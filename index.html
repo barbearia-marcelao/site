@@ -1404,7 +1404,7 @@ async function atualizarHorarios(dataSelecionada) {
         function selecionarHorario(elemento, horarioStr) {
             document.querySelectorAll('.horario-btn').forEach(btn => btn.classList.remove('selected'));
             elemento.classList.add('selected');
-            dadosAgendamento.horario = horarioStr;
+            dadosAgendamento.horario = horarioStr || elemento.innerText.trim();
         }
 
         function carregarDiasProximos() {
