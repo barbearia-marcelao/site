@@ -1616,10 +1616,16 @@ Caso o comprovante não seja enviado, este agendamento deverá ser considerado a
 Desde já, agradeço!`;
 
             let numeroWhatsApp = "5585997313200"; 
-           window.open(
-    `https://api.whatsapp.com/send?phone=${numeroWhatsApp}&text=${encodeURIComponent(mensagem)}`,
-    '_blank'
-);
+    // Usando wa.me que funciona perfeitamente tanto no computador quanto no celular
+    let urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
+    
+    // Tenta abrir em nova aba/janela
+    let win = window.open(urlWhatsApp, '_blank');
+    
+    // Se o navegador do celular bloquear a nova aba, força o redirecionamento na mesma tela
+    if (!win) {
+        window.location.href = urlWhatsApp;
+    }
         }
     function verificarExpediente() {
 
