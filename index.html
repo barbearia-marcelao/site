@@ -1135,8 +1135,8 @@ Caso o cliente não compareça ao horário agendado, o valor do sinal <strong>n�
 
                                <div class="step-actions">
                     <button class="btn btn-voltar" onclick="irParaPasso(2)">Voltar</button>
-                    <button class="btn btn-proximo" onclick="irParaPasso(4)">Efetuar Pagamento</button>
-                </div>
+<button class="btn btn-proximo" onclick="validarEAvancar(4)">Efetuar Pagamento</button>
+                               </div>
             </div>
 
             <!-- PASSO 4 -->
@@ -1955,3 +1955,18 @@ Como funciona o pagamento e a ativação da minha assinatura mensal?`;
 
 </body>
 </html>
+<script>
+function validarEAvancar(proximoPasso) {
+    const inputNome = document.getElementById('nome-cliente');
+    const nome = inputNome ? inputNome.value.trim() : '';
+
+    if (!nome) {
+        alert('Por favor, preencha o seu nome completo para continuar.');
+        if (inputNome) inputNome.focus();
+        return;
+    }
+
+    dadosAgendamento.nome = nome;
+    irParaPasso(proximoPasso);
+}
+</script>
