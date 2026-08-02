@@ -1113,22 +1113,18 @@ gap: 12px;
             <i class="fa-solid fa-check"></i>
             Anote ou envie seu código pelo WhatsApp para confirmar seu agendamento.
         </li>
-
         <li>
             <i class="fa-solid fa-check"></i>
             Para confirmar a reserva do horário, será necessário o pagamento antecipado de 50% do valor do serviço escolhido.
         </li>
-
         <li>
             <i class="fa-solid fa-check"></i>
             O valor pago será descontado do valor total do atendimento.
         </li>
-
         <li>
             <i class="fa-solid fa-check"></i>
-            Caso o cliente não compareça ao horário agendado, o valor do sinal será devolvido até o final do dia.
+Caso o cliente não compareça ao horário agendado, o valor do sinal <strong>não será devolvido</strong>.        
         </li>
-
         <li>
             <i class="fa-solid fa-check"></i>
             Chegue aproximadamente 5 minutos antes do horário marcado.
@@ -1525,108 +1521,69 @@ if (passo === 4) {
         }
 
 async function finalizarAgendamento() {
-            const nome = document.getElementById('nome-cliente').value.trim();
+    const inputNome = document.getElementById('nome-cliente');
+    const nome = inputNome ? inputNome.value.trim() : '';
 
-            if (!nome) {
-                alert('Por favor, preencha o seu nome completo.');
-                return;
+    // Validação estrita: se não preencher o nome, bloqueia e para na hora
+    if (!nome) {
+        alert('Por favor, preencha o seu nome completo para continuar.');
+        if (inputNome) inputNome.focus();
+        return;
+    }
+
+    dadosAgendamento.nome = nome;
+
+    // Tenta salvar o agendamento no Firebase
+    try {
+        await window.firebaseAddDoc(
+            window.firebaseCollection(window.db, "agendamentos"),
+            {
+                nome: dadosAgendamento.nome,
+                servico: dadosAgendamento.servico,
+                data: dadosAgendamento.data,
+                horario: dadosAgendamento.horario,
+                codigo: dadosAgendamento.codigo,
+                criadoEm: new Date()
             }
+        );
+        console.log("Agendamento salvo com sucesso!");
+    } catch (erro) {
+        console.error("Erro ao salvar:", erro);
+    }
 
-            dadosAgendamento.nome = nome;
-            try {
-
-    await window.firebaseAddDoc(
-        window.firebaseCollection(window.db, "agendamentos"),
-        {
-            nome: dadosAgendamento.nome,
-            servico: dadosAgendamento.servico,
-            data: dadosAgendamento.data,
-            horario: dadosAgendamento.horario,
-            codigo: dadosAgendamento.codigo,
-            criadoEm: new Date()
-        }
-    );
-
-    console.log("Agendamento salvo com sucesso!");
-
-} catch (erro) {
-
-    console.error("Erro ao salvar:", erro);
-
-}
-
-// SALVAR AGENDAMENTO NO FIRESTORE
-
-try {
-
-    await addDoc(collection(db, "agendamentos"), {
-        nome: dadosAgendamento.nome,
-        servico: dadosAgendamento.servico,
-        data: dadosAgendamento.data,
-        horario: dadosAgendamento.horario,
-        codigo: dadosAgendamento.codigo,
-        criadoEm: new Date()
-    });
-
-    console.log("Agendamento salvo no Firebase!");
-
-} catch (erro) {
-
-    console.error("Erro ao salvar agendamento:", erro);
-
-}
-
-           const valorTexto = dadosAgendamento.servico.match(/R\$\s*([\d,]+)/);
-
-const valor = parseFloat(
-    valorTexto[1].replace(".", "").replace(",", ".")
-);
-
-const metade = valor / 2;
-
-let mensagem =
-`Olá! Gostaria de solicitar meu agendamento na Barbearia Marcelão.
+    // Monta a mensagem profissional para o WhatsApp
+    let mensagem = `Olá! Gostaria de solicitar meu agendamento na Barbearia Marcelão.
 
 ━━━━━━━━━━━━━━━━━━━━━━
 📋 DADOS DO AGENDAMENTO
 ━━━━━━━━━━━━━━━━━━━━━━
 
 🔑 Código: ${dadosAgendamento.codigo}
-
 👤 Nome: ${dadosAgendamento.nome}
-
 💈 Serviço: ${dadosAgendamento.servico}
-
 📅 Data: ${dadosAgendamento.data}
-
 🕒 Horário: ${dadosAgendamento.horario}
 
 ━━━━━━━━━━━━━━━━━━━━━━
-⚠️ AGENDAMENTO PENDENTE
+⚠️ POLÍTICA DE RESERVA
 ━━━━━━━━━━━━━━━━━━━━━━
 
-Esta solicitação ainda NÃO está confirmada.
+Esta solicitação está pendente de confirmação.
 
-A confirmação do horário será realizada somente após o envio e a conferência do comprovante do pagamento antecipado (50% do valor do serviço).
+O horário será reservado exclusivamente mediante o envio e a conferência do comprovante de pagamento antecipado (50% do valor do serviço).
 
-Após a confirmação do pagamento, o horário será reservado exclusivamente para este cliente.
+*Atenção:* Em caso de ausência sem aviso prévio, o valor da taxa de reserva não será restituído.
 
-Caso o comprovante não seja enviado, este agendamento deverá ser considerado apenas uma solicitação, ficando o horário disponível para novos clientes.
+Desde já, agradecemos a preferência!`;
 
-Desde já, agradeço!`;
-
-            let numeroWhatsApp = "5585997313200"; 
-    // Usando wa.me que funciona perfeitamente tanto no computador quanto no celular
+    let numeroWhatsApp = "5585997313200"; 
     let urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
     
-    // Tenta abrir em nova aba/janela
     let win = window.open(urlWhatsApp, '_blank');
-    
-    // Se o navegador do celular bloquear a nova aba, força o redirecionamento na mesma tela
     if (!win) {
         window.location.href = urlWhatsApp;
     }
-        }
+}
     function verificarExpediente() {
 
     const agora = new Date();
@@ -1690,14 +1647,6 @@ Hoje nossos atendimentos já foram finalizados.
 <br><br>
 
 ✨ <strong>Mas você ainda pode garantir seu horário para os próximos dias.</strong>
-
-<br><br>
-
-📅 Escolha uma das datas acima para continuar seu agendamento.
-
-<br><br>
-
-🔥 Os horários mais disputados costumam acabar rapidamente.
 
 </p>
 
