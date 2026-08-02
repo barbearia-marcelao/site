@@ -1122,10 +1122,11 @@ gap: 12px;
             O valor pago será descontado do valor total do atendimento.
         </li>
         <li>
-            <i class="fa-solid fa-check"></i>
-Caso o cliente não compareça ao horário agendado, o valor do sinal <strong>não será devolvido</strong>.        
+            
+    <i class="fa-solid fa-check"></i>
+    O valor inicial <strong>não será devolvido</strong> em caso de ausência.
+
         </li>
-        <li>
             <i class="fa-solid fa-check"></i>
             Chegue aproximadamente 5 minutos antes do horário marcado.
         </li>
@@ -1585,6 +1586,7 @@ Desde já, agradecemos a preferência!`;
     }
 }
     function verificarExpediente() {
+    return; // Desativa o bloqueio e mantém o site sempre aberto
 
     const agora = new Date();
 
