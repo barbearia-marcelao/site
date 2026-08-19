@@ -994,7 +994,7 @@ gap: 12px;
         <div class="step-container">
 
             <div class="aviso-atendimento">
-                <i class="fa-solid fa-circle-info"></i> O atendimento de Segunda a Sábado ocorre <strong>por agendamento</strong>. Garanta seu horário antecipadamente!
+                <i class="fa-solid fa-circle-info"></i> O atendimento de Segunda a Sexta ocorre <strong>por agendamento</strong>. Garanta seu horário antecipadamente!
             </div>
 
             <!-- PASSO 1 -->
@@ -1057,7 +1057,7 @@ gap: 12px;
 
             <!-- PASSO 2 -->
             <div id="step-2" class="step-content hidden">
-                <div class="step-title">2. Data e Horário Disponível (Segunda a Sábado)</div>
+                <div class="step-title">2. Data e Horário Disponível (Segunda a Sexta)</div>
                 <div class="form-group">
                     <label>Data do Atendimento</label>
                     <div id="dias-grid" class="options-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
@@ -1333,10 +1333,10 @@ async function atualizarHorarios(dataSelecionada) {
     // Dependendo de como o botão envia a data, vamos buscar os bloqueios no Firebase
     let diaDaSemana = "";
     if (dataSelecionada === "Hoje") {
-        const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+        const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
         diaDaSemana = diasSemana[new Date().getDay()];
     } else if (dataSelecionada === "Amanhã") {
-        const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+        const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
         const amanha = new Date();
         amanha.setDate(amanha.getDate() + 1);
         diaDaSemana = diasSemana[amanha.getDay()];
@@ -1348,7 +1348,7 @@ async function atualizarHorarios(dataSelecionada) {
         else if (dataSelecionada.includes("Qua")) diaDaSemana = "Quarta";
         else if (dataSelecionada.includes("Qui")) diaDaSemana = "Quinta";
         else if (dataSelecionada.includes("Sex")) diaDaSemana = "Sexta";
-        else if (dataSelecionada.includes("Sáb")) diaDaSemana = "Sábado";
+
     }
 
     // Consulta o Firebase para ver quais horários estão bloqueados para este dia
@@ -1404,7 +1404,7 @@ async function atualizarHorarios(dataSelecionada) {
             dadosAgendamento.horario = horarioStr || elemento.innerText.trim();
         }
 
-        function carregarDiasProximos() {
+       function carregarDiasProximos() {
 
     const diasGrid = document.getElementById("dias-grid");
     diasGrid.innerHTML = "";
@@ -1412,43 +1412,69 @@ async function atualizarHorarios(dataSelecionada) {
     const hoje = new Date();
     let data = new Date(hoje);
 
-    // Se hoje for domingo, começa na segunda-feira
-    if (hoje.getDay() === 0) {
+    const diaAtual = hoje.getDay();
+
+    // Domingo = 0
+    // Segunda = 1
+    // ...
+    // Sexta = 5
+    // Sábado = 6
+
+    // Se for domingo, começa na segunda-feira
+    if (diaAtual === 0) {
         data.setDate(data.getDate() + 1);
     }
 
-    const diasSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+    // Se for sábado, começa na segunda-feira seguinte
+    if (diaAtual === 6) {
+        data.setDate(data.getDate() + 2);
+    }
+
+    const diasSemana = [
+        "Dom",
+        "Seg",
+        "Ter",
+        "Qua",
+        "Qui",
+        "Sex",
+        "Sáb"
+    ];
 
     while (true) {
 
         const diaSemana = data.getDay();
 
-        // Nunca mostrar domingo
-        if (diaSemana !== 0) {
+        // Nunca mostrar sábado ou domingo
+        if (diaSemana !== 0 && diaSemana !== 6) {
 
             let texto;
 
+            // Hoje
             if (
-                hoje.getDay() !== 0 &&
                 data.toDateString() === hoje.toDateString()
             ) {
 
                 texto = "Hoje";
 
+            // Amanhã
             } else if (
-                hoje.getDay() !== 0 &&
-                data.toDateString() === new Date(hoje.getTime() + 86400000).toDateString()
+                data.toDateString() ===
+                new Date(hoje.getTime() + 86400000).toDateString()
             ) {
 
                 texto = "Amanhã";
 
+            // Outros dias
             } else {
 
-                texto = `${diasSemana[diaSemana]}, ${String(data.getDate()).padStart(2,"0")}/${String(data.getMonth()+1).padStart(2,"0")}`;
-
+                texto =
+                    `${diasSemana[diaSemana]}, ` +
+                    `${String(data.getDate()).padStart(2, "0")}/` +
+                    `${String(data.getMonth() + 1).padStart(2, "0")}`;
             }
 
             const btn = document.createElement("div");
+
             btn.className = "option-btn";
             btn.style.padding = "10px";
             btn.style.fontSize = "0.9rem";
@@ -1459,21 +1485,21 @@ async function atualizarHorarios(dataSelecionada) {
             };
 
             diasGrid.appendChild(btn);
+        }
 
-            // Parar quando chegar no sábado
-            if (diaSemana === 6) {
-                break;
-            }
-
+        // Se chegou na sexta-feira, PARA.
+        // Isso impede que a segunda-feira seguinte apareça.
+        if (diaSemana === 5) {
+            break;
         }
 
         data.setDate(data.getDate() + 1);
-
     }
 
     verificarExpediente();
-
 }
+
+
         function gerarCodigoAleatorio() {
             return Math.floor(1000 + Math.random() * 9000).toString();
         }
@@ -1665,7 +1691,7 @@ background:#2b2b2b;
 
 <br>
 
-Segunda a Sábado
+Segunda a Sexta
 
 <br>
 
@@ -1747,14 +1773,13 @@ async function abrirPainelAdmin(){
 
     const conteudo=document.getElementById("conteudo-admin");
 
-    const dias=[
-        "Segunda",
-        "Terça",
-        "Quarta",
-        "Quinta",
-        "Sexta",
-        "Sábado"
-    ];
+    const dias = [
+    "Segunda",
+    "Terça",
+    "Quarta",
+    "Quinta",
+    "Sexta"
+];
 
     const horarios=[
         "08:10","08:50","09:30",
