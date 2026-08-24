@@ -1408,26 +1408,55 @@ ouvirHorariosBloqueados(diaDaSemana);
 
     
 
-    // Mantém também a sua regra de esconder os horários que já passaram se for hoje
-    if (dataSelecionada !== "Hoje") {
-        return;
+    // Esconde horários que já passaram somente se o dia selecionado for HOJE
+const agora = new Date();
+
+const partesData = dataSelecionada.match(
+    /(\d{2})\/(\d{2})/
+);
+
+if (partesData) {
+
+    const diaSelecionado = parseInt(partesData[1]);
+    const mesSelecionado = parseInt(partesData[2]) - 1;
+
+    const dataSelecionadaObj = new Date(
+        agora.getFullYear(),
+        mesSelecionado,
+        diaSelecionado
+    );
+
+    // Só esconde horários se a data escolhida for hoje
+    if (
+        dataSelecionadaObj.getDate() === agora.getDate() &&
+        dataSelecionadaObj.getMonth() === agora.getMonth() &&
+        dataSelecionadaObj.getFullYear() === agora.getFullYear()
+    ) {
+
+        horarios.forEach(btn => {
+
+            const horaTexto = btn.innerText.trim();
+            const partesHora = horaTexto.split(":");
+
+            const hora = parseInt(partesHora[0]);
+            const minuto = parseInt(partesHora[1]);
+
+            if (
+                hora < agora.getHours() ||
+                (
+                    hora === agora.getHours() &&
+                    minuto <= agora.getMinutes()
+                )
+            ) {
+
+                btn.style.display = "none";
+
+            }
+
+        });
+
     }
-
-    const agora = new Date();
-
-    horarios.forEach(btn => {
-        let horaTexto = btn.innerText;
-        let partes = horaTexto.split(":");
-        let hora = parseInt(partes[0]);
-        let minuto = parseInt(partes[1]);
-
-        if (
-            hora < agora.getHours() ||
-            (hora == agora.getHours() && minuto <= agora.getMinutes())
-        ) {
-            btn.style.display = "none";
-        }
-    });
+}
 }
 
         function selecionarHorario(elemento, horarioStr) {
