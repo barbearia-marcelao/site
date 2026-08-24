@@ -1039,7 +1039,7 @@ gap: 12px;
                     <div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Alisamento ou botox - R$ 50,00')">Alisamento ou botox - R$ 50,00</div>
                     <div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Limpeza básica de pele - R$ 35,00')">Limpeza básica de pele - R$ 35,00</div>
 <div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Barba desenhada - R$ 35,00')">Barba desenhada - R$ 35,00</div>
-<div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Cabelo e barba - R$ 35,00')">Cabelo e barba - R$ 35,00</div>
+<div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Cabelo e barba - R$ 50,00')">Cabelo e barba - R$ 50,00</div>
 <div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Barbaterapia - R$ 35,00')">Barbaterapia - R$ 35,00</div>
 <div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Sobrancelhas - R$ 10,00')">Sobrancelhas - R$ 10,00</div>
 
@@ -1321,7 +1321,59 @@ function filtrarCategoria(categoria) {
     atualizarHorarios(dataStr);
 
 }
-async function atualizarHorarios(dataSelecionada) {
+let cancelarListenerHorarios = null;
+
+function ouvirHorariosBloqueados(diaDaSemana) {
+
+    // Cancela o listener anterior
+    if (cancelarListenerHorarios) {
+        cancelarListenerHorarios();
+        cancelarListenerHorarios = null;
+    }
+
+    const consulta = window.firebaseQuery(
+        window.firebaseCollection(window.db, "horariosBloqueados"),
+        window.firebaseWhere("dia", "==", diaDaSemana)
+    );
+
+    cancelarListenerHorarios = window.firebaseOnSnapshot(
+        consulta,
+        (snapshot) => {
+
+            const horariosBloqueados = [];
+
+            snapshot.forEach((doc) => {
+                horariosBloqueados.push(doc.data().horario);
+            });
+
+            document.querySelectorAll(".horario-btn").forEach(btn => {
+
+                const horario = btn.innerText.trim();
+
+                if (horariosBloqueados.includes(horario)) {
+
+                    btn.style.display = "none";
+                    btn.classList.remove("selected");
+
+                    if (dadosAgendamento.horario === horario) {
+                        dadosAgendamento.horario = "";
+                    }
+
+                } else {
+
+                    btn.style.display = "block";
+
+                }
+
+            });
+
+        },
+        (erro) => {
+            console.error("Erro ao atualizar horários em tempo real:", erro);
+        }
+    );
+}
+    async function atualizarHorarios(dataSelecionada) {
     const horarios = document.querySelectorAll(".horario-btn");
 
     // Primeiro deixa todos visíveis
@@ -1351,30 +1403,10 @@ async function atualizarHorarios(dataSelecionada) {
 
     }
 
-    // Consulta o Firebase para ver quais horários estão bloqueados para este dia
-    try {
-        const querySnapshot = await window.firebaseGetDocs(
-            window.firebaseQuery(
-                window.firebaseCollection(window.db, "horariosBloqueados"),
-                window.firebaseWhere("dia", "==", diaDaSemana)
-            )
-        );
+        // Ativa a atualização dos horários em tempo real
+ouvirHorariosBloqueados(diaDaSemana);
 
-        const horariosBloqueados = [];
-        querySnapshot.forEach((doc) => {
-            horariosBloqueados.push(doc.data().horario);
-        });
-
-        // Esconde os horários que o Marcelo bloqueou
-        horarios.forEach(btn => {
-            if (horariosBloqueados.includes(btn.innerText.trim())) {
-                btn.style.display = "none";
-            }
-        });
-
-    } catch (erro) {
-        console.error("Erro ao verificar horários bloqueados:", erro);
-    }
+    
 
     // Mantém também a sua regra de esconder os horários que já passaram se for hoje
     if (dataSelecionada !== "Hoje") {
@@ -1414,18 +1446,14 @@ async function atualizarHorarios(dataSelecionada) {
 
     const diaAtual = hoje.getDay();
 
-    // Domingo = 0
-    // Segunda = 1
-    // ...
-    // Sexta = 5
-    // Sábado = 6
-
-    // Se for domingo, começa na segunda-feira
+    // Domingo
+    // No domingo, começa pela segunda-feira
     if (diaAtual === 0) {
         data.setDate(data.getDate() + 1);
     }
 
-    // Se for sábado, começa na segunda-feira seguinte
+    // Sábado
+    // No sábado, começa pela segunda-feira seguinte
     if (diaAtual === 6) {
         data.setDate(data.getDate() + 2);
     }
@@ -1444,34 +1472,13 @@ async function atualizarHorarios(dataSelecionada) {
 
         const diaSemana = data.getDay();
 
-        // Nunca mostrar sábado ou domingo
-        if (diaSemana !== 0 && diaSemana !== 6) {
+        // Mostrar somente segunda a sexta
+        if (diaSemana >= 1 && diaSemana <= 5) {
 
-            let texto;
-
-            // Hoje
-            if (
-                data.toDateString() === hoje.toDateString()
-            ) {
-
-                texto = "Hoje";
-
-            // Amanhã
-            } else if (
-                data.toDateString() ===
-                new Date(hoje.getTime() + 86400000).toDateString()
-            ) {
-
-                texto = "Amanhã";
-
-            // Outros dias
-            } else {
-
-                texto =
-                    `${diasSemana[diaSemana]}, ` +
-                    `${String(data.getDate()).padStart(2, "0")}/` +
-                    `${String(data.getMonth() + 1).padStart(2, "0")}`;
-            }
+            const texto =
+                `${diasSemana[diaSemana]}, ` +
+                `${String(data.getDate()).padStart(2, "0")}/` +
+                `${String(data.getMonth() + 1).padStart(2, "0")}`;
 
             const btn = document.createElement("div");
 
@@ -1487,8 +1494,7 @@ async function atualizarHorarios(dataSelecionada) {
             diasGrid.appendChild(btn);
         }
 
-        // Se chegou na sexta-feira, PARA.
-        // Isso impede que a segunda-feira seguinte apareça.
+        // Parar na sexta-feira
         if (diaSemana === 5) {
             break;
         }
@@ -1548,6 +1554,68 @@ if (passo === 4) {
         }
 
 async function finalizarAgendamento() {
+        // 🔒 VERIFICAÇÃO FINAL DO HORÁRIO
+    try {
+
+        const diaSelecionado = dadosAgendamento.data;
+        const horarioSelecionado = dadosAgendamento.horario;
+
+        let diaDaSemana = "";
+
+        if (diaSelecionado.includes("Seg")) diaDaSemana = "Segunda";
+        else if (diaSelecionado.includes("Ter")) diaDaSemana = "Terça";
+        else if (diaSelecionado.includes("Qua")) diaDaSemana = "Quarta";
+        else if (diaSelecionado.includes("Qui")) diaDaSemana = "Quinta";
+        else if (diaSelecionado.includes("Sex")) diaDaSemana = "Sexta";
+
+        const consulta = window.firebaseQuery(
+            window.firebaseCollection(window.db, "horariosBloqueados"),
+            window.firebaseWhere("dia", "==", diaDaSemana)
+        );
+
+        const snapshot = await window.firebaseGetDocs(consulta);
+
+        let horarioBloqueado = false;
+
+        snapshot.forEach((doc) => {
+
+            const dados = doc.data();
+
+            if (dados.horario === horarioSelecionado) {
+                horarioBloqueado = true;
+            }
+
+        });
+
+        if (horarioBloqueado) {
+
+            alert(
+                "⚠️ Este horário acabou de ser bloqueado.\n\n" +
+                "Por favor, escolha outro horário."
+            );
+
+            dadosAgendamento.horario = "";
+
+            // Volta para a etapa de escolha do horário
+            irParaPasso(2);
+
+            return;
+        }
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao verificar disponibilidade:",
+            erro
+        );
+
+        alert(
+            "Não foi possível verificar a disponibilidade do horário. " +
+            "Tente novamente."
+        );
+
+        return;
+    }
     const inputNome = document.getElementById('nome-cliente');
     const nome = inputNome ? inputNome.value.trim() : '';
 
@@ -1560,23 +1628,80 @@ async function finalizarAgendamento() {
 
     dadosAgendamento.nome = nome;
 
-    // Tenta salvar o agendamento no Firebase
-    try {
-        await window.firebaseAddDoc(
-            window.firebaseCollection(window.db, "agendamentos"),
-            {
-                nome: dadosAgendamento.nome,
-                servico: dadosAgendamento.servico,
-                data: dadosAgendamento.data,
-                horario: dadosAgendamento.horario,
-                codigo: dadosAgendamento.codigo,
-                criadoEm: new Date()
+    // 🔒 TRAVA DEFINITIVA DO HORÁRIO
+try {
+
+    const idHorario = `${diaDaSemana}_${dadosAgendamento.horario}`;
+
+    const referenciaHorario = window.firebaseDoc(
+        window.db,
+        "reservasSlots",
+        idHorario
+    );
+
+    await window.firebaseRunTransaction(
+        window.db,
+        async (transaction) => {
+
+            const reservaExistente =
+                await transaction.get(referenciaHorario);
+
+            // Se outra pessoa já reservou
+            if (reservaExistente.exists()) {
+                throw new Error("HORARIO_JA_RESERVADO");
             }
+
+            // Cria a trava do horário
+            transaction.set(referenciaHorario, {
+                dia: diaDaSemana,
+                horario: dadosAgendamento.horario,
+                reservadoEm: new Date(),
+                codigo: dadosAgendamento.codigo
+            });
+
+        }
+    );
+
+    // Só chega aqui se conseguiu travar o horário
+    await window.firebaseAddDoc(
+        window.firebaseCollection(window.db, "agendamentos"),
+        {
+            nome: dadosAgendamento.nome,
+            servico: dadosAgendamento.servico,
+            data: dadosAgendamento.data,
+            horario: dadosAgendamento.horario,
+            codigo: dadosAgendamento.codigo,
+            criadoEm: new Date()
+        }
+    );
+
+    console.log("✅ Horário reservado e agendamento salvo!");
+
+} catch (erro) {
+
+    console.error("Erro ao reservar horário:", erro);
+
+    if (erro.message === "HORARIO_JA_RESERVADO") {
+
+        alert(
+            "⚠️ Esse horário acabou de ser reservado por outra pessoa.\n\n" +
+            "Por favor, escolha outro horário."
         );
-        console.log("Agendamento salvo com sucesso!");
-    } catch (erro) {
-        console.error("Erro ao salvar:", erro);
+
+        dadosAgendamento.horario = "";
+
+        irParaPasso(2);
+
+        return;
     }
+
+    alert(
+        "Não foi possível confirmar o agendamento.\n\n" +
+        "Verifique sua conexão e tente novamente."
+    );
+
+    return;
+}
 
     // Monta a mensagem profissional para o WhatsApp
     let mensagem = `Olá! Gostaria de solicitar meu agendamento na Barbearia Marcelão.
@@ -1948,8 +2073,10 @@ Como funciona o pagamento e a ativação da minha assinatura mensal?`;
     deleteDoc,
     getDocs,
     query,
-    where
-  } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore.js";
+    where,
+    onSnapshot,
+    runTransaction
+} from "https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBJaHFBApy9mPSALP_GVwwu7OekQ9vOhFY",
@@ -1966,14 +2093,17 @@ Como funciona o pagamento e a ativação da minha assinatura mensal?`;
 
   // Salvando as funções na janela global para o resto do site usar
   window.db = getFirestore(app);
+    
   window.firebaseCollection = collection;
   window.firebaseAddDoc = addDoc;
   window.firebaseDoc = doc;
   window.firebaseSetDoc = setDoc;
   window.firebaseDeleteDoc = deleteDoc;
   window.firebaseGetDocs = getDocs;
-  window.firebaseQuery = query;
-  window.firebaseWhere = where;
+window.firebaseQuery = query;
+window.firebaseWhere = where;
+window.firebaseOnSnapshot = onSnapshot;
+    window.firebaseRunTransaction = runTransaction;
 
   console.log("Firebase + Firestore conectado com sucesso!");
 
