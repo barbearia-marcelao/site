@@ -1322,8 +1322,55 @@ function filtrarCategoria(categoria) {
 
 }
 let cancelarListenerHorarios = null;
+    function ocultarHorariosPassados(dataSelecionada) {
 
-function ouvirHorariosBloqueados(diaDaSemana) {
+    const agora = new Date();
+
+    // Pega a data no formato: Seg, 24/08
+    const partesData = dataSelecionada.match(/(\d{2})\/(\d{2})/);
+
+    if (!partesData) return;
+
+    const dia = parseInt(partesData[1]);
+    const mes = parseInt(partesData[2]) - 1;
+
+    const dataEscolhida = new Date(
+        agora.getFullYear(),
+        mes,
+        dia
+    );
+
+    // Só esconde horários se a data escolhida for hoje
+    const ehHoje =
+        dataEscolhida.getDate() === agora.getDate() &&
+        dataEscolhida.getMonth() === agora.getMonth() &&
+        dataEscolhida.getFullYear() === agora.getFullYear();
+
+    if (!ehHoje) return;
+
+    document.querySelectorAll(".horario-btn").forEach(btn => {
+
+        const partesHora = btn.innerText.trim().split(":");
+
+        if (partesHora.length !== 2) return;
+
+        const hora = parseInt(partesHora[0]);
+        const minuto = parseInt(partesHora[1]);
+
+        if (
+            hora < agora.getHours() ||
+            (
+                hora === agora.getHours() &&
+                minuto <= agora.getMinutes()
+            )
+        ) {
+            btn.style.display = "none";
+        }
+
+    });
+}
+
+function ouvirHorariosBloqueados(diaDaSemana, dataSelecionada) {
 
     // Cancela o listener anterior
     if (cancelarListenerHorarios) {
@@ -1361,11 +1408,14 @@ function ouvirHorariosBloqueados(diaDaSemana) {
 
                 } else {
 
-                    btn.style.display = "block";
+    btn.style.display = "block";
 
-                }
+}
+                
 
             });
+            // Verifica novamente os horários que já passaram
+ocultarHorariosPassados(dataSelecionada);
 
         },
         (erro) => {
