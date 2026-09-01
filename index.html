@@ -1540,21 +1540,26 @@ if (partesData) {
        function carregarDiasProximos() {
 
     const diasGrid = document.getElementById("dias-grid");
+
+    if (!diasGrid) return;
+
     diasGrid.innerHTML = "";
 
     const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
     let data = new Date(hoje);
 
-    const diaAtual = hoje.getDay();
+    const diaAtual = data.getDay();
 
-    // Domingo
-    // No domingo, começa pela segunda-feira
+    // Domingo = 0
+    // Se hoje for domingo, começa na segunda-feira
     if (diaAtual === 0) {
         data.setDate(data.getDate() + 1);
     }
 
-    // Sábado
-    // No sábado, começa pela segunda-feira seguinte
+    // Sábado = 6
+    // Se hoje for sábado, começa na segunda-feira seguinte
     if (diaAtual === 6) {
         data.setDate(data.getDate() + 2);
     }
@@ -1568,12 +1573,34 @@ if (partesData) {
         "Sex",
         "Sáb"
     ];
+
+    // Cria somente Segunda até Sexta
+    while (true) {
+
+        const diaSemana = data.getDay();
+
+        // Nunca mostra domingo
+        if (diaSemana !== 0 && diaSemana !== 6) {
+
+            const btn = document.createElement("button");
+
+            btn.className = "dia-btn";
+
+            const dia = String(data.getDate()).padStart(2, "0");
+            const mes = String(data.getMonth() + 1).padStart(2, "0");
+
+            const texto = `${diasSemana[diaSemana]}, ${dia}/${mes}`;
+
+            btn.innerText = texto;
+
+            btn.onclick = function () {
+                selecionarDia(this, texto);
             };
 
             diasGrid.appendChild(btn);
         }
 
-        // Parar na sexta-feira
+        // Para depois da sexta-feira
         if (diaSemana === 5) {
             break;
         }
