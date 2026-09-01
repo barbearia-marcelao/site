@@ -2151,7 +2151,7 @@ Como funciona o pagamento e a ativação da minha assinatura mensal?`;
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-analytics.js";
-  import { 
+ import { 
     getFirestore,
     collection,
     addDoc,
@@ -2192,6 +2192,7 @@ window.firebaseQuery = query;
 window.firebaseWhere = where;
 window.firebaseOnSnapshot = onSnapshot;
     window.firebaseRunTransaction = runTransaction;
+    window.firebaseServerTimestamp = serverTimestamp;
 
   console.log("Firebase + Firestore conectado com sucesso!");
 
