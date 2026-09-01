@@ -1639,58 +1639,6 @@ async function finalizarAgendamento() {
 
 
     // ================================
-    // 2. VERIFICA SE O MARCELO BLOQUEOU
-    // ================================
-
-    try {
-
-        const consulta = window.firebaseQuery(
-            window.firebaseCollection(window.db, "horariosBloqueados"),
-            window.firebaseWhere("dia", "==", diaDaSemana)
-        );
-
-        const snapshot = await window.firebaseGetDocs(consulta);
-
-        let horarioBloqueado = false;
-
-        snapshot.forEach((documento) => {
-
-            const dados = documento.data();
-
-            if (dados.horario === horarioSelecionado) {
-                horarioBloqueado = true;
-            }
-
-        });
-
-        if (horarioBloqueado) {
-
-            alert(
-                "⚠️ Este horário acabou de ser bloqueado.\n\n" +
-                "Por favor, escolha outro horário."
-            );
-
-            dadosAgendamento.horario = "";
-
-            irParaPasso(2);
-
-            return;
-        }
-
-    } catch (erro) {
-
-        console.error("Erro ao verificar disponibilidade:", erro);
-
-        alert(
-            "Não foi possível verificar a disponibilidade do horário.\n\n" +
-            "Tente novamente."
-        );
-
-        return;
-    }
-
-
-    // ================================
     // 3. VERIFICA O NOME
     // ================================
 
