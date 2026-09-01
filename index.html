@@ -1419,23 +1419,9 @@ function ouvirHorariosBloqueados(diaDaSemana, dataSelecionada) {
             btn.innerText = texto;
 
             btn.onclick = function () {
-                selecionarDia(this, texto);if (horariosBloqueados.includes(horario)) {
-
-                    btn.style.display = "none";
-                    btn.classList.remove("selected");
-
-                    if (dadosAgendamento.horario === horario) {
-                        dadosAgendamento.horario = "";
-                    }
-
-                } else {
-
-    btn.style.display = "block";
-
-}
-                
-
-            });
+    selecionarDia(this, texto);
+};
+            
             // Verifica novamente os horários que já passaram
 ocultarHorariosPassados(dataSelecionada);
 
