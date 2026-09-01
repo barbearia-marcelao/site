@@ -1634,19 +1634,21 @@ if (passo === 4) {
 
 async function finalizarAgendamento() {
         // 🔒 VERIFICAÇÃO FINAL DO HORÁRIO
+    
+    const diaSelecionado = dadosAgendamento.data;
+    const horarioSelecionado = dadosAgendamento.horario;
+
+    let diaDaSemana = "";
+
+    if (diaSelecionado.includes("Seg")) diaDaSemana = "Segunda";
+    else if (diaSelecionado.includes("Ter")) diaDaSemana = "Terça";
+    else if (diaSelecionado.includes("Qua")) diaDaSemana = "Quarta";
+    else if (diaSelecionado.includes("Qui")) diaDaSemana = "Quinta";
+    else if (diaSelecionado.includes("Sex")) diaDaSemana = "Sexta";
+    
     try {
 
-        const diaSelecionado = dadosAgendamento.data;
-        const horarioSelecionado = dadosAgendamento.horario;
-
-        let diaDaSemana = "";
-
-        if (diaSelecionado.includes("Seg")) diaDaSemana = "Segunda";
-        else if (diaSelecionado.includes("Ter")) diaDaSemana = "Terça";
-        else if (diaSelecionado.includes("Qua")) diaDaSemana = "Quarta";
-        else if (diaSelecionado.includes("Qui")) diaDaSemana = "Quinta";
-        else if (diaSelecionado.includes("Sex")) diaDaSemana = "Sexta";
-
+       
         const consulta = window.firebaseQuery(
             window.firebaseCollection(window.db, "horariosBloqueados"),
             window.firebaseWhere("dia", "==", diaDaSemana)
