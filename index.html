@@ -1378,6 +1378,8 @@ function ouvirHorariosBloqueados(diaDaSemana, dataSelecionada) {
         cancelarListenerHorarios = null;
     }
 
+    if (!diaDaSemana) return;
+
     const consulta = window.firebaseQuery(
         window.firebaseCollection(window.db, "horariosBloqueados"),
         window.firebaseWhere("dia", "==", diaDaSemana)
@@ -1390,131 +1392,87 @@ function ouvirHorariosBloqueados(diaDaSemana, dataSelecionada) {
             const horariosBloqueados = [];
 
             snapshot.forEach((doc) => {
-                horariosBloqueados.push(doc.data().horario);
+                const dados = doc.data();
+                horariosBloqueados.push(dados.horario);
             });
 
             document.querySelectorAll(".horario-btn").forEach(btn => {
 
                 const horario = btn.innerText.trim();
 
-                
+                if (horariosBloqueados.includes(horario)) {
 
-    while (true) {
+                    btn.style.display = "none";
+                    btn.classList.remove("selected");
 
-        const diaSemana = data.getDay();
+                    if (dadosAgendamento.horario === horario) {
+                        dadosAgendamento.horario = "";
+                    }
 
-        // Mostrar somente segunda a sexta
-        if (diaSemana >= 1 && diaSemana <= 5) {
+                } else {
 
-            const texto =
-                `${diasSemana[diaSemana]}, ` +
-                `${String(data.getDate()).padStart(2, "0")}/` +
-                `${String(data.getMonth() + 1).padStart(2, "0")}`;
+                    btn.style.display = "block";
 
-            const btn = document.createElement("div");
+                }
 
-            btn.className = "option-btn";
-            btn.style.padding = "10px";
-            btn.style.fontSize = "0.9rem";
-            btn.innerText = texto;
+            });
 
-            btn.onclick = function () {
-    selecionarDia(this, texto);
-};
-            
-            // Verifica novamente os horários que já passaram
-ocultarHorariosPassados(dataSelecionada);
+            // Esconde novamente os horários que já passaram,
+            // caso a data selecionada seja hoje.
+            if (dataSelecionada) {
+                ocultarHorariosPassados(dataSelecionada);
+            }
 
         },
         (erro) => {
-            console.error("Erro ao atualizar horários em tempo real:", erro);
+
+            console.error(
+                "Erro ao atualizar horários em tempo real:",
+                erro
+            );
+
         }
     );
 }
-    async function atualizarHorarios(dataSelecionada) {
+
+
+async function atualizarHorarios(dataSelecionada) {
+
     const horarios = document.querySelectorAll(".horario-btn");
 
-    // Primeiro deixa todos visíveis
+    // Primeiro mostra todos os horários
     horarios.forEach(btn => {
         btn.style.display = "block";
     });
 
-    // Descobre o nome do dia da semana correspondente (ex: "Segunda", "Terça", etc.)
-    // Dependendo de como o botão envia a data, vamos buscar os bloqueios no Firebase
     let diaDaSemana = "";
-    if (dataSelecionada === "Hoje") {
-        const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
-        diaDaSemana = diasSemana[new Date().getDay()];
-    } else if (dataSelecionada === "Amanhã") {
-        const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
-        const amanha = new Date();
-        amanha.setDate(amanha.getDate() + 1);
-        diaDaSemana = diasSemana[amanha.getDay()];
-    } else {
-        // Exemplo: se o texto for "Seg, 03/08", precisamos extrair o dia da semana
-        // Se no seu site o formato for diferente, o Firebase vai comparar com o texto salvo
-        if (dataSelecionada.includes("Seg")) diaDaSemana = "Segunda";
-        else if (dataSelecionada.includes("Ter")) diaDaSemana = "Terça";
-        else if (dataSelecionada.includes("Qua")) diaDaSemana = "Quarta";
-        else if (dataSelecionada.includes("Qui")) diaDaSemana = "Quinta";
-        else if (dataSelecionada.includes("Sex")) diaDaSemana = "Sexta";
 
+    // Descobre o dia da semana
+    if (dataSelecionada.includes("Seg")) {
+        diaDaSemana = "Segunda";
+    }
+    else if (dataSelecionada.includes("Ter")) {
+        diaDaSemana = "Terça";
+    }
+    else if (dataSelecionada.includes("Qua")) {
+        diaDaSemana = "Quarta";
+    }
+    else if (dataSelecionada.includes("Qui")) {
+        diaDaSemana = "Quinta";
+    }
+    else if (dataSelecionada.includes("Sex")) {
+        diaDaSemana = "Sexta";
     }
 
-        // Ativa a atualização dos horários em tempo real
-ouvirHorariosBloqueados(diaDaSemana);
-
-    
-
-    // Esconde horários que já passaram somente se o dia selecionado for HOJE
-const agora = new Date();
-
-const partesData = dataSelecionada.match(
-    /(\d{2})\/(\d{2})/
-);
-
-if (partesData) {
-
-    const diaSelecionado = parseInt(partesData[1]);
-    const mesSelecionado = parseInt(partesData[2]) - 1;
-
-    const dataSelecionadaObj = new Date(
-        agora.getFullYear(),
-        mesSelecionado,
-        diaSelecionado
+    // Atualização em tempo real dos bloqueios
+    ouvirHorariosBloqueados(
+        diaDaSemana,
+        dataSelecionada
     );
 
-    // Só esconde horários se a data escolhida for hoje
-    if (
-        dataSelecionadaObj.getDate() === agora.getDate() &&
-        dataSelecionadaObj.getMonth() === agora.getMonth() &&
-        dataSelecionadaObj.getFullYear() === agora.getFullYear()
-    ) {
-
-        horarios.forEach(btn => {
-
-            const horaTexto = btn.innerText.trim();
-            const partesHora = horaTexto.split(":");
-
-            const hora = parseInt(partesHora[0]);
-            const minuto = parseInt(partesHora[1]);
-
-            if (
-                hora < agora.getHours() ||
-                (
-                    hora === agora.getHours() &&
-                    minuto <= agora.getMinutes()
-                )
-            ) {
-
-                btn.style.display = "none";
-
-            }
-
-        });
-
-    }
-}
+    // Esconde horários que já passaram
+    // somente quando a data escolhida for hoje
+    ocultarHorariosPassados(dataSelecionada);
 }
 
         function selecionarHorario(elemento, horarioStr) {
