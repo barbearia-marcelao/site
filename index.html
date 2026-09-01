@@ -1633,10 +1633,19 @@ if (passo === 4) {
         }
 
 async function finalizarAgendamento() {
-        // 🔒 VERIFICAÇÃO FINAL DO HORÁRIO
-    
+
+    // ================================
+    // 1. VERIFICAÇÃO DOS DADOS
+    // ================================
+
     const diaSelecionado = dadosAgendamento.data;
     const horarioSelecionado = dadosAgendamento.horario;
+
+    if (!diaSelecionado || !horarioSelecionado) {
+        alert("⚠️ Selecione uma data e um horário antes de continuar.");
+        irParaPasso(2);
+        return;
+    }
 
     let diaDaSemana = "";
 
@@ -1645,10 +1654,19 @@ async function finalizarAgendamento() {
     else if (diaSelecionado.includes("Qua")) diaDaSemana = "Quarta";
     else if (diaSelecionado.includes("Qui")) diaDaSemana = "Quinta";
     else if (diaSelecionado.includes("Sex")) diaDaSemana = "Sexta";
-    
+
+    if (!diaDaSemana) {
+        alert("⚠️ Não foi possível identificar o dia selecionado.");
+        return;
+    }
+
+
+    // ================================
+    // 2. VERIFICA SE O MARCELO BLOQUEOU
+    // ================================
+
     try {
 
-       
         const consulta = window.firebaseQuery(
             window.firebaseCollection(window.db, "horariosBloqueados"),
             window.firebaseWhere("dia", "==", diaDaSemana)
@@ -1658,9 +1676,9 @@ async function finalizarAgendamento() {
 
         let horarioBloqueado = false;
 
-        snapshot.forEach((doc) => {
+        snapshot.forEach((documento) => {
 
-            const dados = doc.data();
+            const dados = documento.data();
 
             if (dados.horario === horarioSelecionado) {
                 horarioBloqueado = true;
@@ -1677,7 +1695,6 @@ async function finalizarAgendamento() {
 
             dadosAgendamento.horario = "";
 
-            // Volta para a etapa de escolha do horário
             irParaPasso(2);
 
             return;
@@ -1685,107 +1702,147 @@ async function finalizarAgendamento() {
 
     } catch (erro) {
 
-        console.error(
-            "Erro ao verificar disponibilidade:",
-            erro
-        );
+        console.error("Erro ao verificar disponibilidade:", erro);
 
         alert(
-            "Não foi possível verificar a disponibilidade do horário. " +
+            "Não foi possível verificar a disponibilidade do horário.\n\n" +
             "Tente novamente."
         );
 
         return;
     }
-    const inputNome = document.getElementById('nome-cliente');
-    const nome = inputNome ? inputNome.value.trim() : '';
 
-    // Validação estrita: se não preencher o nome, bloqueia e para na hora
+
+    // ================================
+    // 3. VERIFICA O NOME
+    // ================================
+
+    const inputNome = document.getElementById("nome-cliente");
+    const nome = inputNome ? inputNome.value.trim() : "";
+
     if (!nome) {
-        alert('Por favor, preencha o seu nome completo para continuar.');
-        if (inputNome) inputNome.focus();
+
+        alert(
+            "Por favor, preencha o seu nome completo para continuar."
+        );
+
+        if (inputNome) {
+            inputNome.focus();
+        }
+
         return;
     }
 
     dadosAgendamento.nome = nome;
 
-    // 🔒 TRAVA DEFINITIVA DO HORÁRIO
-try {
 
-    const idHorario = `${diaDaSemana}_${dadosAgendamento.horario}`;
+    // ================================
+    // 4. TRAVA DEFINITIVA DO HORÁRIO
+    // ================================
 
-    const referenciaHorario = window.firebaseDoc(
-        window.db,
-        "reservasSlots",
-        idHorario
-    );
+    try {
 
-    await window.firebaseRunTransaction(
-        window.db,
-        async (transaction) => {
+        const idHorario =
+            `${diaDaSemana}_${horarioSelecionado}`;
 
-            const reservaExistente =
-                await transaction.get(referenciaHorario);
+        const referenciaHorario =
+            window.firebaseDoc(
+                window.db,
+                "reservasSlots",
+                idHorario
+            );
 
-            // Se outra pessoa já reservou
-            if (reservaExistente.exists()) {
-                throw new Error("HORARIO_JA_RESERVADO");
+        await window.firebaseRunTransaction(
+            window.db,
+            async (transaction) => {
+
+                const reservaExistente =
+                    await transaction.get(referenciaHorario);
+
+                if (reservaExistente.exists()) {
+
+                    throw new Error(
+                        "HORARIO_JA_RESERVADO"
+                    );
+
+                }
+
+                transaction.set(
+                    referenciaHorario,
+                    {
+                        dia: diaDaSemana,
+                        horario: horarioSelecionado,
+                        reservadoEm: new Date(),
+                        codigo: dadosAgendamento.codigo
+                    }
+                );
+
             }
-
-            // Cria a trava do horário
-            transaction.set(referenciaHorario, {
-                dia: diaDaSemana,
-                horario: dadosAgendamento.horario,
-                reservadoEm: new Date(),
-                codigo: dadosAgendamento.codigo
-            });
-
-        }
-    );
-
-    // Só chega aqui se conseguiu travar o horário
-    await window.firebaseAddDoc(
-        window.firebaseCollection(window.db, "agendamentos"),
-        {
-            nome: dadosAgendamento.nome,
-            servico: dadosAgendamento.servico,
-            data: dadosAgendamento.data,
-            horario: dadosAgendamento.horario,
-            codigo: dadosAgendamento.codigo,
-            criadoEm: new Date()
-        }
-    );
-
-    console.log("✅ Horário reservado e agendamento salvo!");
-
-} catch (erro) {
-
-    console.error("Erro ao reservar horário:", erro);
-
-    if (erro.message === "HORARIO_JA_RESERVADO") {
-
-        alert(
-            "⚠️ Esse horário acabou de ser reservado por outra pessoa.\n\n" +
-            "Por favor, escolha outro horário."
         );
 
-        dadosAgendamento.horario = "";
 
-        irParaPasso(2);
+        // ================================
+        // 5. SALVA O AGENDAMENTO
+        // ================================
+
+        await window.firebaseAddDoc(
+            window.firebaseCollection(
+                window.db,
+                "agendamentos"
+            ),
+            {
+                nome: dadosAgendamento.nome,
+                servico: dadosAgendamento.servico,
+                data: dadosAgendamento.data,
+                horario: dadosAgendamento.horario,
+                codigo: dadosAgendamento.codigo,
+                criadoEm: new Date()
+            }
+        );
+
+        console.log(
+            "✅ Horário reservado e agendamento salvo!"
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao reservar horário:",
+            erro
+        );
+
+        if (
+            erro.message ===
+            "HORARIO_JA_RESERVADO"
+        ) {
+
+            alert(
+                "⚠️ Esse horário acabou de ser reservado por outra pessoa.\n\n" +
+                "Por favor, escolha outro horário."
+            );
+
+            dadosAgendamento.horario = "";
+
+            irParaPasso(2);
+
+            return;
+        }
+
+        alert(
+            "Não foi possível confirmar o agendamento.\n\n" +
+            "Verifique sua conexão e tente novamente."
+        );
 
         return;
     }
 
-    alert(
-        "Não foi possível confirmar o agendamento.\n\n" +
-        "Verifique sua conexão e tente novamente."
-    );
 
-    return;
-}
+    // ================================
+    // 6. WHATSAPP
+    // ================================
 
-    // Monta a mensagem profissional para o WhatsApp
-    let mensagem = `Olá! Gostaria de solicitar meu agendamento na Barbearia Marcelão.
+    const mensagem = `Olá! Gostaria de solicitar meu agendamento na Barbearia Marcelão.
 
 ━━━━━━━━━━━━━━━━━━━━━━
 📋 DADOS DO AGENDAMENTO
@@ -1809,14 +1866,20 @@ O horário será reservado exclusivamente mediante o envio e a conferência do c
 
 Desde já, agradecemos a preferência!`;
 
-    let numeroWhatsApp = "5585997313200"; 
-    let urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
-    
-    let win = window.open(urlWhatsApp, '_blank');
+    const numeroWhatsApp = "5585997313200";
+
+    const urlWhatsApp =
+        `https://wa.me/${numeroWhatsApp}?text=` +
+        encodeURIComponent(mensagem);
+
+    const win =
+        window.open(urlWhatsApp, "_blank");
+
     if (!win) {
         window.location.href = urlWhatsApp;
     }
-}
+} 
+    
     function verificarExpediente() {
     return; // Desativa o bloqueio e mantém o site sempre aberto
 
