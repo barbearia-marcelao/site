@@ -1002,10 +1002,10 @@ gap: 12px;
             <div id="step-1" class="step-content">
 
                 <div class="categorias-abas">
-                    <button class="aba-btn active" onclick="filtrarCategoria('adulto')">Adulto</button>
-                    <button class="aba-btn" onclick="filtrarCategoria('infantil')">Infantil</button>
-                    <button class="aba-btn" onclick="filtrarCategoria('exclusividade')">Exclusividades</button>
-                    <button class="aba-btn" onclick="filtrarCategoria('pigmentacao')">Pigmentação</button>
+                    <button class="aba-btn active" onclick="filtrarCategoria('adulto', this)"> Adulto</button>
+                    <button class="aba-btn" onclick="filtrarCategoria('infantil', this)"> Infantil</button>
+                    <button class="aba-btn" onclick="filtrarCategoria('exclusividade', this)"> Exclusividades</button>
+                    <button class="aba-btn" onclick="filtrarCategoria('pigmentacao', this)"> Pigmentação</button>
                 </div>
 
                 <div id="grid-servicos-adulto" class="options-grid">
@@ -1040,7 +1040,7 @@ gap: 12px;
                     <div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Limpeza básica de pele - R$ 35,00')">Limpeza básica de pele - R$ 35,00</div>
 <div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Barba desenhada - R$ 35,00')">Barba desenhada - R$ 35,00</div>
 <div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Cabelo e barba - R$ 50,00')">Cabelo e barba - R$ 50,00</div>
-<div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Barbaterapia - R$ 35,00')">Barbaterapia - R$ 35,00</div>
+<div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Barbaterapia - R$ 50,00')">Barbaterapia - R$ 50,00</div>
 <div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Sobrancelhas - R$ 10,00')">Sobrancelhas - R$ 10,00</div>
 
                 </div>
@@ -1122,14 +1122,14 @@ gap: 12px;
             O valor pago será descontado do valor total do atendimento.
         </li>
         <li>
-            
     <i class="fa-solid fa-check"></i>
     O valor inicial não será devolvido em caso de ausência.
+</li>
 
-        </li>
-            <i class="fa-solid fa-check"></i>
-            Chegue aproximadamente 5 minutos antes do horário marcado.
-        </li>
+<li>
+    <i class="fa-solid fa-check"></i>
+    Chegue aproximadamente 5 minutos antes do horário marcado.
+</li>
 
     </ul>
 </div>
@@ -1281,27 +1281,34 @@ Fechar Painel
             codigo: ''
         };
 
-function filtrarCategoria(categoria) {
-            document.querySelectorAll('.aba-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+function filtrarCategoria(categoria, botao) {
+    document.querySelectorAll('.aba-btn').forEach(btn =>
+        btn.classList.remove('active')
+    );
 
-            // Remove a seleção visual de todos os botões de serviço
-            document.querySelectorAll('[id^="grid-servicos-"] .option-btn').forEach(btn => btn.classList.remove('selected'));
-            
-            // Limpa o serviço salvo na memória para obrigar a escolher na nova aba
-            dadosAgendamento.servico = '';
+    if (botao) {
+        botao.classList.add('active');
+    }
 
-            document.querySelectorAll('.options-grid').forEach(grid => {
-                if(grid.id.startsWith('grid-servicos-')) {
-                    grid.classList.add('hidden');
-                }
-            });
+    document.querySelectorAll('[id^="grid-servicos-"] .option-btn')
+        .forEach(btn => btn.classList.remove('selected'));
 
-            const gridAlvo = document.getElementById('grid-servicos-' + categoria);
-            if(gridAlvo) {
-                gridAlvo.classList.remove('hidden');
-            }
+    dadosAgendamento.servico = '';
+
+    document.querySelectorAll('.options-grid').forEach(grid => {
+        if (grid.id.startsWith('grid-servicos-')) {
+            grid.classList.add('hidden');
         }
+    });
+
+    const gridAlvo = document.getElementById(
+        'grid-servicos-' + categoria
+    );
+
+    if (gridAlvo) {
+        gridAlvo.classList.remove('hidden');
+    }
+}
 
         function selecionarServico(elemento, nomeServico) {
             document.querySelectorAll('#step-1 .option-btn').forEach(btn => btn.classList.remove('selected'));
@@ -1311,16 +1318,30 @@ function filtrarCategoria(categoria) {
 
         function selecionarDia(elemento, dataStr) {
 
-    document.querySelectorAll('#dias-grid .option-btn')
-        .forEach(btn => btn.classList.remove('selected'));
+    // Remove a seleção de todos os dias
+    document.querySelectorAll("#dias-grid .dia-btn")
+        .forEach(btn => {
+            btn.classList.remove("selected");
+        });
 
-    elemento.classList.add('selected');
+    // Marca o dia escolhido
+    elemento.classList.add("selected");
 
+    // Salva a data escolhida
     dadosAgendamento.data = dataStr;
 
-    atualizarHorarios(dataStr);
+    // Limpa qualquer horário escolhido anteriormente
+    dadosAgendamento.horario = "";
 
+    document.querySelectorAll(".horario-btn")
+        .forEach(btn => {
+            btn.classList.remove("selected");
+        });
+
+    // Atualiza os horários disponíveis
+    atualizarHorarios(dataStr);
 }
+    
 let cancelarListenerHorarios = null;
     function ocultarHorariosPassados(dataSelecionada) {
 
@@ -1494,20 +1515,6 @@ async function atualizarHorarios(dataSelecionada) {
 
     let data = new Date(hoje);
 
-    const diaAtual = data.getDay();
-
-    // Domingo = 0
-    // Se hoje for domingo, começa na segunda-feira
-    if (diaAtual === 0) {
-        data.setDate(data.getDate() + 1);
-    }
-
-    // Sábado = 6
-    // Se hoje for sábado, começa na segunda-feira seguinte
-    if (diaAtual === 6) {
-        data.setDate(data.getDate() + 2);
-    }
-
     const diasSemana = [
         "Dom",
         "Seg",
@@ -1518,13 +1525,14 @@ async function atualizarHorarios(dataSelecionada) {
         "Sáb"
     ];
 
-    // Cria somente Segunda até Sexta
-    while (true) {
+    let quantidadeDias = 0;
+
+    while (quantidadeDias < 6) {
 
         const diaSemana = data.getDay();
 
-        // Nunca mostra domingo
-        if (diaSemana !== 0 && diaSemana !== 6) {
+        // Segunda até sexta
+        if (diaSemana >= 1 && diaSemana <= 5) {
 
             const btn = document.createElement("button");
 
@@ -1533,7 +1541,8 @@ async function atualizarHorarios(dataSelecionada) {
             const dia = String(data.getDate()).padStart(2, "0");
             const mes = String(data.getMonth() + 1).padStart(2, "0");
 
-            const texto = `${diasSemana[diaSemana]}, ${dia}/${mes}`;
+            const texto =
+                `${diasSemana[diaSemana]}, ${dia}/${mes}`;
 
             btn.innerText = texto;
 
@@ -1542,11 +1551,8 @@ async function atualizarHorarios(dataSelecionada) {
             };
 
             diasGrid.appendChild(btn);
-        }
 
-        // Para depois da sexta-feira
-        if (diaSemana === 5) {
-            break;
+            quantidadeDias++;
         }
 
         data.setDate(data.getDate() + 1);
@@ -1713,8 +1719,18 @@ async function finalizarAgendamento() {
 
     try {
 
-        const idHorario =
-            `${diaDaSemana}_${horarioSelecionado}`;
+       const partesData = diaSelecionado.match(/(\d{2})\/(\d{2})/);
+
+if (!partesData) {
+    alert("Erro ao identificar a data.");
+    return;
+}
+
+const dia = partesData[1];
+const mes = partesData[2];
+
+const idHorario =
+    `${dia}-${mes}_${horarioSelecionado}`;
 
         const referenciaHorario =
             window.firebaseDoc(
@@ -1738,15 +1754,16 @@ async function finalizarAgendamento() {
 
                 }
 
-                transaction.set(
-                    referenciaHorario,
-                    {
-                        dia: diaDaSemana,
-                        horario: horarioSelecionado,
-                        reservadoEm: new Date(),
-                        codigo: dadosAgendamento.codigo
-                    }
-                );
+               transaction.set(
+    referenciaHorario,
+    {
+        dia: diaDaSemana,
+        data: diaSelecionado,
+        horario: horarioSelecionado,
+        reservadoEm: window.firebaseServerTimestamp(),
+        codigo: dadosAgendamento.codigo
+    }
+);
 
             }
         );
@@ -1767,7 +1784,7 @@ async function finalizarAgendamento() {
                 data: dadosAgendamento.data,
                 horario: dadosAgendamento.horario,
                 codigo: dadosAgendamento.codigo,
-                criadoEm: new Date()
+                criadoEm: window.firebaseServerTimestamp()
             }
         );
 
@@ -1852,7 +1869,7 @@ Desde já, agradecemos a preferência!`;
 } 
     
     function verificarExpediente() {
-    return; // Desativa o bloqueio e mantém o site sempre aberto
+   
 
     const agora = new Date();
 
@@ -1983,29 +2000,36 @@ function copiarPix() {
 
 let contadorCliques = 0;
 
-document.getElementById("titulo-secreto").addEventListener("click", function () {
+const tituloSecreto = document.getElementById("titulo-secreto");
 
-    contadorCliques++;
+if (tituloSecreto) {
 
-    if (contadorCliques >= 5) {
+    tituloSecreto.addEventListener("click", function () {
 
-        contadorCliques = 0;
+        contadorCliques++;
 
-        let senha = prompt("Área Restrita\n\nDigite a senha:");
+        if (contadorCliques >= 5) {
 
-        if (senha === "1234") {
+            contadorCliques = 0;
 
-abrirPainelAdmin();
+            let senha = prompt(
+                "Área Restrita\n\nDigite a senha:"
+            );
 
-        } else if (senha !== null) {
+            if (senha === "1234") {
 
-            alert("Senha incorreta.");
+                abrirPainelAdmin();
 
+            } else if (senha !== null) {
+
+                alert("Senha incorreta.");
+
+            }
         }
 
-    }
+    });
 
-});
+}
 // ===== PAINEL ADMINISTRATIVO =====
 
 async function abrirPainelAdmin(){
@@ -2190,7 +2214,8 @@ Como funciona o pagamento e a ativação da minha assinatura mensal?`;
     query,
     where,
     onSnapshot,
-    runTransaction
+    runTransaction,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -2225,8 +2250,6 @@ window.firebaseOnSnapshot = onSnapshot;
 
 </script>
 
-</body>
-</html>
 <script>
 function validarEAvancar(proximoPasso) {
 
@@ -2262,3 +2285,6 @@ function validarEAvancar(proximoPasso) {
     irParaPasso(proximoPasso);
 }
 </script>
+    
+</body>
+</html>
