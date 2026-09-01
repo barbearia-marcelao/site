@@ -1397,7 +1397,29 @@ function ouvirHorariosBloqueados(diaDaSemana, dataSelecionada) {
 
                 const horario = btn.innerText.trim();
 
-                if (horariosBloqueados.includes(horario)) {
+                
+
+    while (true) {
+
+        const diaSemana = data.getDay();
+
+        // Mostrar somente segunda a sexta
+        if (diaSemana >= 1 && diaSemana <= 5) {
+
+            const texto =
+                `${diasSemana[diaSemana]}, ` +
+                `${String(data.getDate()).padStart(2, "0")}/` +
+                `${String(data.getMonth() + 1).padStart(2, "0")}`;
+
+            const btn = document.createElement("div");
+
+            btn.className = "option-btn";
+            btn.style.padding = "10px";
+            btn.style.fontSize = "0.9rem";
+            btn.innerText = texto;
+
+            btn.onclick = function () {
+                selecionarDia(this, texto);if (horariosBloqueados.includes(horario)) {
 
                     btn.style.display = "none";
                     btn.classList.remove("selected");
@@ -1546,28 +1568,6 @@ if (partesData) {
         "Sex",
         "Sáb"
     ];
-
-    while (true) {
-
-        const diaSemana = data.getDay();
-
-        // Mostrar somente segunda a sexta
-        if (diaSemana >= 1 && diaSemana <= 5) {
-
-            const texto =
-                `${diasSemana[diaSemana]}, ` +
-                `${String(data.getDate()).padStart(2, "0")}/` +
-                `${String(data.getMonth() + 1).padStart(2, "0")}`;
-
-            const btn = document.createElement("div");
-
-            btn.className = "option-btn";
-            btn.style.padding = "10px";
-            btn.style.fontSize = "0.9rem";
-            btn.innerText = texto;
-
-            btn.onclick = function () {
-                selecionarDia(this, texto);
             };
 
             diasGrid.appendChild(btn);
@@ -2193,16 +2193,36 @@ window.firebaseOnSnapshot = onSnapshot;
 </html>
 <script>
 function validarEAvancar(proximoPasso) {
+
+    // 🔒 Se estiver saindo da etapa de DATA E HORÁRIO
+    if (proximoPasso === 3) {
+
+        // Verifica se escolheu um horário
+        if (!dadosAgendamento.horario) {
+
+            alert('⚠️ Por favor, selecione um horário para continuar.');
+
+            return;
+        }
+    }
+
     const inputNome = document.getElementById('nome-cliente');
     const nome = inputNome ? inputNome.value.trim() : '';
 
-    if (!nome) {
+    // Verifica o nome quando necessário
+    if (proximoPasso === 4 && !nome) {
+
         alert('Por favor, preencha o seu nome completo para continuar.');
-        if (inputNome) inputNome.focus();
+
+        if (inputNome) {
+            inputNome.focus();
+        }
+
         return;
     }
 
     dadosAgendamento.nome = nome;
+
     irParaPasso(proximoPasso);
 }
 </script>
