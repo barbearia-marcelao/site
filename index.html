@@ -1430,15 +1430,7 @@ async function carregarHorariosDisponiveis(dataSelecionada) {
             window.firebaseWhere('dia', '==', diaDaSemana)
         );
 
-        const consultaReservas = window.firebaseQuery(
-            window.firebaseCollection(window.db, 'reservasSlots'),
-            window.firebaseWhere('data', '==', dataSelecionada)
-        );
-
-        const [snapshotBloqueios, snapshotReservas] = await Promise.all([
-            window.firebaseGetDocs(consultaBloqueios),
-            window.firebaseGetDocs(consultaReservas)
-        ]);
+        const snapshotBloqueios = await window.firebaseGetDocs(consultaBloqueios);
 
         const bloqueados = new Set();
         const reservados = new Set();
@@ -1450,24 +1442,49 @@ async function carregarHorariosDisponiveis(dataSelecionada) {
             }
         });
 
-        snapshotReservas.forEach(doc => {
-            const dados = doc.data();
-            if (dados && dados.horario) {
-                reservados.add(dados.horario);
+        // Verifica cada horário diretamente pelo ID do slot.
+        // Isso evita uma consulta por campo em reservasSlots que pode ser
+        // bloqueada pelas regras do Firestore, e usa a mesma referência
+        // que a transação de reserva já utiliza.
+        const verificacoes = HORARIOS_ATENDIMENTO.map(async horario => {
+            if (bloqueados.has(horario) || horarioJaPassou(dataSelecionada, horario)) {
+                return { horario, reservado: false, pular: true };
             }
+
+            const partesData = dataSelecionada.match(/(\d{2})\/(\d{2})/);
+            if (!partesData) {
+                return { horario, reservado: false, pular: true };
+            }
+
+            const dia = partesData[1];
+            const mes = partesData[2];
+            const idHorario = `${dia}-${mes}_${horario}`;
+
+            const referencia = window.firebaseDoc(
+                window.db,
+                'reservasSlots',
+                idHorario
+            );
+
+            const reserva = await window.firebaseGetDoc(referencia);
+
+            return {
+                horario,
+                reservado: reserva.exists(),
+                pular: false
+            };
         });
+
+        const resultados = await Promise.all(verificacoes);
 
         grid.innerHTML = '';
 
         let quantidadeDisponivel = 0;
 
-        HORARIOS_ATENDIMENTO.forEach(horario => {
-            const indisponivel =
-                bloqueados.has(horario) ||
-                reservados.has(horario) ||
-                horarioJaPassou(dataSelecionada, horario);
+        resultados.forEach(resultado => {
+            if (resultado.pular || resultado.reservado) return;
 
-            if (indisponivel) return;
+            const horario = resultado.horario;
 
             const btn = document.createElement('button');
             btn.type = 'button';
@@ -1779,6 +1796,7 @@ if (document.readyState === 'loading') {
     setDoc,
     deleteDoc,
     getDocs,
+    getDoc,
     query,
     where,
     onSnapshot,
@@ -1808,6 +1826,7 @@ if (document.readyState === 'loading') {
   window.firebaseSetDoc = setDoc;
   window.firebaseDeleteDoc = deleteDoc;
   window.firebaseGetDocs = getDocs;
+  window.firebaseGetDoc = getDoc;
 window.firebaseQuery = query;
 window.firebaseWhere = where;
 window.firebaseOnSnapshot = onSnapshot;
