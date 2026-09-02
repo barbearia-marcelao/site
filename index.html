@@ -1015,11 +1015,20 @@ gap: 12px;
 
                 <div id="grid-servicos-adulto" class="options-grid">
 
-    <div class="option-btn" onclick="selecionarServico(this, 'Adulto: Social Altura Lateral 1,2,3 - R$ 25,00')">Social - R$ 25,00</div>
-    <div class="option-btn" onclick="selecionarServico(this, 'Adulto: Degradê na Zero  - R$ 25,00')">Degradê na Zero - R$ 25,00</div>
-    <div class="option-btn" onclick="selecionarServico(this, 'Adulto: Degradê Navalhado  - R$ 30,00')">Degradê Navalhado - R$ 30,00</div>
-    <div class="option-btn" onclick="selecionarServico(this, 'Adulto: Social todo na Tesoura  - R$ 35,00')">Social todo na Tesoura - R$ 35,00</div>
+<div class="option-btn" onclick="confirmarServico('Adulto: Social Altura Lateral 1,2,3', 'R$ 25,00')">
+    Social - R$ 25,00
+</div>
+                   <div class="option-btn" onclick="confirmarServico('Adulto: Degradê na Zero', 'R$ 25,00')">
+    Degradê na Zero - R$ 25,00
+</div>
 
+<div class="option-btn" onclick="confirmarServico('Adulto: Degradê Navalhado', 'R$ 30,00')">
+    Degradê Navalhado - R$ 30,00
+</div>
+
+<div class="option-btn" onclick="confirmarServico('Adulto: Social todo na Tesoura', 'R$ 35,00')">
+    Social todo na Tesoura - R$ 35,00
+</div>
                 </div>
 
 
@@ -1027,32 +1036,81 @@ gap: 12px;
                 <div id="grid-servicos-infantil" class="options-grid hidden">
 
 
-                    <div class="option-btn" onclick="selecionarServico(this, 'Infantil: Social - R$ 30,00')">Social - R$ 30,00</div>
-                    <div class="option-btn" onclick="selecionarServico(this, 'Infantil: Degradê na Zero ou Zero Alto - R$ 35,00')">Degradê na Zero - R$ 35,00</div>
-                    <div class="option-btn" onclick="selecionarServico(this, 'Infantil: Degradê na navalha - R$ 40,00')">Degradê navalhado - R$ 40,00</div>                   
-                    <div class="option-btn" onclick="selecionarServico(this, 'Infantil: Social Todo na Tesoura - R$ 40,00')">Social todo na Tesoura - R$ 40,00</div>
+<div class="option-btn" onclick="confirmarServico('Infantil: Social', 'R$ 30,00')">
+    Social - R$ 30,00
+</div>
+
+<div class="option-btn" onclick="confirmarServico('Infantil: Degradê na Zero ou Zero Alto', 'R$ 35,00')">
+    Degradê na Zero - R$ 35,00
+</div>
+
+<div class="option-btn" onclick="confirmarServico('Infantil: Degradê na navalha', 'R$ 40,00')">
+    Degradê navalhado - R$ 40,00
+</div>
+
+<div class="option-btn" onclick="confirmarServico('Infantil: Social Todo na Tesoura', 'R$ 40,00')">
+    Social todo na Tesoura - R$ 40,00
+</div>
 
                 </div>
 
 
 
                 <div id="grid-servicos-exclusividade" class="options-grid hidden">
-                    <div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Luzes amarela - R$ 50,00')">Luzes amarela - R$ 50,00</div>
-                    <div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Luzes platinado - R$ 70,00')">Luzes platinado - R$ 70,00</div>
-                    <div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Luzes geral global amarelo - R$ 100,00')">Luzes geral global amarelo - R$ 100,00</div>
-                    <div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Luzes geral global platinada - R$ 120,00')">Luzes geral global platinada - R$ 120,00</div>
-                    <div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Alisamento ou botox - R$ 50,00')">Alisamento ou botox - R$ 50,00</div>
-                    <div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Limpeza básica de pele - R$ 35,00')">Limpeza básica de pele - R$ 35,00</div>
-<div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Barba desenhada - R$ 35,00')">Barba desenhada - R$ 35,00</div>
-<div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Cabelo e barba - R$ 50,00')">Cabelo e barba - R$ 50,00</div>
-<div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Barbaterapia - R$ 50,00')">Barbaterapia - R$ 50,00</div>
-<div class="option-btn" onclick="selecionarServico(this, 'Exclusividade: Sobrancelhas - R$ 10,00')">Sobrancelhas - R$ 10,00</div>
+                    
+
+<div class="option-btn" onclick="confirmarServico('Exclusividade: Luzes amarela', 'R$ 50,00')">
+    Luzes amarela - R$ 50,00
+</div>
+
+<div class="option-btn" onclick="confirmarServico('Exclusividade: Luzes platinado', 'R$ 70,00')">
+    Luzes platinado - R$ 70,00
+</div>
+
+<div class="option-btn" onclick="confirmarServico('Exclusividade: Luzes geral global amarelo', 'R$ 100,00')">
+    Luzes geral global amarelo - R$ 100,00
+</div>
+
+<div class="option-btn" onclick="confirmarServico('Exclusividade: Luzes geral global platinada', 'R$ 120,00')">
+    Luzes geral global platinada - R$ 120,00
+</div>
+
+<div class="option-btn" onclick="confirmarServico('Exclusividade: Alisamento ou botox', 'R$ 50,00')">
+    Alisamento ou botox - R$ 50,00
+</div>
+
+<div class="option-btn" onclick="confirmarServico('Exclusividade: Limpeza básica de pele', 'R$ 35,00')">
+    Limpeza básica de pele - R$ 35,00
+</div>
+
+<div class="option-btn" onclick="confirmarServico('Exclusividade: Barba desenhada', 'R$ 35,00')">
+    Barba desenhada - R$ 35,00
+</div>
+
+<div class="option-btn" onclick="confirmarServico('Exclusividade: Cabelo e barba', 'R$ 50,00')">
+    Cabelo e barba - R$ 50,00
+</div>
+
+<div class="option-btn" onclick="confirmarServico('Exclusividade: Barbaterapia', 'R$ 50,00')">
+    Barbaterapia - R$ 50,00
+</div>
+
+<div class="option-btn" onclick="confirmarServico('Exclusividade: Sobrancelhas', 'R$ 10,00')">
+    Sobrancelhas - R$ 10,00
+</div>
 
                 </div>
 
                 <div id="grid-servicos-pigmentacao" class="options-grid hidden">
-                    <div class="option-btn" onclick="selecionarServico(this, 'Pigmentação: Pigmentação geral - R$ 30,00')">Pigmentação geral - R$ 30,00</div>
-                    <div class="option-btn" onclick="selecionarServico(this, 'Pigmentação: Pigmentação de barba - R$ 30,00')">Pigmentação de barba - R$ 30,00</div>
+                   
+<div class="option-btn" onclick="confirmarServico('Pigmentação: Pigmentação geral', 'R$ 30,00')">
+    Pigmentação geral - R$ 30,00
+</div>
+
+<div class="option-btn" onclick="confirmarServico('Pigmentação: Pigmentação de barba', 'R$ 30,00')">
+    Pigmentação de barba - R$ 30,00
+</div>
+                    
                 </div>
 
                 <div class="step-actions">
