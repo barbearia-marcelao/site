@@ -3973,6 +3973,46 @@ Como funciona o pagamento e a ativação da minha assinatura mensal?`;
     );
 }
 
+/* =========================================================
+   CLIQUE NOS CORTES - ABRIR CONFIRMAÇÃO
+   ========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll(".card-corte").forEach(function (card) {
+
+        card.style.cursor = "pointer";
+
+        card.addEventListener("click", function () {
+
+            const nomeElemento =
+                card.querySelector(".nome-corte");
+
+            const precoElemento =
+                card.querySelector(".preco-corte");
+
+            if (!nomeElemento || !precoElemento) {
+                console.error("Não foi possível encontrar nome ou preço do corte.");
+                return;
+            }
+
+            const nome =
+                nomeElemento.innerText.trim();
+
+            const preco =
+                precoElemento.innerText.trim();
+
+            confirmarServico(
+                nome,
+                preco
+            );
+
+        });
+
+    });
+
+});
+    
 </script>
 
 
