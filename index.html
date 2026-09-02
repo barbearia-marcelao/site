@@ -812,9 +812,10 @@ gap: 12px;
             <div class="titulo-exclusividade"><i class="fa-solid fa-crown" style="color: #d4af37; margin-right: 8px;"></i> Exclusividades e Tratamentos</div>
             <div class="subtitulo-exclusividade">Eleve o seu visual com nossos procedimentos especiais de alto padrão.</div>
             <div class="section-divider" style="margin: 10px auto 30px auto; width: 40px;"></div>
+
             
             <div class="grid-extras">
-                <div class="card-extra">
+                <div class="card-extra" onclick="confirmarServico('Luzes amarela', 'R$ 50,00')">
                     <img src="T1.jpg" alt="Luzes amarela">
                     <div class="info-extra">
                         <div>
@@ -823,7 +824,9 @@ gap: 12px;
                         <div class="preco-extra">R$ 50,00</div>
                     </div>
                 </div>
-                <div class="card-extra">
+          
+            
+            <div class="card-extra" onclick="confirmarServico('Luzes platinado', 'R$ 70,00')">
                     <img src="T2.jpg" alt="Luzes platinado">
                     <div class="info-extra">
                         <div>
@@ -831,8 +834,11 @@ gap: 12px;
                         </div>
                         <div class="preco-extra">R$ 70,00</div>
                     </div>
+                    
+                
                 </div>
-                <div class="card-extra">
+            
+                <div class="card-extra" onclick="confirmarServico('Luzes geral global amarelo', 'R$ 100,00')">
                     <img src="T3.jpg" alt="Luzes geral global amarelo">
                     <div class="info-extra">
                         <div>
@@ -841,7 +847,8 @@ gap: 12px;
                         <div class="preco-extra">R$ 100,00</div>
                     </div>
                 </div>
-                <div class="card-extra">
+            
+                <div class="card-extra" onclick="confirmarServico('Luzes geral global platinada', 'R$ 120,00')">
                     <img src="T4.jpg" alt="Luzes geral global platinada">
                     <div class="info-extra">
                         <div>
@@ -850,7 +857,8 @@ gap: 12px;
                         <div class="preco-extra">R$ 120,00</div>
                     </div>
                 </div>
-                <div class="card-extra">
+            
+                <div class="card-extra" onclick="confirmarServico('Alisamento ou botox', 'R$ 50,00')">
                     <img src="T5.jpg" alt="Alisamento ou botox">
                     <div class="info-extra">
                         <div>
@@ -859,7 +867,8 @@ gap: 12px;
                         <div class="preco-extra">R$ 50,00</div>
                     </div>
                 </div>
-                <div class="card-extra">
+            
+               <div class="card-extra" onclick="confirmarServico('Limpeza básica de pele', 'R$ 35,00')">
                     <img src="T6.jpg" alt="Limpeza básica de pele">
                     <div class="info-extra">
                         <div>
@@ -870,7 +879,7 @@ gap: 12px;
                 </div>
 
 
-<div class="card-extra">
+<div class="card-extra" onclick="confirmarServico('Barba desenhada', 'R$ 25,00')">
                     <img src="T7.jpg" alt="Barba desenhada">
                     <div class="info-extra">
                         <div>
@@ -880,7 +889,7 @@ gap: 12px;
                     </div>
                 </div>
 
-<div class="card-extra">
+<div class="card-extra" onclick="confirmarServico('Cabelo e barba', 'R$ 50,00')">
                     <img src="T8.jpg" alt="Cabelo e barba">
                     <div class="info-extra">
                         <div>
@@ -891,7 +900,7 @@ gap: 12px;
                     </div>
                 </div>
 
-<div class="card-extra">
+<div class="card-extra" onclick="confirmarServico('Barbaterapia', 'R$ 50,00')">
                     <img src="T9.jpg" alt="Barbaterapia">
                     <div class="info-extra">
                         <div>
@@ -902,11 +911,7 @@ gap: 12px;
                     </div>
                 </div>
 
-
-
-
-
-                <div class="card-extra">
+                <div class="card-extra" onclick="confirmarServico('Pigmentação geral', 'R$ 30,00')">
                     <img src="p2.jpg" alt="Pigmentação geral">
                     <div class="info-extra">
                         <div>
@@ -916,7 +921,7 @@ gap: 12px;
                     </div>
                 </div>
 
-                <div class="card-extra">
+                <div class="card-extra" onclick="confirmarServico('Pigmentação de barba', 'R$ 30,00')">
                     <img src="p1.jpg" alt="Pigmentação de barba">
                     <div class="info-extra">
                         <div>
@@ -926,7 +931,7 @@ gap: 12px;
                     </div>
                 </div>
 
-                <div class="card-extra">
+               <div class="card-extra" onclick="confirmarServico('Sobrancelhas', 'R$ 10,00')">
                     <img src="p3.jpg" alt="Sobrancelhas ">
                     <div class="info-extra">
                         <div>
@@ -2200,27 +2205,27 @@ window.firebaseOnSnapshot = onSnapshot;
 </script>
 
 <script>
+
 function validarEAvancar(proximoPasso) {
 
     // 🔒 Se estiver saindo da etapa de DATA E HORÁRIO
     if (proximoPasso === 3) {
 
-        // Verifica se escolheu um horário
         if (!dadosAgendamento.horario) {
 
-            alert('⚠️ Por favor, selecione um horário para continuar.');
+            alert("⚠️ Por favor, selecione um horário para continuar.");
 
             return;
         }
     }
 
-    const inputNome = document.getElementById('nome-cliente');
-    const nome = inputNome ? inputNome.value.trim() : '';
+    const inputNome = document.getElementById("nome-cliente");
+    const nome = inputNome ? inputNome.value.trim() : "";
 
     // Verifica o nome quando necessário
     if (proximoPasso === 4 && !nome) {
 
-        alert('Por favor, preencha o seu nome completo para continuar.');
+        alert("Por favor, preencha o seu nome completo para continuar.");
 
         if (inputNome) {
             inputNome.focus();
@@ -2233,7 +2238,1786 @@ function validarEAvancar(proximoPasso) {
 
     irParaPasso(proximoPasso);
 }
+
+
+/* =========================================================
+   CONFIRMAÇÃO DOS SERVIÇOS
+   ========================================================= */
+
+let servicoSelecionado = "";
+let precoServicoSelecionado = "";
+
+
+function confirmarServico(nomeServico, precoServico) {
+
+    servicoSelecionado = nomeServico;
+    precoServicoSelecionado = precoServico;
+
+    const texto = document.getElementById("texto-confirmacao");
+
+    if (!texto) {
+        console.error("Elemento texto-confirmacao não encontrado.");
+        return;
+    }
+
+    texto.innerHTML = `
+        Confirmar que quer agendar:<br><br>
+
+        <strong style="
+            color:#d4af37;
+            font-size:24px;
+        ">
+            ${nomeServico}
+        </strong>
+
+        <br><br>
+
+        Valor:
+        <strong>
+            ${precoServico}
+        </strong>
+    `;
+
+    const janela =
+        document.getElementById("confirmacao-servico");
+
+    if (janela) {
+        janela.style.display = "flex";
+    }
+}
+
+
+function fecharConfirmacaoServico() {
+
+    const janela =
+        document.getElementById("confirmacao-servico");
+
+    if (janela) {
+        janela.style.display = "none";
+    }
+
+}
+
+
+/* =========================================================
+   SIM, QUERO AGENDAR
+   ========================================================= */
+
+function confirmarServicoSim() {
+
+    const janela =
+        document.getElementById("confirmacao-servico");
+
+    if (janela) {
+        janela.style.display = "none";
+    }
+
+    if (!servicoSelecionado) {
+
+        alert("⚠️ Selecione um serviço.");
+
+        return;
+    }
+
+    // Salva o serviço escolhido
+    dadosAgendamento.servico =
+        servicoSelecionado + " - " + precoServicoSelecionado;
+
+    dadosAgendamento.valor =
+        precoServicoSelecionado;
+
+    // Limpa data e horário anteriores
+    dadosAgendamento.data = "";
+    dadosAgendamento.horario = "";
+
+    // Vai para escolha dos dias e horários
+    irParaPasso(2);
+}
+
+
+/* =========================================================
+   SELEÇÃO DE DIA
+   ========================================================= */
+
+function selecionarDia(elemento, dataStr) {
+
+    document.querySelectorAll("#dias-grid .dia-btn")
+        .forEach(btn => {
+            btn.classList.remove("selected");
+        });
+
+    elemento.classList.add("selected");
+
+    dadosAgendamento.data = dataStr;
+
+    dadosAgendamento.horario = "";
+
+    document.querySelectorAll(".horario-btn")
+        .forEach(btn => {
+            btn.classList.remove("selected");
+        });
+
+    atualizarHorarios(dataStr);
+}
+
+
+/* =========================================================
+   HORÁRIOS PASSADOS
+   ========================================================= */
+
+function ocultarHorariosPassados(dataSelecionada) {
+
+    const agora = new Date();
+
+    const partesData =
+        dataSelecionada.match(/(\d{2})\/(\d{2})/);
+
+    if (!partesData) return;
+
+    const dia =
+        parseInt(partesData[1]);
+
+    const mes =
+        parseInt(partesData[2]) - 1;
+
+    const dataEscolhida =
+        new Date(
+            agora.getFullYear(),
+            mes,
+            dia
+        );
+
+    const ehHoje =
+        dataEscolhida.getDate() === agora.getDate() &&
+        dataEscolhida.getMonth() === agora.getMonth() &&
+        dataEscolhida.getFullYear() === agora.getFullYear();
+
+    if (!ehHoje) return;
+
+    document.querySelectorAll(".horario-btn")
+        .forEach(btn => {
+
+            const partesHora =
+                btn.innerText.trim().split(":");
+
+            if (partesHora.length !== 2) return;
+
+            const hora =
+                parseInt(partesHora[0]);
+
+            const minuto =
+                parseInt(partesHora[1]);
+
+            if (
+                hora < agora.getHours() ||
+                (
+                    hora === agora.getHours() &&
+                    minuto <= agora.getMinutes()
+                )
+            ) {
+
+                btn.style.display = "none";
+
+            }
+
+        });
+}
+
+
+/* =========================================================
+   HORÁRIOS BLOQUEADOS PELO ADMIN
+   ========================================================= */
+
+let cancelarListenerHorarios = null;
+
+
+function ouvirHorariosBloqueados(
+    diaDaSemana,
+    dataSelecionada
+) {
+
+    if (cancelarListenerHorarios) {
+
+        cancelarListenerHorarios();
+
+        cancelarListenerHorarios = null;
+    }
+
+    if (!diaDaSemana) return;
+
+    const consulta =
+        window.firebaseQuery(
+            window.firebaseCollection(
+                window.db,
+                "horariosBloqueados"
+            ),
+            window.firebaseWhere(
+                "dia",
+                "==",
+                diaDaSemana
+            )
+        );
+
+    cancelarListenerHorarios =
+        window.firebaseOnSnapshot(
+            consulta,
+            (snapshot) => {
+
+                const horariosBloqueados = [];
+
+                snapshot.forEach((doc) => {
+
+                    const dados = doc.data();
+
+                    horariosBloqueados.push(
+                        dados.horario
+                    );
+
+                });
+
+                document
+                    .querySelectorAll(".horario-btn")
+                    .forEach(btn => {
+
+                        const horario =
+                            btn.innerText.trim();
+
+                        if (
+                            horariosBloqueados
+                                .includes(horario)
+                        ) {
+
+                            btn.style.display = "none";
+
+                            btn.classList.remove(
+                                "selected"
+                            );
+
+                            if (
+                                dadosAgendamento.horario ===
+                                horario
+                            ) {
+
+                                dadosAgendamento.horario =
+                                    "";
+
+                            }
+
+                        } else {
+
+                            btn.style.display =
+                                "block";
+
+                        }
+
+                    });
+
+                if (dataSelecionada) {
+
+                    ocultarHorariosPassados(
+                        dataSelecionada
+                    );
+
+                }
+
+            },
+
+            (erro) => {
+
+                console.error(
+                    "Erro ao atualizar horários:",
+                    erro
+                );
+
+            }
+        );
+}
+
+
+/* =========================================================
+   ATUALIZAR HORÁRIOS
+   ========================================================= */
+
+async function atualizarHorarios(dataSelecionada) {
+
+    const horarios =
+        document.querySelectorAll(".horario-btn");
+
+    horarios.forEach(btn => {
+
+        btn.style.display = "block";
+
+    });
+
+    let diaDaSemana = "";
+
+    if (dataSelecionada.includes("Seg")) {
+
+        diaDaSemana = "Segunda";
+
+    } else if (
+        dataSelecionada.includes("Ter")
+    ) {
+
+        diaDaSemana = "Terça";
+
+    } else if (
+        dataSelecionada.includes("Qua")
+    ) {
+
+        diaDaSemana = "Quarta";
+
+    } else if (
+        dataSelecionada.includes("Qui")
+    ) {
+
+        diaDaSemana = "Quinta";
+
+    } else if (
+        dataSelecionada.includes("Sex")
+    ) {
+
+        diaDaSemana = "Sexta";
+
+    }
+
+    ouvirHorariosBloqueados(
+        diaDaSemana,
+        dataSelecionada
+    );
+
+    ocultarHorariosPassados(
+        dataSelecionada
+    );
+}
+
+
+/* =========================================================
+   SELECIONAR HORÁRIO
+   ========================================================= */
+
+function selecionarHorario(
+    elemento,
+    horarioStr
+) {
+
+    document
+        .querySelectorAll(".horario-btn")
+        .forEach(btn => {
+
+            btn.classList.remove(
+                "selected"
+            );
+
+        });
+
+    elemento.classList.add("selected");
+
+    dadosAgendamento.horario =
+        horarioStr ||
+        elemento.innerText.trim();
+}
+
+
+/* =========================================================
+   CARREGAR OS PRÓXIMOS DIAS
+   ========================================================= */
+
+function carregarDiasProximos() {
+
+    const diasGrid =
+        document.getElementById("dias-grid");
+
+    if (!diasGrid) return;
+
+    diasGrid.innerHTML = "";
+
+    const hoje = new Date();
+
+    hoje.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+    let data =
+        new Date(hoje);
+
+    const diasSemana = [
+        "Dom",
+        "Seg",
+        "Ter",
+        "Qua",
+        "Qui",
+        "Sex",
+        "Sáb"
+    ];
+
+    let quantidadeDias = 0;
+
+    while (quantidadeDias < 6) {
+
+        const diaSemana =
+            data.getDay();
+
+        // Segunda até sexta
+        if (
+            diaSemana >= 1 &&
+            diaSemana <= 5
+        ) {
+
+            const btn =
+                document.createElement(
+                    "button"
+                );
+
+            btn.className =
+                "dia-btn";
+
+            const dia =
+                String(
+                    data.getDate()
+                ).padStart(2, "0");
+
+            const mes =
+                String(
+                    data.getMonth() + 1
+                ).padStart(2, "0");
+
+            const texto =
+                `${diasSemana[diaSemana]}, ${dia}/${mes}`;
+
+            btn.innerText =
+                texto;
+
+            btn.onclick =
+                function () {
+
+                    selecionarDia(
+                        this,
+                        texto
+                    );
+
+                };
+
+            diasGrid.appendChild(btn);
+
+            quantidadeDias++;
+        }
+
+        data.setDate(
+            data.getDate() + 1
+        );
+    }
+
+    verificarExpediente();
+}
+
+
+/* =========================================================
+   GERAR CÓDIGO
+   ========================================================= */
+
+function gerarCodigoAleatorio() {
+
+    return Math.floor(
+        1000 +
+        Math.random() * 9000
+    ).toString();
+
+}
+
+
+/* =========================================================
+   MUDAR DE ETAPA
+   ========================================================= */
+
+function irParaPasso(passo) {
+
+    // ETAPA 2
+    if (passo === 2) {
+
+        if (!dadosAgendamento.servico) {
+
+            alert(
+                "Por favor, selecione um serviço antes de continuar."
+            );
+
+            return;
+        }
+
+        carregarDiasProximos();
+    }
+
+
+    // ETAPA 3
+    if (passo === 3) {
+
+        if (
+            !dadosAgendamento.data ||
+            !dadosAgendamento.horario
+        ) {
+
+            alert(
+                "Por favor, selecione uma data e um horário."
+            );
+
+            return;
+        }
+
+        dadosAgendamento.codigo =
+            gerarCodigoAleatorio();
+
+        const displayCodigo =
+            document.getElementById(
+                "display-codigo"
+            );
+
+        if (displayCodigo) {
+
+            displayCodigo.innerText =
+                dadosAgendamento.codigo;
+
+        }
+    }
+
+
+    // ETAPA 4
+    if (passo === 4) {
+
+        const valorTexto =
+            dadosAgendamento.servico.match(
+                /R\$\s*([\d,]+)/
+            );
+
+        if (!valorTexto) {
+
+            alert(
+                "Não foi possível identificar o valor do serviço."
+            );
+
+            return;
+        }
+
+        const valor =
+            parseFloat(
+                valorTexto[1]
+                    .replace(".", "")
+                    .replace(",", ".")
+            );
+
+        const metade =
+            valor / 2;
+
+        const valorServico =
+            document.getElementById(
+                "valor-servico"
+            );
+
+        const valorSinal =
+            document.getElementById(
+                "valor-sinal"
+            );
+
+        if (valorServico) {
+
+            valorServico.innerText =
+                "R$ " +
+                valor
+                    .toFixed(2)
+                    .replace(".", ",");
+
+        }
+
+        if (valorSinal) {
+
+            valorSinal.innerText =
+                "R$ " +
+                metade
+                    .toFixed(2)
+                    .replace(".", ",");
+
+        }
+    }
+
+
+    // Esconde todas as etapas
+    document
+        .querySelectorAll(".step-content")
+        .forEach(el => {
+
+            el.classList.add("hidden");
+
+        });
+
+
+    // Mostra a etapa escolhida
+    const etapa =
+        document.getElementById(
+            "step-" + passo
+        );
+
+    if (etapa) {
+
+        etapa.classList.remove(
+            "hidden"
+        );
+
+    }
+}
+
+
+/* =========================================================
+   FINALIZAR AGENDAMENTO
+   ========================================================= */
+
+async function finalizarAgendamento() {
+
+    console.log(
+        "🔵 FINALIZAR AGENDAMENTO FOI CHAMADA"
+    );
+
+
+    const diaSelecionado =
+        dadosAgendamento.data;
+
+    const horarioSelecionado =
+        dadosAgendamento.horario;
+
+
+    if (
+        !diaSelecionado ||
+        !horarioSelecionado
+    ) {
+
+        alert(
+            "⚠️ Selecione uma data e um horário antes de continuar."
+        );
+
+        irParaPasso(2);
+
+        return;
+    }
+
+
+    let diaDaSemana = "";
+
+
+    if (
+        diaSelecionado.includes("Seg")
+    ) {
+
+        diaDaSemana =
+            "Segunda";
+
+    } else if (
+        diaSelecionado.includes("Ter")
+    ) {
+
+        diaDaSemana =
+            "Terça";
+
+    } else if (
+        diaSelecionado.includes("Qua")
+    ) {
+
+        diaDaSemana =
+            "Quarta";
+
+    } else if (
+        diaSelecionado.includes("Qui")
+    ) {
+
+        diaDaSemana =
+            "Quinta";
+
+    } else if (
+        diaSelecionado.includes("Sex")
+    ) {
+
+        diaDaSemana =
+            "Sexta";
+    }
+
+
+    if (!diaDaSemana) {
+
+        alert(
+            "⚠️ Não foi possível identificar o dia selecionado."
+        );
+
+        return;
+    }
+
+
+    // NOME
+    const inputNome =
+        document.getElementById(
+            "nome-cliente"
+        );
+
+    const nome =
+        inputNome
+            ? inputNome.value.trim()
+            : "";
+
+
+    if (!nome) {
+
+        alert(
+            "Por favor, preencha o seu nome completo para continuar."
+        );
+
+        if (inputNome) {
+
+            inputNome.focus();
+
+        }
+
+        return;
+    }
+
+
+    dadosAgendamento.nome =
+        nome;
+
+
+    /* =====================================================
+       TRAVA DEFINITIVA DO HORÁRIO
+       ===================================================== */
+
+    try {
+
+        const partesData =
+            diaSelecionado.match(
+                /(\d{2})\/(\d{2})/
+            );
+
+
+        if (!partesData) {
+
+            alert(
+                "Erro ao identificar a data."
+            );
+
+            return;
+        }
+
+
+        const dia =
+            partesData[1];
+
+        const mes =
+            partesData[2];
+
+
+        const idHorario =
+            `${dia}-${mes}_${horarioSelecionado}`;
+
+
+        const referenciaHorario =
+            window.firebaseDoc(
+                window.db,
+                "reservasSlots",
+                idHorario
+            );
+
+
+        await window.firebaseRunTransaction(
+            window.db,
+            async (transaction) => {
+
+                const reservaExistente =
+                    await transaction.get(
+                        referenciaHorario
+                    );
+
+
+                if (
+                    reservaExistente.exists()
+                ) {
+
+                    throw new Error(
+                        "HORARIO_JA_RESERVADO"
+                    );
+                }
+
+
+                transaction.set(
+                    referenciaHorario,
+                    {
+                        dia:
+                            diaDaSemana,
+
+                        data:
+                            diaSelecionado,
+
+                        horario:
+                            horarioSelecionado,
+
+                        reservadoEm:
+                            window.firebaseServerTimestamp(),
+
+                        codigo:
+                            dadosAgendamento.codigo
+                    }
+                );
+
+            }
+        );
+
+
+        /* =================================================
+           SALVA O AGENDAMENTO
+           ================================================= */
+
+        await window.firebaseAddDoc(
+            window.firebaseCollection(
+                window.db,
+                "agendamentos"
+            ),
+            {
+
+                nome:
+                    dadosAgendamento.nome,
+
+                servico:
+                    dadosAgendamento.servico,
+
+                data:
+                    dadosAgendamento.data,
+
+                horario:
+                    dadosAgendamento.horario,
+
+                codigo:
+                    dadosAgendamento.codigo,
+
+                criadoEm:
+                    window.firebaseServerTimestamp()
+
+            }
+        );
+
+
+        console.log(
+            "✅ Horário reservado e agendamento salvo!"
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao reservar horário:",
+            erro
+        );
+
+
+        if (
+            erro.message ===
+            "HORARIO_JA_RESERVADO"
+        ) {
+
+            alert(
+                "⚠️ Esse horário acabou de ser reservado por outra pessoa.\n\n" +
+                "Por favor, escolha outro horário."
+            );
+
+
+            dadosAgendamento.horario =
+                "";
+
+
+            irParaPasso(2);
+
+            return;
+        }
+
+
+        alert(
+            "Não foi possível confirmar o agendamento.\n\n" +
+            "Verifique sua conexão e tente novamente."
+        );
+
+        return;
+    }
+
+
+    /* =====================================================
+       WHATSAPP
+       ===================================================== */
+
+    const mensagem =
+`Olá! Gostaria de solicitar meu agendamento na Barbearia Marcelão.
+
+━━━━━━━━━━━━━━━━━━━━━━
+📋 DADOS DO AGENDAMENTO
+━━━━━━━━━━━━━━━━━━━━━━
+
+🔑 Código: ${dadosAgendamento.codigo}
+👤 Nome: ${dadosAgendamento.nome}
+💈 Serviço: ${dadosAgendamento.servico}
+📅 Data: ${dadosAgendamento.data}
+🕒 Horário: ${dadosAgendamento.horario}
+
+━━━━━━━━━━━━━━━━━━━━━━
+⚠️ POLÍTICA DE RESERVA
+━━━━━━━━━━━━━━━━━━━━━━
+
+Esta solicitação está pendente de confirmação.
+
+O horário será reservado exclusivamente mediante o envio e a conferência do comprovante de pagamento antecipado (50% do valor do serviço).
+
+*Atenção:* Em caso de ausência sem aviso prévio, o valor da taxa de reserva não será restituído.
+
+Desde já, agradecemos a preferência!`;
+
+
+    const numeroWhatsApp =
+        "5585997313200";
+
+
+    const urlWhatsApp =
+        `https://wa.me/${numeroWhatsApp}?text=` +
+        encodeURIComponent(
+            mensagem
+        );
+
+
+    const win =
+        window.open(
+            urlWhatsApp,
+            "_blank"
+        );
+
+
+    if (!win) {
+
+        window.location.href =
+            urlWhatsApp;
+
+    }
+}
+
+
+/* =========================================================
+   VERIFICAR EXPEDIENTE
+   ========================================================= */
+
+function verificarExpediente() {
+
+    const agora =
+        new Date();
+
+
+    const expedienteEncerrado =
+        agora.getHours() > 18 ||
+        (
+            agora.getHours() === 18 &&
+            agora.getMinutes() >= 30
+        );
+
+
+    if (!expedienteEncerrado)
+        return;
+
+
+    document
+        .querySelectorAll(
+            ".horario-btn"
+        )
+        .forEach(btn => {
+
+            btn.style.display =
+                "none";
+
+        });
+
+
+    if (
+        document.getElementById(
+            "mensagem-expediente"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    const mensagem =
+        document.createElement(
+            "div"
+        );
+
+
+    mensagem.id =
+        "mensagem-expediente";
+
+
+    mensagem.style.width =
+        "100%";
+
+    mensagem.style.gridColumn =
+        "1 / -1";
+
+    mensagem.style.boxSizing =
+        "border-box";
+
+
+    mensagem.innerHTML = `
+
+        <div style="
+            width:100%;
+            box-sizing:border-box;
+            background:linear-gradient(
+                180deg,
+                #202020,
+                #171717
+            );
+            border:2px solid #d4af37;
+            border-radius:18px;
+            padding:35px;
+            text-align:center;
+        ">
+
+            <div style="
+                font-size:48px;
+            ">
+                💈
+            </div>
+
+            <h2 style="
+                color:#d4af37;
+                font-size:38px;
+                margin-top:10px;
+                margin-bottom:20px;
+            ">
+                ATENDIMENTO ENCERRADO
+            </h2>
+
+            <p style="
+                font-size:18px;
+                line-height:34px;
+            ">
+
+                Muito obrigado pela sua visita!
+
+                <br><br>
+
+                Hoje nossos atendimentos já foram finalizados.
+
+                <br><br>
+
+                ✨
+                <strong>
+                    Mas você ainda pode garantir seu horário para os próximos dias.
+                </strong>
+
+            </p>
+
+            <div style="
+                margin-top:25px;
+                padding:18px;
+                border-radius:12px;
+                background:#2b2b2b;
+            ">
+
+                <strong style="
+                    color:#d4af37;
+                ">
+
+                    🕘 Atendimento
+
+                    <br>
+
+                    Segunda a Sexta
+
+                    <br>
+
+                    08:00 às 18:30
+
+                </strong>
+
+            </div>
+
+            <button
+                onclick="
+                    document
+                    .getElementById('dias-grid')
+                    .scrollIntoView({
+                        behavior:'smooth'
+                    });
+                "
+                style="
+                    margin-top:25px;
+                    padding:14px 30px;
+                    background:#d4af37;
+                    color:black;
+                    font-weight:bold;
+                    border:none;
+                    border-radius:10px;
+                    cursor:pointer;
+                    font-size:16px;
+                "
+            >
+                📅 ESCOLHER OUTRA DATA
+            </button>
+
+        </div>
+    `;
+
+
+    const horariosGrid =
+        document.querySelector(
+            ".horarios-grid"
+        );
+
+
+    if (horariosGrid) {
+
+        horariosGrid.appendChild(
+            mensagem
+        );
+
+    }
+}
+
+
+/* =========================================================
+   COPIAR PIX
+   ========================================================= */
+
+function copiarPix() {
+
+    const chave =
+        document.getElementById(
+            "chavePix"
+        ).innerText;
+
+
+    navigator.clipboard
+        .writeText(chave);
+
+
+    alert(
+        "✅ Chave PIX copiada com sucesso!"
+    );
+}
+
+
+/* =========================================================
+   BOTÃO SECRETO
+   ========================================================= */
+
+let contadorCliques = 0;
+
+
+const tituloSecreto =
+    document.getElementById(
+        "titulo-secreto"
+    );
+
+
+if (tituloSecreto) {
+
+    tituloSecreto.addEventListener(
+        "click",
+        function () {
+
+            contadorCliques++;
+
+
+            if (
+                contadorCliques >= 5
+            ) {
+
+                contadorCliques = 0;
+
+
+                let senha =
+                    prompt(
+                        "Área Restrita\n\nDigite a senha:"
+                    );
+
+
+                if (
+                    senha === "1234"
+                ) {
+
+                    abrirPainelAdmin();
+
+                } else if (
+                    senha !== null
+                ) {
+
+                    alert(
+                        "Senha incorreta."
+                    );
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   PAINEL ADMINISTRATIVO
+   ========================================================= */
+
+async function abrirPainelAdmin() {
+
+    const painel =
+        document.getElementById(
+            "painel-admin"
+        );
+
+
+    if (painel) {
+
+        painel.style.display =
+            "block";
+
+    }
+
+
+    const conteudo =
+        document.getElementById(
+            "conteudo-admin"
+        );
+
+
+    const dias = [
+        "Segunda",
+        "Terça",
+        "Quarta",
+        "Quinta",
+        "Sexta"
+    ];
+
+
+    const horarios = [
+
+        "08:10",
+        "08:50",
+        "09:30",
+        "10:10",
+        "10:50",
+        "11:30",
+
+        "15:10",
+        "15:50",
+        "16:30",
+        "17:10",
+        "17:50",
+        "18:30"
+
+    ];
+
+
+    conteudo.innerHTML =
+        "<p style='text-align:center;color:#d4af37;'>" +
+        "Carregando horários bloqueados..." +
+        "</p>";
+
+
+    try {
+
+        const querySnapshot =
+            await window.firebaseGetDocs(
+                window.firebaseCollection(
+                    window.db,
+                    "horariosBloqueados"
+                )
+            );
+
+
+        const bloqueiosSalvos = [];
+
+
+        querySnapshot.forEach(
+            (doc) => {
+
+                bloqueiosSalvos.push(
+                    doc.data().dia +
+                    "_" +
+                    doc.data().horario
+                );
+
+            }
+        );
+
+
+        conteudo.innerHTML =
+            "";
+
+
+        dias.forEach(
+            dia => {
+
+                let html = `
+
+                    <div style="
+                        margin-bottom:30px;
+                        border:1px solid #333;
+                        border-radius:10px;
+                        padding:20px;
+                    ">
+
+                        <h3 style="
+                            color:#d4af37;
+                            margin-bottom:15px;
+                        ">
+                            ${dia}
+                        </h3>
+
+                        <div style="
+                            display:grid;
+                            grid-template-columns:
+                            repeat(
+                                auto-fill,
+                                minmax(95px,1fr)
+                            );
+                            gap:10px;
+                        ">
+                `;
+
+
+                horarios.forEach(
+                    horario => {
+
+                        const idUnico =
+                            `${dia}_${horario}`;
+
+
+                        const estaBloqueado =
+                            bloqueiosSalvos
+                                .includes(
+                                    idUnico
+                                );
+
+
+                        const bg =
+                            estaBloqueado
+                                ? "#b30000"
+                                : "#2a2a2a";
+
+
+                        const textoBtn =
+                            estaBloqueado
+                                ? `${horario} 🔒`
+                                : horario;
+
+
+                        const statusOcupado =
+                            estaBloqueado
+                                ? "1"
+                                : "0";
+
+
+                        html += `
+
+                            <button
+                                class="admin-horario"
+                                data-ocupado="${statusOcupado}"
+
+                                style="
+                                    background:${bg};
+                                    color:white;
+                                    border:1px solid #444;
+                                    border-radius:8px;
+                                    padding:10px;
+                                    cursor:pointer;
+                                "
+
+                                onclick="
+                                    alternarHorario(this)
+                                "
+                            >
+
+                                ${textoBtn}
+
+                            </button>
+
+                        `;
+
+                    }
+                );
+
+
+                html += `
+
+                        </div>
+
+                    </div>
+
+                `;
+
+
+                conteudo.innerHTML +=
+                    html;
+
+            }
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar painel admin:",
+            erro
+        );
+
+
+        conteudo.innerHTML =
+            "<p style='text-align:center;color:red;'>" +
+            "Erro ao carregar dados do painel." +
+            "</p>";
+
+    }
+
+}
+
+
+/* =========================================================
+   FECHAR PAINEL
+   ========================================================= */
+
+function fecharPainelAdmin() {
+
+    const painel =
+        document.getElementById(
+            "painel-admin"
+        );
+
+
+    if (painel) {
+
+        painel.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =========================================================
+   BLOQUEAR / DESBLOQUEAR HORÁRIO
+   ========================================================= */
+
+async function alternarHorario(botao) {
+
+    const horario =
+        botao.innerText
+            .replace(" 🔒", "")
+            .trim();
+
+
+    const cardDia =
+        botao.closest(
+            "div[style*='margin-bottom:30px']"
+        );
+
+
+    if (!cardDia) {
+
+        alert(
+            "Erro ao identificar o dia."
+        );
+
+        return;
+    }
+
+
+    const dia =
+        cardDia
+            .querySelector("h3")
+            .innerText
+            .trim();
+
+
+    const docId =
+        `${dia}_${horario}`;
+
+
+    const docRef =
+        window.firebaseDoc(
+            window.db,
+            "horariosBloqueados",
+            docId
+        );
+
+
+    if (
+        botao.dataset.ocupado === "1"
+    ) {
+
+        try {
+
+            await window.firebaseDeleteDoc(
+                docRef
+            );
+
+
+            botao.dataset.ocupado =
+                "0";
+
+
+            botao.style.background =
+                "#2a2a2a";
+
+
+            botao.style.color =
+                "white";
+
+
+            botao.innerHTML =
+                horario;
+
+
+        } catch (erro) {
+
+            console.error(
+                "Erro ao desbloquear:",
+                erro
+            );
+
+
+            alert(
+                "Erro ao desbloquear horário."
+            );
+
+        }
+
+
+    } else {
+
+        try {
+
+            await window.firebaseSetDoc(
+                docRef,
+                {
+
+                    dia:
+                        dia,
+
+                    horario:
+                        horario,
+
+                    bloqueadoEm:
+                        window.firebaseServerTimestamp()
+
+                }
+            );
+
+
+            botao.dataset.ocupado =
+                "1";
+
+
+            botao.style.background =
+                "#b30000";
+
+
+            botao.style.color =
+                "white";
+
+
+            botao.innerHTML =
+                horario +
+                " 🔒";
+
+
+        } catch (erro) {
+
+            console.error(
+                "Erro ao bloquear:",
+                erro
+            );
+
+
+            alert(
+                "Erro ao bloquear horário."
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   PLANOS VIP
+   ========================================================= */
+
+function assinarPlano(
+    nomePlano,
+    quantidadeCortes,
+    valorPlano
+) {
+
+    const numeroWhatsApp =
+        "5585997313200";
+
+
+    const mensagem =
+`Olá, Marcelo! Gostaria de assinar um plano VIP da barbearia.
+
+━━━━━━━━━━━━━━━━━━━━━━
+👑 DETALHES DO PLANO ESCOLHIDO
+━━━━━━━━━━━━━━━━━━━━━━
+
+• *Plano:* ${nomePlano}
+• *Cortes inclusos:* ${quantidadeCortes} por mês
+• *Valor mensal:* ${valorPlano}
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+Como funciona o pagamento e a ativação da minha assinatura mensal?`;
+
+
+    const url =
+        `https://api.whatsapp.com/send?phone=${numeroWhatsApp}&text=` +
+        encodeURIComponent(
+            mensagem
+        );
+
+
+    window.open(
+        url,
+        "_blank"
+    );
+}
+
 </script>
-    
+
+
+<!-- =====================================================
+     JANELA DE CONFIRMAÇÃO DO SERVIÇO
+     ===================================================== -->
+
+<div
+    id="confirmacao-servico"
+
+    style="
+        display:none;
+        position:fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        background:rgba(0,0,0,0.90);
+        z-index:999999;
+
+        align-items:center;
+        justify-content:center;
+    "
+>
+
+    <div
+        style="
+            width:90%;
+            max-width:500px;
+
+            background:#1b1b1b;
+
+            border:2px solid #d4af37;
+
+            border-radius:18px;
+
+            padding:30px;
+
+            text-align:center;
+
+            box-sizing:border-box;
+        "
+    >
+
+        <div
+            style="
+                font-size:50px;
+            "
+        >
+            💈
+        </div>
+
+
+        <h2
+            style="
+                color:#d4af37;
+                margin-bottom:20px;
+            "
+        >
+            CONFIRMAR SERVIÇO
+        </h2>
+
+
+        <p
+            id="texto-confirmacao"
+
+            style="
+                color:white;
+                font-size:19px;
+                line-height:30px;
+            "
+        >
+        </p>
+
+
+        <div
+            style="
+                display:flex;
+                gap:12px;
+                justify-content:center;
+                margin-top:25px;
+                flex-wrap:wrap;
+            "
+        >
+
+            <button
+                onclick="confirmarServicoSim()"
+
+                style="
+                    padding:14px 25px;
+                    border:none;
+                    border-radius:10px;
+                    background:#d4af37;
+                    color:#000;
+                    font-weight:bold;
+                    cursor:pointer;
+                "
+            >
+                ✅ SIM, CONTINUAR
+            </button>
+
+
+            <button
+                onclick="fecharConfirmacaoServico()"
+
+                style="
+                    padding:14px 25px;
+                    border:none;
+                    border-radius:10px;
+                    background:#333;
+                    color:white;
+                    font-weight:bold;
+                    cursor:pointer;
+                "
+            >
+                ↩️ ESCOLHER OUTRO SERVIÇO
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
 </body>
 </html>
