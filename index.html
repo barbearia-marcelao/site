@@ -1409,9 +1409,11 @@ async function carregarHorariosDisponiveis(dataSelecionada) {
 
     const diaDaSemana = descobrirDiaDaSemana(dataSelecionada);
 
-    if (!diaDaSemana) return;
+    if (!diaDaSemana) {
+        mostrarAvisoHorarios('⚠️ Não foi possível identificar a data selecionada.');
+        return;
+    }
 
-    // Enquanto carrega, mostra uma mensagem discreta.
     grid.innerHTML = `
         <div style="
             grid-column:1 / -1;
@@ -1425,66 +1427,84 @@ async function carregarHorariosDisponiveis(dataSelecionada) {
     `;
 
     try {
-        const consultaBloqueios = window.firebaseQuery(
-            window.firebaseCollection(window.db, 'horariosBloqueados'),
-            window.firebaseWhere('dia', '==', diaDaSemana)
-        );
-
-        const snapshotBloqueios = await window.firebaseGetDocs(consultaBloqueios);
+        // Garante que o Firebase terminou de inicializar antes da consulta.
+        if (window.firebaseReady) {
+            await window.firebaseReady;
+        }
 
         const bloqueados = new Set();
         const reservados = new Set();
 
-        snapshotBloqueios.forEach(doc => {
-            const dados = doc.data();
-            if (dados && dados.horario) {
-                bloqueados.add(dados.horario);
-            }
-        });
-
-        // Verifica cada horário diretamente pelo ID do slot.
-        // Isso evita uma consulta por campo em reservasSlots que pode ser
-        // bloqueada pelas regras do Firestore, e usa a mesma referência
-        // que a transação de reserva já utiliza.
-        const verificacoes = HORARIOS_ATENDIMENTO.map(async horario => {
-            if (bloqueados.has(horario) || horarioJaPassou(dataSelecionada, horario)) {
-                return { horario, reservado: false, pular: true };
-            }
-
-            const partesData = dataSelecionada.match(/(\d{2})\/(\d{2})/);
-            if (!partesData) {
-                return { horario, reservado: false, pular: true };
-            }
-
-            const dia = partesData[1];
-            const mes = partesData[2];
-            const idHorario = `${dia}-${mes}_${horario}`;
-
-            const referencia = window.firebaseDoc(
-                window.db,
-                'reservasSlots',
-                idHorario
+        /* =====================================================
+           1. HORÁRIOS BLOQUEADOS PELO ADMIN
+           ===================================================== */
+        try {
+            const consultaBloqueios = window.firebaseQuery(
+                window.firebaseCollection(window.db, 'horariosBloqueados'),
+                window.firebaseWhere('dia', '==', diaDaSemana)
             );
 
-            const reserva = await window.firebaseGetDoc(referencia);
+            const snapshotBloqueios = await window.firebaseGetDocs(consultaBloqueios);
 
-            return {
-                horario,
-                reservado: reserva.exists(),
-                pular: false
-            };
-        });
+            snapshotBloqueios.forEach(docSnap => {
+                const dados = docSnap.data();
+                if (dados && dados.horario) {
+                    bloqueados.add(String(dados.horario));
+                }
+            });
+        } catch (erroBloqueios) {
+            // Se a consulta de bloqueios falhar, não mostraremos uma falsa
+            // mensagem de "sem horários". O usuário ainda poderá ver os slots.
+            console.warn('Não foi possível consultar bloqueios:', erroBloqueios);
+        }
 
-        const resultados = await Promise.all(verificacoes);
+        /* =====================================================
+           2. RESERVAS JÁ FEITAS
+           =====================================================
+           Lemos a coleção agendamentos e filtramos no navegador.
+           Se a leitura estiver bloqueada pelas regras do Firestore,
+           simplesmente continuamos com os horários não bloqueados.
+           A transação de FINALIZAR continua sendo a proteção contra
+           duas pessoas reservarem o mesmo horário.
+           ===================================================== */
+        try {
+            const snapshotAgendamentos = await window.firebaseGetDocs(
+                window.firebaseCollection(window.db, 'agendamentos')
+            );
+
+            snapshotAgendamentos.forEach(docSnap => {
+                const dados = docSnap.data();
+
+                if (!dados) return;
+
+                const mesmaData = String(dados.data || '') === String(dataSelecionada);
+                const mesmoHorario = String(dados.horario || '');
+
+                if (mesmaData && mesmoHorario) {
+                    reservados.add(mesmoHorario);
+                }
+            });
+        } catch (erroReservas) {
+            console.warn(
+                'Não foi possível consultar reservas existentes. ' +
+                'Os horários não bloqueados continuarão sendo exibidos:',
+                erroReservas
+            );
+        }
 
         grid.innerHTML = '';
 
         let quantidadeDisponivel = 0;
 
-        resultados.forEach(resultado => {
-            if (resultado.pular || resultado.reservado) return;
+        HORARIOS_ATENDIMENTO.forEach(horario => {
+            // Horário já passado só é retirado quando a data escolhida é hoje.
+            if (horarioJaPassou(dataSelecionada, horario)) return;
 
-            const horario = resultado.horario;
+            // Bloqueio manual pelo administrador.
+            if (bloqueados.has(horario)) return;
+
+            // Reserva já registrada.
+            if (reservados.has(horario)) return;
 
             const btn = document.createElement('button');
             btn.type = 'button';
@@ -1500,29 +1520,52 @@ async function carregarHorariosDisponiveis(dataSelecionada) {
         });
 
         if (quantidadeDisponivel === 0) {
-            if (aviso) {
-                aviso.style.display = 'block';
-                aviso.innerHTML = `
-                    ⚠️ <strong>Não há mais horários disponíveis para esta data.</strong><br><br>
-                    Escolha o próximo dia disponível para fazer seu agendamento.
-                `;
-            }
-            return;
+            mostrarAvisoHorarios(`
+                ⚠️ <strong>Não há mais horários disponíveis para esta data.</strong><br><br>
+                Escolha o próximo dia disponível para fazer seu agendamento.
+            `);
         }
 
     } catch (erro) {
-        console.error('Erro ao verificar horários:', erro);
+        console.error('Erro geral ao carregar horários:', erro);
 
+        // Última proteção: se alguma parte do Firebase falhar, ainda mostramos
+        // os horários básicos, retirando apenas os que já passaram hoje.
         grid.innerHTML = '';
 
-        if (aviso) {
-            aviso.style.display = 'block';
-            aviso.innerHTML = `
-                ⚠️ Não foi possível carregar os horários agora.<br>
-                Verifique sua conexão e tente novamente.
-            `;
+        let quantidadeDisponivel = 0;
+
+        HORARIOS_ATENDIMENTO.forEach(horario => {
+            if (horarioJaPassou(dataSelecionada, horario)) return;
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'horario-modal-btn';
+            btn.innerText = horario;
+            btn.onclick = function () {
+                selecionarHorarioModal(this, horario);
+            };
+
+            grid.appendChild(btn);
+            quantidadeDisponivel++;
+        });
+
+        if (quantidadeDisponivel === 0) {
+            mostrarAvisoHorarios(`
+                ⚠️ <strong>Não há mais horários disponíveis para esta data.</strong><br><br>
+                Escolha o próximo dia disponível para fazer seu agendamento.
+            `);
         }
     }
+}
+
+function mostrarAvisoHorarios(html) {
+    const aviso = document.getElementById('aviso-horarios-modal');
+
+    if (!aviso) return;
+
+    aviso.style.display = 'block';
+    aviso.innerHTML = html;
 }
 
 function selecionarHorarioModal(elemento, horario) {
@@ -1566,6 +1609,10 @@ async function finalizarAgendamento() {
         alert('Por favor, preencha seu nome completo para continuar.');
         if (inputNome) inputNome.focus();
         return;
+    }
+
+    if (window.firebaseReady) {
+        await window.firebaseReady;
     }
 
     dadosAgendamento.nome = nome;
@@ -1814,27 +1861,27 @@ if (document.readyState === 'loading') {
     measurementId: "G-NKEJH8EFJE"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+  window.firebaseReady = (async () => {
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    window.db = getFirestore(app);
 
-  // Salvando as funções na janela global para o resto do site usar
-  window.db = getFirestore(app);
-    
-  window.firebaseCollection = collection;
-  window.firebaseAddDoc = addDoc;
-  window.firebaseDoc = doc;
-  window.firebaseSetDoc = setDoc;
-  window.firebaseDeleteDoc = deleteDoc;
-  window.firebaseGetDocs = getDocs;
-  window.firebaseGetDoc = getDoc;
-window.firebaseQuery = query;
-window.firebaseWhere = where;
-window.firebaseOnSnapshot = onSnapshot;
+    window.firebaseCollection = collection;
+    window.firebaseAddDoc = addDoc;
+    window.firebaseDoc = doc;
+    window.firebaseSetDoc = setDoc;
+    window.firebaseDeleteDoc = deleteDoc;
+    window.firebaseGetDocs = getDocs;
+    window.firebaseGetDoc = getDoc;
+    window.firebaseQuery = query;
+    window.firebaseWhere = where;
+    window.firebaseOnSnapshot = onSnapshot;
     window.firebaseRunTransaction = runTransaction;
     window.firebaseServerTimestamp = serverTimestamp;
 
-  console.log("Firebase + Firestore conectado com sucesso!");
-
+    console.log("Firebase + Firestore conectado com sucesso!");
+    return { app, analytics };
+  })();
 
 </script>
 
