@@ -1633,42 +1633,18 @@ async function finalizarAgendamento() {
     }
 
     try {
-        const partesData = dadosAgendamento.data.match(/(\d{2})\/(\d{2})/);
-
-        if (!partesData) {
-            throw new Error('DATA_INVALIDA');
-        }
-
-        const dia = partesData[1];
-        const mes = partesData[2];
-
-        const idHorario = `${dia}-${mes}_${dadosAgendamento.horario}`;
-
-        const referenciaHorario = window.firebaseDoc(
-            window.db,
-            'reservasSlots',
-            idHorario
-        );
-
-        await window.firebaseRunTransaction(
-            window.db,
-            async transaction => {
-                const reservaExistente = await transaction.get(referenciaHorario);
-
-                if (reservaExistente.exists()) {
-                    throw new Error('HORARIO_JA_RESERVADO');
-                }
-
-                transaction.set(referenciaHorario, {
-                    dia: diaDaSemana,
-                    data: dadosAgendamento.data,
-                    horario: dadosAgendamento.horario,
-                    reservadoEm: window.firebaseServerTimestamp(),
-                    codigo: dadosAgendamento.codigo
-                });
-            }
-        );
-
+        /*
+         * SALVAMENTO DO AGENDAMENTO
+         *
+         * O fluxo anterior tentava gravar primeiro em "reservasSlots"
+         * usando uma transação. Se as regras do Firestore não permitirem
+         * acesso a essa coleção, o agendamento inteiro falhava e o usuário
+         * recebia "Não foi possível confirmar o agendamento".
+         *
+         * O site já consulta a coleção "agendamentos" para retirar horários
+         * ocupados da tela. Portanto, salvamos diretamente nela, que é a
+         * coleção usada pelo painel/administração do site.
+         */
         await window.firebaseAddDoc(
             window.firebaseCollection(window.db, 'agendamentos'),
             {
