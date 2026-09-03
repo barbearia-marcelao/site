@@ -1,2166 +1,68 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barbearia Marcelão</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        
-        body {
-            background-color: #121212;
-            color: #f5f5f5;
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .hero-section {
-            width: 100%;
-            max-width: 1200px;
-            height: 650px; 
-            background-image: url('fundo1.jpg');
-            background-size: 100% auto; 
-            background-position: center 30px; 
-            background-repeat: no-repeat;
-            background-color: #121212;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        @media (max-width: 768px) {
-            .hero-section {
-                height: 400px;
-                background-position: center 15px;
-            }
-        }
-
-        section {
-            padding: 70px 20px;
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        h2 {
-            font-size: 2.3rem;
-            color: #d4af37;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            text-align: center;
-        }
-
-        .section-divider {
-            width: 60px;
-            height: 3px;
-            background-color: #d4af37;
-            margin: 0 auto 40px auto;
-        }
-
-        .sub-category-title {
-            font-size: 1.6rem;
-            color: #ffffff;
-            margin: 50px auto 25px auto;
-            max-width: 1100px;
-            width: 100%;
-            text-align: left;
-            border-left: 4px solid #d4af37;
-            padding-left: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 800;
-            background: linear-gradient(90deg, rgba(212,175,55,0.1) 0%, rgba(18,18,18,0) 100%);
-            padding-top: 8px;
-            padding-bottom: 8px;
-        }
-
-        .aviso-atendimento {
-            background-color: #221e16;
-            border: 1px solid #d4af37;
-            color: #f5f5f5;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            font-size: 0.95rem;
-            text-align: center;
-            line-height: 1.5;
-            max-width: 1100px;
-            width: 100%;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .aviso-atendimento i {
-            color: #d4af37;
-            margin-right: 8px;
-        }
-
-        .grid-cortes {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(140px, 160px));
-gap: 12px;
-            justify-content: center;
-            justify-items: center;
-            align-items: stretch;
-            max-width: 1000px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .card-corte {
-            background-color: #181818;
-            border-radius: 10px;
-            overflow: hidden;
-            width: 100%;
-            max-width: 220px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
-            transition: transform 0.3s ease, border-color 0.3s ease;
-            border: 1px solid #2c2c2c;
-            display: flex;
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .card-corte:hover {
-            transform: translateY(-6px);
-            border-color: #d4af37;
-        }
-
-        .card-corte img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            object-position: center;
-            display: block;
-        }
-
-        .grid-infantil .card-corte img {
-            height: 200px;
-        }
-
-        .info-corte {
-            background-color: #1f1d19;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            justify-content: space-between;
-            border-top: 2px solid #332d24;
-            text-align: center;
-        }
-
-        .topo-info {
-            margin-bottom: 8px;
-        }
-
-        .nome-corte {
-            font-size: 0.9rem;
-            font-weight: 800;
-            margin-bottom: 4px;
-            color: #ffffff;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            line-height: 1.2;
-            text-align: center;
-        }
-
-        .obs-corte {
-            font-size: 0.7rem;
-            color: #b0a89e;
-            margin-bottom: 2px;
-            text-align: center;
-        }
-
-        .detalhe-incluso {
-            font-size: 0.68rem;
-            color: #d4af37;
-            font-weight: 600;
-            margin-top: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            text-align: center;
-        }
-
-        .rodape-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-top: 1px solid rgba(212, 175, 55, 0.15);
-            padding-top: 6px;
-            margin-top: 4px;
-        }
-
-        .preco-corte {
-            font-size: 1rem;
-            font-weight: 800;
-            color: #d4af37;
-        }
-
-        .badge-servico {
-            background-color: rgba(212, 175, 55, 0.1);
-            color: #d4af37;
-            font-size: 0.55rem;
-            padding: 2px 5px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-        }
-
-        .secao-exclusividades {
-            margin-top: 60px;
-            background: #171717;
-            border: 1px solid #2a2a2a;
-            padding: 40px 30px;
-            border-radius: 12px;
-            max-width: 1000px;
-            width: 100%;
-            margin-left: auto;
-            margin-right: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
-        .titulo-exclusividade {
-            font-size: 1.5rem;
-            color: #d4af37;
-            margin-bottom: 8px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            text-align: center;
-        }
-        .subtitulo-exclusividade {
-            font-size: 0.95rem;
-            color: #b0a89e;
-            margin-bottom: 30px;
-            max-width: 600px;
-            text-align: center;
-        }
-
-        .grid-extras {
-display: grid;
-grid-template-columns: repeat(3, 170px);
-gap: 12px;
-            gap: 20px;
-            margin-bottom: 10px;
-            justify-content: center;
-            justify-items: center;
-            width: 100%;
-        }
-
-        @media (max-width: 768px) {
-            .grid-extras {
-                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            }
-        }
-
-        .card-extra {
-            background-color: #1f1f1f;
- transform: scale(0.90);
-            border: 1px solid #333;
-            border-radius: 10px;
-            overflow: hidden;
-            text-align: center;
-            transition: border-color 0.3s ease, transform 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            max-width: 220px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-        }
-
-        .card-extra:hover {
-            border-color: #d4af37;
-            transform: translateY(-5px);
-        }
-
-        .card-extra img {
-            width: 100%;
-            height: 230px;
-            object-fit: cover;
-            object-position: center;
-            display: block;
-        }
-        .info-extra {
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            justify-content: space-between;
-            align-items: center;
-            text-align: center;
-        }
-
-        .card-extra h4 {
-            color: #fff;
-            font-size: 0.85rem;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            text-align: center;
-            line-height: 1.2;
-        }
-
-        .card-extra .preco-extra {
-            color: #d4af37;
-            font-weight: 800;
-            font-size: 1rem;
-            background: rgba(212, 175, 55, 0.1);
-            padding: 4px 10px;
-            border-radius: 6px;
-            display: inline-block;
-            width: 100%;
-            text-align: center;
-        }
-
-        .agendamento-section {
-            background: linear-gradient(180deg, #121212 0%, #1a1a1a 100%);
-            border-top: 1px solid #222;
-            width: 100%;
-            max-width: 100%;
-            align-items: center;
-        }
-
-        .step-container {
-            background-color: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 15px;
-            padding: 40px;
-            max-width: 750px;
-            width: 100%;
-            margin: 0 auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            text-align: left;
-        }
-
-        .step-title {
-            font-size: 1.4rem;
-            color: #d4af37;
-            margin-bottom: 25px;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .categorias-abas {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-
-        .aba-btn {
-            background-color: #222;
-            border: 1px solid #444;
-            color: #bbb;
-            padding: 10px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-        }
-
-        .aba-btn:hover {
-            border-color: #d4af37;
-            color: #fff;
-        }
-
-        .aba-btn.active {
-            background-color: #d4af37;
-            color: #121212;
-            border-color: #d4af37;
-        }
-
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-            max-height: 320px;
-            overflow-y: auto;
-            padding-right: 5px;
-            justify-items: center;
-        }
-
-        .option-btn {
-            background-color: #222;
-            border: 2px solid #333;
-            color: #fff;
-            padding: 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            font-size: 0.95rem;
-            font-weight: 600;
-            width: 100%;
-        }
-
-        .option-btn:hover {
-            border-color: #d4af37;
-        }
-
-        .option-btn.selected {
-            background-color: #d4af37;
-            color: #121212;
-            border-color: #d4af37;
-        }
-
-        .horarios-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 30px;
-            justify-items: center;
-        }
-
-        @media (max-width: 600px) {
-            .horarios-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .horario-btn {
-            background-color: #222;
-            border: 2px solid #333;
-            color: #fff;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            font-weight: 600;
-            width: 100%;
-        }
-
-        .horario-btn:hover {
-            border-color: #d4af37;
-        }
-
-        .horario-btn.selected {
-            background-color: #d4af37;
-            color: #121212;
-            border-color: #d4af37;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #ccc;
-            font-size: 0.95rem;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 15px;
-            background-color: #222;
-            border: 2px solid #333;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-control:focus {
-            border-color: #d4af37;
-        }
-
-        .codigo-gerado-box {
-            background-color: #1f1b14;
-            border: 2px dashed #d4af37;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .codigo-gerado-box span {
-            display: block;
-            font-size: 0.9rem;
-            color: #b0a89e;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-
-        .codigo-gerado-box h3 {
-            font-size: 2rem;
-            color: #d4af37;
-            letter-spacing: 4px;
-            font-weight: bold;
-        }
-
-        .step-actions {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-        }
-
-        .btn {
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: opacity 0.3s ease;
-            border: none;
-            font-size: 1rem;
-        }
-
-        .btn-voltar {
-            background-color: #333;
-            color: #fff;
-        }
-
-        .btn-proximo {
-            background-color: #d4af37;
-            color: #121212;
-            margin-left: auto;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .regras-agendamento-box {
-            background-color: #1f1b14;
-            border: 1px solid #d4af37;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            color: #f5f5f5;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-
-        .regras-agendamento-box h4 {
-            color: #d4af37;
-            margin-bottom: 12px;
-            font-size: 1.05rem;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .regras-agendamento-box ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .regras-agendamento-box li {
-            margin-bottom: 8px;
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-        }
-
-        .regras-agendamento-box li i {
-            color: #d4af37;
-            margin-top: 4px;
-        }
-
-        footer {
-            background-color: #0b0b0b;
-            padding: 40px 20px;
-            text-align: center;
-            color: #777;
-            font-size: 0.9rem;
-            border-top: 1px solid #222;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .footer-brand {
-            color: #d4af37;
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-            text-align: center;
-        }
-
-        .social-icons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .social-icons a {
-            color: #d4af37;
-            font-size: 1.4rem;
-            background-color: #1a1a1a;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #333;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-
-        .social-icons a:hover {
-            background-color: #d4af37;
-            color: #121212;
-            transform: translateY(-3px);
-        }
-
-        .footer-address {
-            margin-bottom: 10px;
-            color: #aaa;
-            text-align: center;
-        }
-   
-@media (max-width: 600px){
-
-    .grid-cortes{
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-    }
-
-    .card-corte{
-        transform: scale(0.92);
-    }
-
-
-    .grid-extras{
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-    }
-
-    .card-extra{
-        transform: scale(0.92);
-    }
-
-}
-    </style>
-</head>
-<body>
-
-    <div class="hero-section"></div>
-
-    <!-- SEÇÃO DE CORTES -->
-    <section>
-<h2 id="titulo-secreto">Nossos Cortes</h2>
-        <div class="section-divider"></div>
-        
-        <!-- ADULTO -->
-        <div class="sub-category-title">Adulto</div>
-        <div class="grid-cortes">
-
-            <div class="card-corte" onclick="confirmarServico('Adulto: Social Altura Lateral 1, 2, 3', 'R$ 25,00')">
-    <img src="a1.jpg" alt="Social Altura Lateral">
-    <div class="info-corte">
-        <div class="topo-info">
-            <div class="nome-corte">Social</div>
-            <div class="obs-corte">Altura lateral 1, 2, 3...</div>
-        </div>
-        <div class="rodape-card">
-            <div class="preco-corte">R$ 25,00</div>
-            <div class="badge-servico">Adulto</div>
-        </div>
-    </div>
-</div>
-
-<div class="card-corte" onclick="confirmarServico('Adulto: Degradê na Zero', 'R$ 25,00')">
-    <img src="a3.jpg" alt="Degradê na Zero">
-    <div class="info-corte">
-        <div class="topo-info">
-            <div class="nome-corte">Degradê na Zero</div>
-            <div class="obs-corte">Zero ou zero alto lateral</div>
-        </div>
-        <div class="rodape-card">
-            <div class="preco-corte">R$ 25,00</div>
-            <div class="badge-servico">Adulto</div>
-        </div>
-    </div>
-</div>
-
-<div class="card-corte" onclick="confirmarServico('Adulto: Degradê Navalhado', 'R$ 30,00')">
-    <img src="a2.jpg" alt="Degradê Navalhado">
-    <div class="info-corte">
-        <div class="topo-info">
-            <div class="nome-corte">Degradê Navalhado</div>
-            <div class="obs-corte">Acabamento na navalha</div>
-        </div>
-        <div class="rodape-card">
-            <div class="preco-corte">R$ 30,00</div>
-            <div class="badge-servico">Adulto</div>
-        </div>
-    </div>
-</div>
-
-<div class="card-corte" onclick="confirmarServico('Adulto: Social todo na Tesoura', 'R$ 35,00')">
-    <img src="a4.jpg" alt="Social todo na Tesoura">
-    <div class="info-corte">
-        <div class="topo-info">
-            <div class="nome-corte">Social todo na Tesoura</div>
-            <div class="obs-corte">Inferior e superior</div>
-        </div>
-        <div class="rodape-card">
-            <div class="preco-corte">R$ 35,00</div>
-            <div class="badge-servico">Adulto</div>
-        </div>
-    </div>
-</div>
-            
-
-            
-        </div>
-
-
-        <!-- INFANTIL -->
-        <div class="sub-category-title">Infantil</div>
-        <div class="grid-cortes grid-infantil">
-            
-           <div class="card-corte" onclick="confirmarServico('Infantil: Social', 'R$ 30,00')">
-    <img src="i3.jpg" alt="Social Infantil">
-    <div class="info-corte">
-        <div class="topo-info">
-            <div class="nome-corte">Social</div>
-            <div class="obs-corte">Lateral na máquina e topo na tesoura</div>
-        </div>
-        <div class="rodape-card">
-            <div class="preco-corte">R$ 30,00</div>
-            <div class="badge-servico">Infantil</div>
-        </div>
-    </div>
-</div>
-
-<div class="card-corte" onclick="confirmarServico('Infantil: Degradê na Zero', 'R$ 35,00')">
-    <img src="i2.jpg" alt="Degradê na Zero Infantil">
-    <div class="info-corte">
-        <div class="topo-info">
-            <div class="nome-corte">Degradê na Zero</div>
-            <div class="obs-corte">Zero ou zero alto</div>
-        </div>
-        <div class="rodape-card">
-            <div class="preco-corte">R$ 35,00</div>
-            <div class="badge-servico">Infantil</div>
-        </div>
-    </div>
-</div>
-
-<div class="card-corte" onclick="confirmarServico('Infantil: Degradê na Navalha', 'R$ 40,00')">
-    <img src="i4.jpg" alt="Degradê na navalha Infantil">
-    <div class="info-corte">
-        <div class="topo-info">
-            <div class="nome-corte">Degradê na navalha</div>
-            <div class="obs-corte">Corte clássico navalhado</div>
-        </div>
-        <div class="rodape-card">
-            <div class="preco-corte">R$ 40,00</div>
-            <div class="badge-servico">Infantil</div>
-        </div>
-    </div>
-</div>
-
-<div class="card-corte" onclick="confirmarServico('Infantil: Social todo na Tesoura', 'R$ 40,00')">
-    <img src="i1.jpg" alt="Social todo na Tesoura Infantil">
-    <div class="info-corte">
-        <div class="topo-info">
-            <div class="nome-corte">Social todo na Tesoura</div>
-            <div class="obs-corte">Corte clássico tesoura</div>
-        </div>
-        <div class="rodape-card">
-            <div class="preco-corte">R$ 40,00</div>
-            <div class="badge-servico">Infantil</div>
-        </div>
-    </div>
-</div>
-        
-        </div>
-
-        <!-- EXCLUSIVIDADES CENTRALIZADAS -->
-        <div class="secao-exclusividades">
-            <div class="titulo-exclusividade"><i class="fa-solid fa-crown" style="color: #d4af37; margin-right: 8px;"></i> Exclusividades e Tratamentos</div>
-            <div class="subtitulo-exclusividade">Eleve o seu visual com nossos procedimentos especiais de alto padrão.</div>
-            <div class="section-divider" style="margin: 10px auto 30px auto; width: 40px;"></div>
-
-            
-            <div class="grid-extras">
-                <div class="card-extra" onclick="confirmarServico('Luzes amarela', 'R$ 50,00')">
-                    <img src="T1.jpg" alt="Luzes amarela">
-                    <div class="info-extra">
-                        <div>
-                            <h4>Luzes amarela</h4>
-                        </div>
-                        <div class="preco-extra">R$ 50,00</div>
-                    </div>
-                </div>
-          
-            
-            <div class="card-extra" onclick="confirmarServico('Luzes platinado', 'R$ 70,00')">
-                    <img src="T2.jpg" alt="Luzes platinado">
-                    <div class="info-extra">
-                        <div>
-                            <h4>Luzes platinado</h4>
-                        </div>
-                        <div class="preco-extra">R$ 70,00</div>
-                    </div>
-                    
-                
-                </div>
-            
-                <div class="card-extra" onclick="confirmarServico('Luzes geral global amarelo', 'R$ 100,00')">
-                    <img src="T3.jpg" alt="Luzes geral global amarelo">
-                    <div class="info-extra">
-                        <div>
-                            <h4>Luzes geral global amarelo</h4>
-                        </div>
-                        <div class="preco-extra">R$ 100,00</div>
-                    </div>
-                </div>
-            
-                <div class="card-extra" onclick="confirmarServico('Luzes geral global platinada', 'R$ 120,00')">
-                    <img src="T4.jpg" alt="Luzes geral global platinada">
-                    <div class="info-extra">
-                        <div>
-                            <h4>Luzes geral global platinada</h4>
-                        </div>
-                        <div class="preco-extra">R$ 120,00</div>
-                    </div>
-                </div>
-            
-                <div class="card-extra" onclick="confirmarServico('Alisamento ou botox', 'R$ 50,00')">
-                    <img src="T5.jpg" alt="Alisamento ou botox">
-                    <div class="info-extra">
-                        <div>
-                            <h4>Alisamento ou botox</h4>
-                        </div>
-                        <div class="preco-extra">R$ 50,00</div>
-                    </div>
-                </div>
-            
-               <div class="card-extra" onclick="confirmarServico('Limpeza básica de pele', 'R$ 35,00')">
-                    <img src="T6.jpg" alt="Limpeza básica de pele">
-                    <div class="info-extra">
-                        <div>
-                            <h4>Limpeza básica de pele</h4>
-                        </div>
-                        <div class="preco-extra">R$ 35,00</div>
-                    </div>
-                </div>
-
-
-<div class="card-extra" onclick="confirmarServico('Barba desenhada', 'R$ 25,00')">
-                    <img src="T7.jpg" alt="Barba desenhada">
-                    <div class="info-extra">
-                        <div>
-                            <h4>Barba desenhada</h4>
-                        </div>
-                        <div class="preco-extra">R$ 25,00</div>
-                    </div>
-                </div>
-
-<div class="card-extra" onclick="confirmarServico('Cabelo e barba', 'R$ 50,00')">
-                    <img src="T8.jpg" alt="Cabelo e barba">
-                    <div class="info-extra">
-                        <div>
-                            <h4>Cabelo e barba</h4>
-                            <div class="obs-corte">(Sobrancelhas gratis)</div>
-                        </div>
-                        <div class="preco-extra">R$ 50,00</div>
-                    </div>
-                </div>
-
-<div class="card-extra" onclick="confirmarServico('Barbaterapia', 'R$ 50,00')">
-                    <img src="T9.jpg" alt="Barbaterapia">
-                    <div class="info-extra">
-                        <div>
-                            <h4>Barbaterapia</h4>
-                            <div class="obs-corte">Inclui (barba+limpeza de pele)</div>
-                        </div>
-                        <div class="preco-extra">R$ 50,00</div>
-                    </div>
-                </div>
-
-                <div class="card-extra" onclick="confirmarServico('Pigmentação geral', 'R$ 30,00')">
-                    <img src="p2.jpg" alt="Pigmentação geral">
-                    <div class="info-extra">
-                        <div>
-                            <h4>Pigmentação geral</h4>
-                        </div>
-                        <div class="preco-extra">R$ 30,00</div>
-                    </div>
-                </div>
-
-                <div class="card-extra" onclick="confirmarServico('Pigmentação de barba', 'R$ 30,00')">
-                    <img src="p1.jpg" alt="Pigmentação de barba">
-                    <div class="info-extra">
-                        <div>
-                            <h4>Pigmentação de barba</h4>
-                        </div>
-                        <div class="preco-extra">R$ 30,00</div>
-                    </div>
-                </div>
-
-               <div class="card-extra" onclick="confirmarServico('Sobrancelhas', 'R$ 10,00')">
-                    <img src="p3.jpg" alt="Sobrancelhas ">
-                    <div class="info-extra">
-                        <div>
-                            <h4>Sobrancelhas </h4>
-                        </div>
-                        <div class="preco-extra">R$ 10,00</div>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-    </section>
-
-    <div style="padding: 40px 20px; text-align: center; max-width: 1000px; margin: 0 auto;">
-    <h2 style="color: #d4af37; font-size: 26px; margin-bottom: 10px; text-transform: uppercase;">Planos de Assinatura VIP ✂️</h2>
-    <p style="color: #bbb; margin-bottom: 30px; font-size: 15px;">Garanta seus cortes do mês com desconto e atendimento prioritário na Barbearia Marcelão!</p>
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; text-align: left;">
-        
-        <!-- Plano Bronze (3 Cortes) -->
-        <div style="background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 25px; display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-                <h3 style="color: #fff; font-size: 20px; margin-bottom: 5px;">Plano Bronze</h3>
-                <p style="color: #d4af37; font-size: 26px; font-weight: bold; margin: 15px 0;">R$ 60,00 <span style="font-size: 13px; color: #888; font-weight: normal;">/mês</span></p>
-                <p style="color: #ccc; font-size: 14px; margin-bottom: 25px;">Direito a <strong>3 cortes</strong> durante o mês.</p>
-            </div>
-            <button onclick="assinarPlano('Plano Bronze', '3 Cortes', 'R$ 60,00')" style="background: #d4af37; color: #000; border: none; border-radius: 8px; padding: 14px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; text-transform: uppercase;">
-                Assinar Plano Bronze
-            </button>
-        </div>
-
-        <!-- Plano Prata (5 Cortes) -->
-        <div style="background: #1a1a1a; border: 2px solid #d4af37; border-radius: 12px; padding: 25px; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
-            <span style="background: #d4af37; color: #000; font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 4px; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); text-transform: uppercase;">Mais Popular</span>
-            <div>
-                <h3 style="color: #fff; font-size: 20px; margin-bottom: 5px;">Plano Prata</h3>
-                <p style="color: #d4af37; font-size: 26px; font-weight: bold; margin: 15px 0;">R$ 100,00 <span style="font-size: 13px; color: #888; font-weight: normal;">/mês</span></p>
-                <p style="color: #ccc; font-size: 14px; margin-bottom: 25px;">Direito a <strong>5 cortes</strong> durante o mês.</p>
-            </div>
-            <button onclick="assinarPlano('Plano Prata', '5 Cortes', 'R$ 100,00')" style="background: #d4af37; color: #000; border: none; border-radius: 8px; padding: 14px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; text-transform: uppercase;">
-                Assinar Plano Prata
-            </button>
-        </div>
-
-        <!-- Plano Ouro (7 Cortes) -->
-        <div style="background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 25px; display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-                <h3 style="color: #fff; font-size: 20px; margin-bottom: 5px;">Plano Ouro</h3>
-                <p style="color: #d4af37; font-size: 26px; font-weight: bold; margin: 15px 0;">R$ 120,00 <span style="font-size: 13px; color: #888; font-weight: normal;">/mês</span></p>
-                <p style="color: #ccc; font-size: 14px; margin-bottom: 25px;">Direito a <strong>7 cortes</strong> durante o mês.</p>
-            </div>
-            <button onclick="assinarPlano('Plano Ouro', '7 Cortes', 'R$ 120,00')" style="background: #d4af37; color: #000; border: none; border-radius: 8px; padding: 14px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; text-transform: uppercase;">
-                Assinar Plano Ouro
-            </button>
-        </div>
-
-    </div>
-</div>
-
-    <!-- AGENDAMENTO: agora acontece exclusivamente em uma janela sobre a página -->
-
-<!-- PAINEL ADMINISTRATIVO -->
-<div id="painel-admin" style="display:none;
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,.92);
-z-index:99999;
-overflow:auto;">
-
-<div style="
-max-width:900px;
-margin:40px auto;
-background:#1b1b1b;
-padding:30px;
-border-radius:15px;
-border:2px solid #d4af37;
+<!-- =========================================================
+     PAINEL ADMINISTRATIVO
+     ========================================================= -->
+
+<div id="painel-admin" style="
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.92);
+    z-index:99999;
+    overflow:auto;
 ">
 
-<h2 style="color:#d4af37;text-align:center;">
-PAINEL ADMINISTRATIVO
-</h2>
-
-<p style="text-align:center;color:#ccc;margin-bottom:25px;">
-Controle manual dos horários da barbearia.
-</p>
-
-<div id="conteudo-admin"></div>
-
-<div style="text-align:center;margin-top:30px;">
-
-<button class="btn btn-voltar"
-onclick="fecharPainelAdmin()">
-
-Fechar Painel
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-    <footer>
-        <div class="footer-brand">BARBEARIA MARCELÃO</div>
-        <div class="social-icons">
-    <a href="https://www.instagram.com/marcelaodocorteofc2015" target="_blank">
-        <i class="fa-brands fa-instagram"></i>
-    </a>
-
-    <a href="https://wa.me/5585997313200" target="_blank">
-        <i class="fa-brands fa-whatsapp"></i>
-    </a>
-</div>
-        <div class="footer-address">Rua Cento e onze, 421a, Timbó | Desde 2015</div>
-        <p>&copy; 2026 Barbearia Marcelão. Todos os direitos reservados.</p>
-    </footer>
-
-<!-- SCRIPT DE FUNCIONAMENTO -->
-<script>
-
-/* =========================================================
-   DADOS DO AGENDAMENTO
-   ========================================================= */
-
-let dadosAgendamento = {
-    servico: '',
-    data: '',
-    horario: '',
-    nome: '',
-    codigo: '',
-    valor: ''
-};
-
-let servicoSelecionado = '';
-let precoServicoSelecionado = '';
-
-const HORARIOS_ATENDIMENTO = [
-    '08:10',
-    '08:50',
-    '09:30',
-    '10:10',
-    '10:50',
-    '11:30',
-    '15:10',
-    '15:50',
-    '16:30',
-    '17:10',
-    '17:50',
-    '18:30'
-];
-
-const NOMES_DIAS = [
-    'Dom',
-    'Seg',
-    'Ter',
-    'Qua',
-    'Qui',
-    'Sex',
-    'Sáb'
-];
-
-const NOMES_DIAS_FIREBASE = [
-    'Domingo',
-    'Segunda',
-    'Terça',
-    'Quarta',
-    'Quinta',
-    'Sexta',
-    'Sábado'
-];
-
-/* =========================================================
-   FILTRAR CATEGORIA - mantido para não quebrar o site
-   ========================================================= */
-
-function filtrarCategoria(categoria, botao) {
-    document.querySelectorAll('.aba-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-
-    if (botao) botao.classList.add('active');
-
-    document.querySelectorAll('.options-grid').forEach(grid => {
-        if (grid.id.startsWith('grid-servicos-')) {
-            grid.classList.add('hidden');
-        }
-    });
-
-    const gridAlvo = document.getElementById('grid-servicos-' + categoria);
-
-    if (gridAlvo) {
-        gridAlvo.classList.remove('hidden');
-    }
-}
-
-function selecionarServico(elemento, nomeServico) {
-    document.querySelectorAll('#step-1 .option-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-
-    elemento.classList.add('selected');
-    dadosAgendamento.servico = nomeServico;
-}
-
-/* =========================================================
-   CONFIRMAÇÃO DO SERVIÇO
-   ========================================================= */
-
-function confirmarServico(nomeServico, precoServico) {
-    console.log('SERVIÇO CLICADO:', nomeServico, precoServico);
-
-    servicoSelecionado = nomeServico;
-    precoServicoSelecionado = precoServico;
-
-    dadosAgendamento.data = '';
-    dadosAgendamento.horario = '';
-    dadosAgendamento.nome = '';
-    dadosAgendamento.codigo = '';
-    dadosAgendamento.valor = precoServico;
-
-    const texto = document.getElementById('texto-confirmacao');
-    const janela = document.getElementById('confirmacao-servico');
-    const telaServico = document.getElementById('tela-confirmar-servico');
-    const telaHorario = document.getElementById('tela-escolher-horario');
-
-    if (!texto || !janela || !telaServico || !telaHorario) {
-        console.error('❌ Elementos da janela de agendamento não encontrados.');
-        return;
-    }
-
-    texto.innerHTML = `
-        Confirmar que quer agendar:<br><br>
-
-        <strong style="
-            color:#d4af37;
-            font-size:24px;
-        ">
-            ${nomeServico}
-        </strong>
-
-        <br><br>
-
-        Valor: <strong>${precoServico}</strong>
-    `;
-
-    telaServico.style.display = 'block';
-    telaHorario.style.display = 'none';
-
-    const resumoServico = document.getElementById('resumo-servico-modal');
-    if (resumoServico) {
-        resumoServico.innerHTML = `${nomeServico} — ${precoServico}`;
-    }
-
-    janela.style.display = 'flex';
-}
-
-function fecharConfirmacaoServico() {
-    const janela = document.getElementById('confirmacao-servico');
-
-    if (janela) {
-        janela.style.display = 'none';
-    }
-
-    dadosAgendamento.data = '';
-    dadosAgendamento.horario = '';
-}
-
-/* =========================================================
-   SIM, CONTINUAR -> SEGUNDA TELA NA MESMA JANELA
-   ========================================================= */
-
-async function confirmarServicoSim() {
-    if (!servicoSelecionado) {
-        alert('⚠️ Selecione um serviço.');
-        return;
-    }
-
-    dadosAgendamento.servico =
-        servicoSelecionado + ' - ' + precoServicoSelecionado;
-
-    dadosAgendamento.valor = precoServicoSelecionado;
-    dadosAgendamento.data = '';
-    dadosAgendamento.horario = '';
-
-    const telaServico = document.getElementById('tela-confirmar-servico');
-    const telaHorario = document.getElementById('tela-escolher-horario');
-
-    if (!telaServico || !telaHorario) return;
-
-    telaServico.style.display = 'none';
-    telaHorario.style.display = 'block';
-
-    carregarDiasModal();
-}
-
-/* =========================================================
-   FECHAR JANELA DE AGENDAMENTO
-   ========================================================= */
-
-function fecharJanelaAgendamento() {
-    const janela = document.getElementById('confirmacao-servico');
-
-    if (janela) {
-        janela.style.display = 'none';
-    }
-
-    dadosAgendamento.data = '';
-    dadosAgendamento.horario = '';
-}
-
-/* =========================================================
-   DATA / HORA
-   ========================================================= */
-
-function obterDiaInicialParaAgendamento() {
-    const agora = new Date();
-    const diaSemana = agora.getDay();
-
-    const encerrado =
-        agora.getHours() > 18 ||
-        (agora.getHours() === 18 && agora.getMinutes() >= 30);
-
-    let inicio = new Date(agora);
-    inicio.setHours(0, 0, 0, 0);
-
-    // Sábado ou domingo -> próxima segunda-feira.
-    if (diaSemana === 6) {
-        inicio.setDate(inicio.getDate() + 2);
-        return inicio;
-    }
-
-    if (diaSemana === 0) {
-        inicio.setDate(inicio.getDate() + 1);
-        return inicio;
-    }
-
-    // Sexta-feira -> sempre mostra a próxima semana.
-    if (diaSemana === 5) {
-        inicio.setDate(inicio.getDate() + 3);
-        return inicio;
-    }
-
-    // Segunda a quinta depois das 18:30 -> começa no dia seguinte.
-    if (encerrado) {
-        inicio.setDate(inicio.getDate() + 1);
-    }
-
-    return inicio;
-}
-
-function carregarDiasModal() {
-    const diasGrid = document.getElementById('dias-modal-grid');
-
-    if (!diasGrid) return;
-
-    diasGrid.innerHTML = '';
-
-    const inicio = obterDiaInicialParaAgendamento();
-    let data = new Date(inicio);
-    let quantidade = 0;
-
-    while (quantidade < 5) {
-        const diaSemana = data.getDay();
-
-        if (diaSemana >= 1 && diaSemana <= 5) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'dia-modal-btn';
-
-            const dia = String(data.getDate()).padStart(2, '0');
-            const mes = String(data.getMonth() + 1).padStart(2, '0');
-            const texto = `${NOMES_DIAS[diaSemana]}, ${dia}/${mes}`;
-
-            btn.innerText = texto;
-            btn.dataset.data = texto;
-
-            btn.onclick = function () {
-                selecionarDiaModal(this, texto);
-            };
-
-            diasGrid.appendChild(btn);
-            quantidade++;
-        }
-
-        data.setDate(data.getDate() + 1);
-    }
-
-    // Seleciona automaticamente o primeiro dia disponível.
-    const primeiro = diasGrid.querySelector('.dia-modal-btn');
-
-    if (primeiro) {
-        selecionarDiaModal(primeiro, primeiro.dataset.data);
-    }
-}
-
-function descobrirDiaDaSemana(dataStr) {
-    if (dataStr.includes('Seg')) return 'Segunda';
-    if (dataStr.includes('Ter')) return 'Terça';
-    if (dataStr.includes('Qua')) return 'Quarta';
-    if (dataStr.includes('Qui')) return 'Quinta';
-    if (dataStr.includes('Sex')) return 'Sexta';
-    return '';
-}
-
-function selecionarDiaModal(elemento, dataStr) {
-    document.querySelectorAll('.dia-modal-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-
-    elemento.classList.add('selected');
-
-    dadosAgendamento.data = dataStr;
-    dadosAgendamento.horario = '';
-
-    document.querySelectorAll('.horario-modal-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-
-    carregarHorariosDisponiveis(dataStr);
-}
-
-function horarioJaPassou(dataSelecionada, horario) {
-    const agora = new Date();
-    const partesData = dataSelecionada.match(/(\d{2})\/(\d{2})/);
-
-    if (!partesData) return false;
-
-    const dia = parseInt(partesData[1], 10);
-    const mes = parseInt(partesData[2], 10) - 1;
-
-    const dataEscolhida = new Date(
-        agora.getFullYear(),
-        mes,
-        dia
-    );
-
-    const ehHoje =
-        dataEscolhida.getDate() === agora.getDate() &&
-        dataEscolhida.getMonth() === agora.getMonth() &&
-        dataEscolhida.getFullYear() === agora.getFullYear();
-
-    if (!ehHoje) return false;
-
-    const [hora, minuto] = horario.split(':').map(Number);
-
-    return (
-        hora < agora.getHours() ||
-        (hora === agora.getHours() && minuto <= agora.getMinutes())
-    );
-}
-
-/* =========================================================
-   BUSCAR HORÁRIOS BLOQUEADOS E RESERVADOS
-   ========================================================= */
-
-async function carregarHorariosDisponiveis(dataSelecionada) {
-    const grid = document.getElementById('horarios-modal-grid');
-    const aviso = document.getElementById('aviso-horarios-modal');
-    const botaoFinalizar = document.getElementById('btn-finalizar-modal');
-
-    if (!grid) return;
-
-    grid.innerHTML = '';
-    dadosAgendamento.horario = '';
-
-    if (aviso) {
-        aviso.style.display = 'none';
-        aviso.innerHTML = '';
-    }
-
-    if (botaoFinalizar) {
-        botaoFinalizar.disabled = true;
-        botaoFinalizar.style.opacity = '0.5';
-    }
-
-    const diaDaSemana = descobrirDiaDaSemana(dataSelecionada);
-
-    if (!diaDaSemana) {
-        mostrarAvisoHorarios('⚠️ Não foi possível identificar a data selecionada.');
-        return;
-    }
-
-    grid.innerHTML = `
-        <div style="
-            grid-column:1 / -1;
-            color:#d4af37;
-            text-align:center;
-            padding:15px;
-            font-weight:bold;
-        ">
-            ⏳ Verificando horários disponíveis...
+    <div style="
+        max-width:900px;
+        margin:40px auto;
+        background:#1b1b1b;
+        padding:30px;
+        border-radius:15px;
+        border:2px solid #d4af37;
+    ">
+
+        <h2 style="color:#d4af37;text-align:center;">
+            PAINEL ADMINISTRATIVO
+        </h2>
+
+        <p style="text-align:center;color:#ccc;margin-bottom:25px;">
+            Controle manual dos horários da barbearia.
+        </p>
+
+        <div id="conteudo-admin"></div>
+
+        <div style="text-align:center;margin-top:30px;">
+            <button
+                class="btn btn-voltar"
+                onclick="fecharPainelAdmin()"
+            >
+                Fechar Painel
+            </button>
         </div>
-    `;
 
-    try {
-        // Garante que o Firebase terminou de inicializar antes da consulta.
-        if (window.firebaseReady) {
-            await window.firebaseReady;
-        }
+    </div>
 
-        const bloqueados = new Set();
-        const reservados = new Set();
+</div>
 
-        /* =====================================================
-           1. HORÁRIOS BLOQUEADOS PELO ADMIN
-           ===================================================== */
-        try {
-            const consultaBloqueios = window.firebaseQuery(
-                window.firebaseCollection(window.db, 'horariosBloqueados'),
-                window.firebaseWhere('dia', '==', diaDaSemana)
-            );
 
-            const snapshotBloqueios = await window.firebaseGetDocs(consultaBloqueios);
-
-            snapshotBloqueios.forEach(docSnap => {
-                const dados = docSnap.data();
-                if (dados && dados.horario) {
-                    bloqueados.add(String(dados.horario));
-                }
-            });
-        } catch (erroBloqueios) {
-            // Se a consulta de bloqueios falhar, não mostraremos uma falsa
-            // mensagem de "sem horários". O usuário ainda poderá ver os slots.
-            console.warn('Não foi possível consultar bloqueios:', erroBloqueios);
-        }
-
-        /* =====================================================
-           2. RESERVAS JÁ FEITAS
-           =====================================================
-           Lemos a coleção agendamentos e filtramos no navegador.
-           Se a leitura estiver bloqueada pelas regras do Firestore,
-           simplesmente continuamos com os horários não bloqueados.
-           A transação de FINALIZAR continua sendo a proteção contra
-           duas pessoas reservarem o mesmo horário.
-           ===================================================== */
-        try {
-            const snapshotAgendamentos = await window.firebaseGetDocs(
-                window.firebaseCollection(window.db, 'agendamentos')
-            );
-
-            snapshotAgendamentos.forEach(docSnap => {
-                const dados = docSnap.data();
-
-                if (!dados) return;
-
-                const mesmaData = String(dados.data || '') === String(dataSelecionada);
-                const mesmoHorario = String(dados.horario || '');
-
-                if (mesmaData && mesmoHorario) {
-                    reservados.add(mesmoHorario);
-                }
-            });
-        } catch (erroReservas) {
-            console.warn(
-                'Não foi possível consultar reservas existentes. ' +
-                'Os horários não bloqueados continuarão sendo exibidos:',
-                erroReservas
-            );
-        }
-
-        grid.innerHTML = '';
-
-        let quantidadeDisponivel = 0;
-
-        HORARIOS_ATENDIMENTO.forEach(horario => {
-            // Horário já passado só é retirado quando a data escolhida é hoje.
-            if (horarioJaPassou(dataSelecionada, horario)) return;
-
-            // Bloqueio manual pelo administrador.
-            if (bloqueados.has(horario)) return;
-
-            // Reserva já registrada.
-            if (reservados.has(horario)) return;
-
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'horario-modal-btn';
-            btn.innerText = horario;
-
-            btn.onclick = function () {
-                selecionarHorarioModal(this, horario);
-            };
-
-            grid.appendChild(btn);
-            quantidadeDisponivel++;
-        });
-
-        if (quantidadeDisponivel === 0) {
-            mostrarAvisoHorarios(`
-                ⚠️ <strong>Não há mais horários disponíveis para esta data.</strong><br><br>
-                Escolha o próximo dia disponível para fazer seu agendamento.
-            `);
-        }
-
-    } catch (erro) {
-        console.error('Erro geral ao carregar horários:', erro);
-
-        // Última proteção: se alguma parte do Firebase falhar, ainda mostramos
-        // os horários básicos, retirando apenas os que já passaram hoje.
-        grid.innerHTML = '';
-
-        let quantidadeDisponivel = 0;
-
-        HORARIOS_ATENDIMENTO.forEach(horario => {
-            if (horarioJaPassou(dataSelecionada, horario)) return;
-
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'horario-modal-btn';
-            btn.innerText = horario;
-            btn.onclick = function () {
-                selecionarHorarioModal(this, horario);
-            };
-
-            grid.appendChild(btn);
-            quantidadeDisponivel++;
-        });
-
-        if (quantidadeDisponivel === 0) {
-            mostrarAvisoHorarios(`
-                ⚠️ <strong>Não há mais horários disponíveis para esta data.</strong><br><br>
-                Escolha o próximo dia disponível para fazer seu agendamento.
-            `);
-        }
-    }
-}
-
-function mostrarAvisoHorarios(html) {
-    const aviso = document.getElementById('aviso-horarios-modal');
-
-    if (!aviso) return;
-
-    aviso.style.display = 'block';
-    aviso.innerHTML = html;
-}
-
-function selecionarHorarioModal(elemento, horario) {
-    document.querySelectorAll('.horario-modal-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-
-    elemento.classList.add('selected');
-    dadosAgendamento.horario = horario;
-
-    const botaoFinalizar = document.getElementById('btn-finalizar-modal');
-
-    if (botaoFinalizar) {
-        botaoFinalizar.disabled = false;
-        botaoFinalizar.style.opacity = '1';
-    }
-}
-
-/* =========================================================
-   GERAR CÓDIGO
-   ========================================================= */
-
-function gerarCodigoAleatorio() {
-    return Math.floor(1000 + Math.random() * 9000).toString();
-}
-
-/* =========================================================
-   FINALIZAR -> RESERVA + WHATSAPP
-   ========================================================= */
-
-async function finalizarAgendamento() {
-
-    // =========================================================
-    // 1. VERIFICAÇÕES BÁSICAS
-    // =========================================================
-
-    if (!dadosAgendamento.data || !dadosAgendamento.horario) {
-        alert('⚠️ Selecione uma data e um horário antes de finalizar.');
-        return;
-    }
-
-    const inputNome = document.getElementById('nome-cliente-modal');
-    const nome = inputNome ? inputNome.value.trim() : '';
-
-    if (!nome) {
-        alert('⚠️ Digite seu nome completo para continuar.');
-        if (inputNome) inputNome.focus();
-        return;
-    }
-
-    // =========================================================
-    // 2. AGUARDA O FIREBASE
-    // =========================================================
-
-    try {
-
-        if (window.firebaseReady) {
-            await window.firebaseReady;
-        }
-
-        if (!window.db) {
-            throw new Error('FIREBASE_NAO_INICIALIZADO');
-        }
-
-    } catch (erroFirebase) {
-
-        console.error('❌ ERRO AO INICIALIZAR FIREBASE:', erroFirebase);
-
-        alert(
-            '❌ Não foi possível conectar ao sistema de agendamento.\n\n' +
-            'Atualize a página e tente novamente.'
-        );
-
-        return;
-    }
-
-    // =========================================================
-    // 3. PREPARA OS DADOS
-    // =========================================================
-
-    dadosAgendamento.nome = nome;
-    dadosAgendamento.codigo = gerarCodigoAleatorio();
-
-    const botao = document.getElementById('btn-finalizar-modal');
-
-    if (botao) {
-        botao.disabled = true;
-        botao.innerText = '⏳ RESERVANDO...';
-    }
-
-    // =========================================================
-    // 4. VERIFICA SE O HORÁRIO AINDA ESTÁ DISPONÍVEL
-    // =========================================================
-
-    try {
-
-        const consultaReserva = window.firebaseQuery(
-            window.firebaseCollection(window.db, 'agendamentos'),
-            window.firebaseWhere(
-                'data',
-                '==',
-                dadosAgendamento.data
-            )
-        );
-
-        const reservasDoDia =
-            await window.firebaseGetDocs(consultaReserva);
-
-        let horarioOcupado = false;
-
-        reservasDoDia.forEach(docSnap => {
-
-            const reserva = docSnap.data();
-
-            if (
-                reserva &&
-                String(reserva.horario || '') ===
-                String(dadosAgendamento.horario)
-            ) {
-                horarioOcupado = true;
-            }
-
-        });
-
-        if (horarioOcupado) {
-
-            alert(
-                '⚠️ Esse horário acabou de ser reservado por outra pessoa.\n\n' +
-                'Escolha outro horário.'
-            );
-
-            dadosAgendamento.horario = '';
-
-            if (botao) {
-                botao.disabled = false;
-                botao.innerText =
-                    '📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
-            }
-
-            await carregarHorariosDisponiveis(
-                dadosAgendamento.data
-            );
-
-            return;
-        }
-
-    } catch (erroConsulta) {
-
-        console.error(
-            '❌ ERRO AO CONSULTAR AGENDAMENTOS:',
-            erroConsulta
-        );
-
-        /*
-         * IMPORTANTE:
-         * Se a leitura do Firestore estiver bloqueada pelas regras,
-         * não vamos impedir o cliente de continuar.
-         *
-         * A gravação abaixo será a operação principal.
-         */
-
-        console.warn(
-            '⚠️ Não foi possível consultar reservas existentes. ' +
-            'Tentaremos gravar o agendamento normalmente.'
-        );
-    }
-
-    // =========================================================
-    // 5. GRAVA O AGENDAMENTO
-    // =========================================================
-
-    try {
-
-        const referenciaAgendamentos =
-            window.firebaseCollection(
-                window.db,
-                'agendamentos'
-            );
-
-        const novoAgendamento = {
-
-            nome: dadosAgendamento.nome,
-
-            servico: dadosAgendamento.servico,
-
-            data: dadosAgendamento.data,
-
-            horario: dadosAgendamento.horario,
-
-            codigo: dadosAgendamento.codigo,
-
-            criadoEm: window.firebaseServerTimestamp()
-
-        };
-
-        console.log(
-            '📋 Salvando agendamento:',
-            novoAgendamento
-        );
-
-        const documentoCriado =
-            await window.firebaseAddDoc(
-                referenciaAgendamentos,
-                novoAgendamento
-            );
-
-        console.log(
-            '✅ AGENDAMENTO SALVO COM SUCESSO!',
-            documentoCriado.id
-        );
-
-    } catch (erroGravacao) {
-
-        console.error(
-            '❌ ERRO REAL AO SALVAR NO FIRESTORE:',
-            erroGravacao
-        );
-
-        console.error(
-            'Código do erro:',
-            erroGravacao.code
-        );
-
-        console.error(
-            'Mensagem do erro:',
-            erroGravacao.message
-        );
-
-        if (botao) {
-            botao.disabled = false;
-            botao.innerText =
-                '📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
-        }
-
-        // =====================================================
-        // MENSAGENS MAIS PRECISAS
-        // =====================================================
-
-        if (
-            erroGravacao.code ===
-            'permission-denied'
-        ) {
-
-            alert(
-                '❌ O sistema não permitiu salvar o agendamento.\n\n' +
-                'Erro de permissão do Firestore.'
-            );
-
-        } else if (
-            erroGravacao.code ===
-            'unavailable'
-        ) {
-
-            alert(
-                '❌ O servidor do agendamento está temporariamente indisponível.\n\n' +
-                'Tente novamente em alguns segundos.'
-            );
-
-        } else {
-
-            alert(
-                '❌ Não foi possível salvar o agendamento.\n\n' +
-                'Erro: ' +
-                (erroGravacao.message || 'erro desconhecido')
-            );
-        }
-
-        return;
-    }
-
-    // =========================================================
-    // 6. MONTA A MENSAGEM DO WHATSAPP
-    // =========================================================
-
-    const mensagem = `Olá! Gostaria de solicitar meu agendamento na Barbearia Marcelão.
-
-━━━━━━━━━━━━━━━━━━━━━━
-📋 DADOS DO AGENDAMENTO
-━━━━━━━━━━━━━━━━━━━━━━
-
-🔑 Código: ${dadosAgendamento.codigo}
-👤 Nome: ${dadosAgendamento.nome}
-💈 Serviço: ${dadosAgendamento.servico}
-📅 Data: ${dadosAgendamento.data}
-🕒 Horário: ${dadosAgendamento.horario}
-
-━━━━━━━━━━━━━━━━━━━━━━
-⚠️ POLÍTICA DE RESERVA
-━━━━━━━━━━━━━━━━━━━━━━
-
-Esta solicitação está pendente de confirmação.
-
-O horário será reservado exclusivamente mediante o envio e a conferência do comprovante de pagamento antecipado (50% do valor do serviço).
-
-*Atenção:* Em caso de ausência sem aviso prévio, o valor da taxa de reserva não será restituído.
-
-Desde já, agradecemos a preferência!`;
-
-    // =========================================================
-    // 7. WHATSAPP
-    // =========================================================
-
-    const numeroWhatsApp = '5585997313200';
-
-    const urlWhatsApp =
-        'https://api.whatsapp.com/send?phone=' +
-        numeroWhatsApp +
-        '&text=' +
-        encodeURIComponent(mensagem);
-
-    // Fecha a janela
-    const janela =
-        document.getElementById('confirmacao-servico');
-
-    if (janela) {
-        janela.style.display = 'none';
-    }
-
-    // Abre o WhatsApp
-    const win =
-        window.open(urlWhatsApp, '_blank');
-
-    if (!win) {
-        window.location.href = urlWhatsApp;
-    }
-}
-
-/* =========================================================
-   FUNÇÕES ANTIGAS MANTIDAS COMO COMPATIBILIDADE
-   ========================================================= */
-
-function validarEAvancar() {
-    if (!dadosAgendamento.data || !dadosAgendamento.horario) {
-        alert('⚠️ Selecione uma data e um horário.');
-        return;
-    }
-
-    irParaPasso(3);
-}
-
-function irParaPasso() {
-    // O antigo fluxo de etapas foi substituído pela janela sobre a página.
-    // Esta função fica apenas para não quebrar chamadas antigas.
-}
-
-function selecionarDia() {}
-function selecionarHorario() {}
-function carregarDiasProximos() {}
-function verificarExpediente() {}
-
-/* =========================================================
-   COPIAR PIX - mantida para não quebrar outras partes
-   ========================================================= */
-
-function copiarPix() {
-    const chaveElemento = document.getElementById('chavePix');
-
-    if (!chaveElemento) return;
-
-    const chave = chaveElemento.innerText;
-
-    navigator.clipboard.writeText(chave)
-        .then(() => alert('✅ Chave PIX copiada com sucesso!'))
-        .catch(() => alert('Não foi possível copiar automaticamente a chave PIX.'));
-}
-
-/* =========================================================
-   BOTÃO SECRETO / ADMIN
-   ========================================================= */
-
-let contadorCliques = 0;
-
-function iniciarBotaoSecreto() {
-    const tituloSecreto = document.getElementById('titulo-secreto');
-
-    if (!tituloSecreto) return;
-
-    tituloSecreto.addEventListener('click', function () {
-        contadorCliques++;
-
-        if (contadorCliques >= 5) {
-            contadorCliques = 0;
-
-            const senha = prompt('Área Restrita\n\nDigite a senha:');
-
-            if (senha === '1234') {
-                abrirPainelAdmin();
-            } else if (senha !== null) {
-                alert('Senha incorreta.');
-            }
-        }
-    });
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', iniciarBotaoSecreto);
-} else {
-    iniciarBotaoSecreto();
-}
-
-</script>
-<!-- Firebase -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-analytics.js";
- import { 
-    getFirestore,
-    collection,
-    addDoc,
-    doc,
-    setDoc,
-    deleteDoc,
-    getDocs,
-    getDoc,
-    query,
-    where,
-    onSnapshot,
-    serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyBJaHFBApy9mPSALP_GVwwu7OekQ9vOhFY",
-    authDomain: "barbearia-marcelao.firebaseapp.com",
-    projectId: "barbearia-marcelao",
-    storageBucket: "barbearia-marcelao.firebasestorage.app",
-    messagingSenderId: "299678759428",
-    appId: "1:299678759428:web:87e7f4cdb1336005d05351",
-    measurementId: "G-NKEJH8EFJE"
-  };
-
-  window.firebaseReady = (async () => {
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    window.db = getFirestore(app);
-
-    window.firebaseCollection = collection;
-    window.firebaseAddDoc = addDoc;
-    window.firebaseDoc = doc;
-    window.firebaseSetDoc = setDoc;
-    window.firebaseDeleteDoc = deleteDoc;
-    window.firebaseGetDocs = getDocs;
-    window.firebaseGetDoc = getDoc;
-    window.firebaseQuery = query;
-    window.firebaseWhere = where;
-    window.firebaseOnSnapshot = onSnapshot;
-    window.firebaseServerTimestamp = serverTimestamp;
-
-    console.log("Firebase + Firestore conectado com sucesso!");
-    return { app, analytics };
-  })();
-
-</script>
-
-<script>
-/* =========================================================
-   PAINEL ADMINISTRATIVO
-   ========================================================= */
-
-async function abrirPainelAdmin() {
-    const painel = document.getElementById('painel-admin');
-    if (painel) painel.style.display = 'block';
-
-    const conteudo = document.getElementById('conteudo-admin');
-    if (!conteudo) return;
-
-    const dias = ['Segunda','Terça','Quarta','Quinta','Sexta'];
-    const horarios = ['08:10','08:50','09:30','10:10','10:50','11:30','15:10','15:50','16:30','17:10','17:50','18:30'];
-
-    conteudo.innerHTML = "<p style='text-align:center;color:#d4af37;'>Carregando horários bloqueados...</p>";
-
-    try {
-        const querySnapshot = await window.firebaseGetDocs(
-            window.firebaseCollection(window.db, 'horariosBloqueados')
-        );
-
-        const bloqueiosSalvos = [];
-        querySnapshot.forEach(doc => {
-            const dados = doc.data();
-            bloqueiosSalvos.push(dados.dia + '_' + dados.horario);
-        });
-
-        conteudo.innerHTML = '';
-
-        dias.forEach(dia => {
-            let html = `
-                <div style="margin-bottom:30px;border:1px solid #333;border-radius:10px;padding:20px;">
-                    <h3 style="color:#d4af37;margin-bottom:15px;">${dia}</h3>
-                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:10px;">
-            `;
-
-            horarios.forEach(horario => {
-                const idUnico = `${dia}_${horario}`;
-                const estaBloqueado = bloqueiosSalvos.includes(idUnico);
-                const bg = estaBloqueado ? '#b30000' : '#2a2a2a';
-                const textoBtn = estaBloqueado ? `${horario} 🔒` : horario;
-
-                html += `
-                    <button class="admin-horario" data-ocupado="${estaBloqueado ? '1' : '0'}" style="background:${bg};color:white;border:1px solid #444;border-radius:8px;padding:10px;cursor:pointer;" onclick="alternarHorario(this)">
-                        ${textoBtn}
-                    </button>
-                `;
-            });
-
-            html += '</div></div>';
-            conteudo.innerHTML += html;
-        });
-    } catch (erro) {
-        console.error('Erro ao carregar painel admin:', erro);
-        conteudo.innerHTML = "<p style='text-align:center;color:red;'>Erro ao carregar dados do painel.</p>";
-    }
-}
-
-function fecharPainelAdmin() {
-    const painel = document.getElementById('painel-admin');
-    if (painel) painel.style.display = 'none';
-}
-
-async function alternarHorario(botao) {
-    const horario = botao.innerText.replace(' 🔒', '').trim();
-    const cardDia = botao.closest("div[style*='margin-bottom:30px']");
-
-    if (!cardDia) {
-        alert('Erro ao identificar o dia.');
-        return;
-    }
-
-    const diaElemento = cardDia.querySelector('h3');
-    if (!diaElemento) return;
-
-    const dia = diaElemento.innerText.trim();
-    const docId = `${dia}_${horario}`;
-    const docRef = window.firebaseDoc(window.db, 'horariosBloqueados', docId);
-
-    if (botao.dataset.ocupado === '1') {
-        try {
-            await window.firebaseDeleteDoc(docRef);
-            botao.dataset.ocupado = '0';
-            botao.style.background = '#2a2a2a';
-            botao.innerHTML = horario;
-        } catch (erro) {
-            console.error('Erro ao desbloquear:', erro);
-            alert('Erro ao desbloquear horário.');
-        }
-    } else {
-        try {
-            await window.firebaseSetDoc(docRef, {
-                dia: dia,
-                horario: horario,
-                bloqueadoEm: window.firebaseServerTimestamp()
-            });
-            botao.dataset.ocupado = '1';
-            botao.style.background = '#b30000';
-            botao.innerHTML = horario + ' 🔒';
-        } catch (erro) {
-            console.error('Erro ao bloquear:', erro);
-            alert('Erro ao bloquear horário.');
-        }
-    }
-}
-
-/* =========================================================
-   PLANOS VIP
-   ========================================================= */
-
-function assinarPlano(nomePlano, quantidadeCortes, valorPlano) {
-    const numeroWhatsApp = '5585997313200';
-    const mensagem = `Olá, Marcelo! Gostaria de assinar um plano VIP da barbearia.
-
-━━━━━━━━━━━━━━━━━━━━━━
-👑 DETALHES DO PLANO ESCOLHIDO
-━━━━━━━━━━━━━━━━━━━━━━
-• *Plano:* ${nomePlano}
-• *Cortes inclusos:* ${quantidadeCortes} por mês
-• *Valor mensal:* ${valorPlano}
-━━━━━━━━━━━━━━━━━━━━━━
-
-Como funciona o pagamento e a ativação da minha assinatura mensal?`;
-    const url = `https://api.whatsapp.com/send?phone=${numeroWhatsApp}&text=` + encodeURIComponent(mensagem);
-    window.open(url, '_blank');
-}
-</script>
-<!-- =====================================================
-     JANELA DE AGENDAMENTO SOBRE A PÁGINA
-     ===================================================== -->
+<!-- =========================================================
+     JANELA DE AGENDAMENTO
+     ========================================================= -->
 
 <div id="confirmacao-servico" class="modal-agendamento">
 
     <div class="modal-agendamento-caixa">
 
-        <!-- TELA 1: CONFIRMAR SERVIÇO -->
+        <!-- TELA 1 -->
         <div id="tela-confirmar-servico">
 
             <div class="modal-icone">💈</div>
 
-            <h2 class="modal-titulo">CONFIRMAR<br>SERVIÇO</h2>
+            <h2 class="modal-titulo">
+                CONFIRMAR<br>SERVIÇO
+            </h2>
 
             <p id="texto-confirmacao" class="modal-texto"></p>
 
@@ -2186,7 +88,8 @@ Como funciona o pagamento e a ativação da minha assinatura mensal?`;
 
         </div>
 
-        <!-- TELA 2: DATA E HORÁRIO -->
+
+        <!-- TELA 2 -->
         <div id="tela-escolher-horario" style="display:none;">
 
             <div class="modal-icone">📅</div>
@@ -2195,7 +98,10 @@ Como funciona o pagamento e a ativação da minha assinatura mensal?`;
                 ESCOLHA DATA E HORÁRIO
             </h2>
 
-            <div class="modal-servico-resumo" id="resumo-servico-modal">
+            <div
+                class="modal-servico-resumo"
+                id="resumo-servico-modal"
+            >
                 Serviço selecionado
             </div>
 
@@ -2203,13 +109,19 @@ Como funciona o pagamento e a ativação da minha assinatura mensal?`;
                 Escolha um dos próximos dias disponíveis:
             </div>
 
-            <div id="dias-modal-grid" class="dias-modal-grid"></div>
+            <div
+                id="dias-modal-grid"
+                class="dias-modal-grid"
+            ></div>
 
             <div class="modal-subtitulo horario-titulo">
                 Horários disponíveis
             </div>
 
-            <div id="horarios-modal-grid" class="horarios-modal-grid"></div>
+            <div
+                id="horarios-modal-grid"
+                class="horarios-modal-grid"
+            ></div>
 
             <div
                 id="aviso-horarios-modal"
@@ -2218,20 +130,25 @@ Como funciona o pagamento e a ativação da minha assinatura mensal?`;
             ></div>
 
             <div class="modal-form-nome">
-                <label for="nome-cliente-modal">Seu nome completo</label>
+
+                <label for="nome-cliente-modal">
+                    Seu nome completo
+                </label>
+
                 <input
                     type="text"
                     id="nome-cliente-modal"
                     placeholder="Digite seu nome"
                     autocomplete="name"
                 >
+
             </div>
 
             <div class="modal-botoes modal-botoes-final">
 
                 <button
                     type="button"
-                    onclick="fecharJanelaAgendamento()"
+                    onclick="voltarParaConfirmacaoServico()"
                     class="modal-btn modal-btn-secundario"
                 >
                     ↩️ VOLTAR
@@ -2256,11 +173,52 @@ Como funciona o pagamento e a ativação da minha assinatura mensal?`;
 
 </div>
 
+
+<!-- =========================================================
+     RODAPÉ
+     ========================================================= -->
+
+<footer>
+
+    <div class="footer-brand">
+        BARBEARIA MARCELÃO
+    </div>
+
+    <div class="social-icons">
+
+        <a
+            href="https://www.instagram.com/marcelaodocorteofc2015"
+            target="_blank"
+        >
+            <i class="fa-brands fa-instagram"></i>
+        </a>
+
+        <a
+            href="https://wa.me/5585997313200"
+            target="_blank"
+        >
+            <i class="fa-brands fa-whatsapp"></i>
+        </a>
+
+    </div>
+
+    <div class="footer-address">
+        Rua Cento e onze, 421a, Timbó | Desde 2015
+    </div>
+
+    <p>
+        &copy; 2026 Barbearia Marcelão.
+        Todos os direitos reservados.
+    </p>
+
+</footer>
+
+
+<!-- =========================================================
+     ESTILO DA JANELA
+     ========================================================= -->
+
 <style>
-/* =========================================================
-   ESTILO DA NOVA JANELA DE AGENDAMENTO
-   Não altera o restante do design do site.
-   ========================================================= */
 
 .modal-agendamento {
     display:none;
@@ -2464,7 +422,42 @@ Como funciona o pagamento e a ativação da minha assinatura mensal?`;
     margin-top:22px;
 }
 
+.admin-data {
+    width:100%;
+    box-sizing:border-box;
+    background:#222;
+    color:white;
+    border:1px solid #444;
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:20px;
+}
+
+.admin-legenda {
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    color:#ccc;
+    font-size:14px;
+    margin-bottom:25px;
+    flex-wrap:wrap;
+}
+
+.admin-legenda span {
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.admin-bolinha {
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    display:inline-block;
+}
+
 @media (max-width:600px) {
+
     .modal-agendamento {
         padding:10px;
     }
@@ -2500,7 +493,2665 @@ Como funciona o pagamento e a ativação da minha assinatura mensal?`;
     .modal-btn {
         width:100%;
     }
+
 }
+
 </style>
+
+
+<!-- =========================================================
+     SCRIPT PRINCIPAL
+     ========================================================= -->
+
+<script>
+
+/* =========================================================
+   DADOS
+   ========================================================= */
+
+let dadosAgendamento = {
+    servico: '',
+    data: '',
+    horario: '',
+    nome: '',
+    codigo: '',
+    valor: ''
+};
+
+let servicoSelecionado = '';
+let precoServicoSelecionado = '';
+
+const HORARIOS_ATENDIMENTO = [
+    '08:10',
+    '08:50',
+    '09:30',
+    '10:10',
+    '10:50',
+    '11:30',
+    '15:10',
+    '15:50',
+    '16:30',
+    '17:10',
+    '17:50',
+    '18:30'
+];
+
+const NOMES_DIAS = [
+    'Dom',
+    'Seg',
+    'Ter',
+    'Qua',
+    'Qui',
+    'Sex',
+    'Sáb'
+];
+
+const NOMES_DIAS_FIREBASE = [
+    'Domingo',
+    'Segunda',
+    'Terça',
+    'Quarta',
+    'Quinta',
+    'Sexta',
+    'Sábado'
+];
+
+
+/* =========================================================
+   CATEGORIAS
+   ========================================================= */
+
+function filtrarCategoria(categoria, botao) {
+
+    document.querySelectorAll('.aba-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    if (botao) {
+        botao.classList.add('active');
+    }
+
+    document.querySelectorAll('.options-grid').forEach(grid => {
+
+        if (grid.id.startsWith('grid-servicos-')) {
+            grid.classList.add('hidden');
+        }
+
+    });
+
+    const gridAlvo =
+        document.getElementById(
+            'grid-servicos-' + categoria
+        );
+
+    if (gridAlvo) {
+        gridAlvo.classList.remove('hidden');
+    }
+
+}
+
+
+function selecionarServico(elemento, nomeServico) {
+
+    document.querySelectorAll(
+        '#step-1 .option-btn'
+    ).forEach(btn => {
+        btn.classList.remove('selected');
+    });
+
+    elemento.classList.add('selected');
+
+    dadosAgendamento.servico = nomeServico;
+
+}
+
+
+/* =========================================================
+   CONFIRMAR SERVIÇO
+   ========================================================= */
+
+function confirmarServico(nomeServico, precoServico) {
+
+    console.log(
+        'SERVIÇO CLICADO:',
+        nomeServico,
+        precoServico
+    );
+
+    servicoSelecionado = nomeServico;
+    precoServicoSelecionado = precoServico;
+
+    dadosAgendamento.data = '';
+    dadosAgendamento.horario = '';
+    dadosAgendamento.nome = '';
+    dadosAgendamento.codigo = '';
+    dadosAgendamento.valor = precoServico;
+
+    const texto =
+        document.getElementById(
+            'texto-confirmacao'
+        );
+
+    const janela =
+        document.getElementById(
+            'confirmacao-servico'
+        );
+
+    const telaServico =
+        document.getElementById(
+            'tela-confirmar-servico'
+        );
+
+    const telaHorario =
+        document.getElementById(
+            'tela-escolher-horario'
+        );
+
+    if (
+        !texto ||
+        !janela ||
+        !telaServico ||
+        !telaHorario
+    ) {
+
+        console.error(
+            'Elementos da janela não encontrados.'
+        );
+
+        return;
+    }
+
+    texto.innerHTML = `
+        Confirmar que quer agendar:<br><br>
+
+        <strong style="
+            color:#d4af37;
+            font-size:24px;
+        ">
+            ${nomeServico}
+        </strong>
+
+        <br><br>
+
+        Valor:
+        <strong>${precoServico}</strong>
+    `;
+
+    telaServico.style.display = 'block';
+    telaHorario.style.display = 'none';
+
+    const resumo =
+        document.getElementById(
+            'resumo-servico-modal'
+        );
+
+    if (resumo) {
+        resumo.innerHTML =
+            `${nomeServico} — ${precoServico}`;
+    }
+
+    janela.style.display = 'flex';
+
+}
+
+
+/* =========================================================
+   CONTINUAR
+   ========================================================= */
+
+async function confirmarServicoSim() {
+
+    if (!servicoSelecionado) {
+
+        alert(
+            '⚠️ Selecione um serviço.'
+        );
+
+        return;
+    }
+
+    dadosAgendamento.servico =
+        servicoSelecionado +
+        ' - ' +
+        precoServicoSelecionado;
+
+    dadosAgendamento.valor =
+        precoServicoSelecionado;
+
+    dadosAgendamento.data = '';
+    dadosAgendamento.horario = '';
+
+    const telaServico =
+        document.getElementById(
+            'tela-confirmar-servico'
+        );
+
+    const telaHorario =
+        document.getElementById(
+            'tela-escolher-horario'
+        );
+
+    if (!telaServico || !telaHorario) {
+        return;
+    }
+
+    telaServico.style.display = 'none';
+    telaHorario.style.display = 'block';
+
+    const inputNome =
+        document.getElementById(
+            'nome-cliente-modal'
+        );
+
+    if (inputNome) {
+        inputNome.value = '';
+    }
+
+    const botao =
+        document.getElementById(
+            'btn-finalizar-modal'
+        );
+
+    if (botao) {
+
+        botao.disabled = true;
+
+        botao.style.opacity = '0.5';
+
+        botao.innerText =
+            '📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
+
+    }
+
+    carregarDiasModal();
+
+}
+
+
+/* =========================================================
+   VOLTAR
+   ========================================================= */
+
+function voltarParaConfirmacaoServico() {
+
+    const telaServico =
+        document.getElementById(
+            'tela-confirmar-servico'
+        );
+
+    const telaHorario =
+        document.getElementById(
+            'tela-escolher-horario'
+        );
+
+    if (telaServico) {
+        telaServico.style.display = 'block';
+    }
+
+    if (telaHorario) {
+        telaHorario.style.display = 'none';
+    }
+
+    dadosAgendamento.data = '';
+    dadosAgendamento.horario = '';
+
+}
+
+
+/* =========================================================
+   FECHAR
+   ========================================================= */
+
+function fecharConfirmacaoServico() {
+
+    const janela =
+        document.getElementById(
+            'confirmacao-servico'
+        );
+
+    if (janela) {
+        janela.style.display = 'none';
+    }
+
+    dadosAgendamento.data = '';
+    dadosAgendamento.horario = '';
+
+}
+
+
+function fecharJanelaAgendamento() {
+
+    const janela =
+        document.getElementById(
+            'confirmacao-servico'
+        );
+
+    if (janela) {
+        janela.style.display = 'none';
+    }
+
+    dadosAgendamento.data = '';
+    dadosAgendamento.horario = '';
+
+}
+
+
+/* =========================================================
+   DATA INICIAL
+   ========================================================= */
+
+function obterDiaInicialParaAgendamento() {
+
+    const agora = new Date();
+
+    const diaSemana =
+        agora.getDay();
+
+    const encerrado =
+        agora.getHours() > 18 ||
+        (
+            agora.getHours() === 18 &&
+            agora.getMinutes() >= 30
+        );
+
+    let inicio =
+        new Date(agora);
+
+    inicio.setHours(0, 0, 0, 0);
+
+
+    /*
+     * SÁBADO
+     * Vai para segunda.
+     */
+
+    if (diaSemana === 6) {
+
+        inicio.setDate(
+            inicio.getDate() + 2
+        );
+
+        return inicio;
+    }
+
+
+    /*
+     * DOMINGO
+     * Vai para segunda.
+     */
+
+    if (diaSemana === 0) {
+
+        inicio.setDate(
+            inicio.getDate() + 1
+        );
+
+        return inicio;
+    }
+
+
+    /*
+     * SEXTA
+     * Mostra a próxima segunda.
+     */
+
+    if (diaSemana === 5) {
+
+        inicio.setDate(
+            inicio.getDate() + 3
+        );
+
+        return inicio;
+    }
+
+
+    /*
+     * SEGUNDA A QUINTA
+     * Se já fechou, começa amanhã.
+     */
+
+    if (encerrado) {
+
+        inicio.setDate(
+            inicio.getDate() + 1
+        );
+
+    }
+
+    return inicio;
+
+}
+
+
+/* =========================================================
+   CARREGAR DIAS
+   ========================================================= */
+
+function carregarDiasModal() {
+
+    const diasGrid =
+        document.getElementById(
+            'dias-modal-grid'
+        );
+
+    if (!diasGrid) {
+        return;
+    }
+
+    diasGrid.innerHTML = '';
+
+    const inicio =
+        obterDiaInicialParaAgendamento();
+
+    let data =
+        new Date(inicio);
+
+    let quantidade = 0;
+
+    while (quantidade < 5) {
+
+        const diaSemana =
+            data.getDay();
+
+        if (
+            diaSemana >= 1 &&
+            diaSemana <= 5
+        ) {
+
+            const btn =
+                document.createElement(
+                    'button'
+                );
+
+            btn.type = 'button';
+
+            btn.className =
+                'dia-modal-btn';
+
+            const dia =
+                String(
+                    data.getDate()
+                ).padStart(2, '0');
+
+            const mes =
+                String(
+                    data.getMonth() + 1
+                ).padStart(2, '0');
+
+            const texto =
+                `${NOMES_DIAS[diaSemana]}, ${dia}/${mes}`;
+
+            btn.innerText = texto;
+
+            /*
+             * AGORA GUARDAMOS A DATA REAL.
+             */
+
+            btn.dataset.data =
+                criarDataISO(data);
+
+            btn.dataset.texto =
+                texto;
+
+            btn.onclick = function () {
+
+                selecionarDiaModal(
+                    this,
+                    this.dataset.data,
+                    this.dataset.texto
+                );
+
+            };
+
+            diasGrid.appendChild(btn);
+
+            quantidade++;
+
+        }
+
+        data.setDate(
+            data.getDate() + 1
+        );
+
+    }
+
+
+    /*
+     * Seleciona automaticamente
+     * o primeiro dia.
+     */
+
+    const primeiro =
+        diasGrid.querySelector(
+            '.dia-modal-btn'
+        );
+
+    if (primeiro) {
+
+        selecionarDiaModal(
+            primeiro,
+            primeiro.dataset.data,
+            primeiro.dataset.texto
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DATA ISO
+   ========================================================= */
+
+function criarDataISO(data) {
+
+    const ano =
+        data.getFullYear();
+
+    const mes =
+        String(
+            data.getMonth() + 1
+        ).padStart(2, '0');
+
+    const dia =
+        String(
+            data.getDate()
+        ).padStart(2, '0');
+
+    return `${ano}-${mes}-${dia}`;
+
+}
+
+
+/* =========================================================
+   CONVERTER DATA ISO PARA EXIBIÇÃO
+   ========================================================= */
+
+function formatarDataExibicao(dataISO) {
+
+    if (!dataISO) {
+        return '';
+    }
+
+    const partes =
+        dataISO.split('-');
+
+    if (partes.length !== 3) {
+        return '';
+    }
+
+    const ano =
+        parseInt(partes[0]);
+
+    const mes =
+        parseInt(partes[1]) - 1;
+
+    const dia =
+        parseInt(partes[2]);
+
+    const data =
+        new Date(
+            ano,
+            mes,
+            dia
+        );
+
+    return `${NOMES_DIAS[data.getDay()]}, ${String(dia).padStart(2,'0')}/${String(mes + 1).padStart(2,'0')}`;
+
+}
+
+
+/* =========================================================
+   DESCOBRIR DIA DA SEMANA
+   ========================================================= */
+
+function descobrirDiaDaSemana(dataISO) {
+
+    if (!dataISO) {
+        return '';
+    }
+
+    const partes =
+        dataISO.split('-');
+
+    if (partes.length !== 3) {
+        return '';
+    }
+
+    const data =
+        new Date(
+            parseInt(partes[0]),
+            parseInt(partes[1]) - 1,
+            parseInt(partes[2])
+        );
+
+    return NOMES_DIAS_FIREBASE[
+        data.getDay()
+    ];
+
+}
+
+
+/* =========================================================
+   SELECIONAR DIA
+   ========================================================= */
+
+function selecionarDiaModal(
+    elemento,
+    dataISO,
+    textoData
+) {
+
+    document.querySelectorAll(
+        '.dia-modal-btn'
+    ).forEach(btn => {
+
+        btn.classList.remove(
+            'selected'
+        );
+
+    });
+
+    elemento.classList.add(
+        'selected'
+    );
+
+    dadosAgendamento.data =
+        dataISO;
+
+    dadosAgendamento.horario =
+        '';
+
+    document.querySelectorAll(
+        '.horario-modal-btn'
+    ).forEach(btn => {
+
+        btn.classList.remove(
+            'selected'
+        );
+
+    });
+
+    carregarHorariosDisponiveis(
+        dataISO
+    );
+
+}
+
+
+/* =========================================================
+   VERIFICAR HORÁRIO PASSADO
+   ========================================================= */
+
+function horarioJaPassou(
+    dataISO,
+    horario
+) {
+
+    if (!dataISO) {
+        return false;
+    }
+
+    const agora =
+        new Date();
+
+    const partes =
+        dataISO.split('-');
+
+    if (partes.length !== 3) {
+        return false;
+    }
+
+    const dataEscolhida =
+        new Date(
+            parseInt(partes[0]),
+            parseInt(partes[1]) - 1,
+            parseInt(partes[2])
+        );
+
+    const ehHoje =
+        dataEscolhida.getFullYear() ===
+        agora.getFullYear() &&
+
+        dataEscolhida.getMonth() ===
+        agora.getMonth() &&
+
+        dataEscolhida.getDate() ===
+        agora.getDate();
+
+    if (!ehHoje) {
+        return false;
+    }
+
+    const partesHora =
+        horario.split(':');
+
+    const hora =
+        parseInt(partesHora[0]);
+
+    const minuto =
+        parseInt(partesHora[1]);
+
+    return (
+        hora < agora.getHours() ||
+        (
+            hora === agora.getHours() &&
+            minuto <= agora.getMinutes()
+        )
+    );
+
+}
+
+
+/* =========================================================
+   CARREGAR HORÁRIOS
+   ========================================================= */
+
+async function carregarHorariosDisponiveis(
+    dataSelecionada
+) {
+
+    const grid =
+        document.getElementById(
+            'horarios-modal-grid'
+        );
+
+    const aviso =
+        document.getElementById(
+            'aviso-horarios-modal'
+        );
+
+    const botaoFinalizar =
+        document.getElementById(
+            'btn-finalizar-modal'
+        );
+
+    if (!grid) {
+        return;
+    }
+
+    grid.innerHTML = '';
+
+    dadosAgendamento.horario = '';
+
+    if (aviso) {
+
+        aviso.style.display =
+            'none';
+
+        aviso.innerHTML = '';
+
+    }
+
+    if (botaoFinalizar) {
+
+        botaoFinalizar.disabled =
+            true;
+
+        botaoFinalizar.style.opacity =
+            '0.5';
+
+    }
+
+
+    /*
+     * MOSTRA CARREGANDO.
+     */
+
+    grid.innerHTML = `
+        <div style="
+            grid-column:1 / -1;
+            color:#d4af37;
+            text-align:center;
+            padding:18px;
+            font-weight:bold;
+        ">
+            ⏳ Verificando horários...
+        </div>
+    `;
+
+
+    try {
+
+        if (window.firebaseReady) {
+            await window.firebaseReady;
+        }
+
+        if (!window.db) {
+            throw new Error(
+                'FIREBASE_NAO_INICIALIZADO'
+            );
+        }
+
+
+        /*
+         * =====================================================
+         * CONSULTA 1:
+         * BLOQUEIOS POR DATA
+         * =====================================================
+         */
+
+        const bloqueados =
+            new Set();
+
+        try {
+
+            const consultaBloqueios =
+                window.firebaseQuery(
+
+                    window.firebaseCollection(
+                        window.db,
+                        'horariosBloqueados'
+                    ),
+
+                    window.firebaseWhere(
+                        'data',
+                        '==',
+                        dataSelecionada
+                    )
+
+                );
+
+            const snapshotBloqueios =
+                await window.firebaseGetDocs(
+                    consultaBloqueios
+                );
+
+            snapshotBloqueios.forEach(
+                docSnap => {
+
+                    const dados =
+                        docSnap.data();
+
+                    if (
+                        dados &&
+                        dados.horario
+                    ) {
+
+                        bloqueados.add(
+                            String(
+                                dados.horario
+                            )
+                        );
+
+                    }
+
+                }
+            );
+
+        } catch (erro) {
+
+            console.warn(
+                'Erro ao consultar bloqueios:',
+                erro
+            );
+
+        }
+
+
+        /*
+         * =====================================================
+         * CONSULTA 2:
+         * RESERVAS APENAS DA DATA
+         *
+         * NÃO BAIXA MAIS A COLEÇÃO INTEIRA.
+         * =====================================================
+         */
+
+        const reservados =
+            new Set();
+
+        try {
+
+            const consultaReservas =
+                window.firebaseQuery(
+
+                    window.firebaseCollection(
+                        window.db,
+                        'agendamentos'
+                    ),
+
+                    window.firebaseWhere(
+                        'data',
+                        '==',
+                        dataSelecionada
+                    )
+
+                );
+
+            const snapshotReservas =
+                await window.firebaseGetDocs(
+                    consultaReservas
+                );
+
+            snapshotReservas.forEach(
+                docSnap => {
+
+                    const dados =
+                        docSnap.data();
+
+                    if (
+                        dados &&
+                        dados.horario
+                    ) {
+
+                        reservados.add(
+                            String(
+                                dados.horario
+                            )
+                        );
+
+                    }
+
+                }
+            );
+
+        } catch (erro) {
+
+            /*
+             * AQUI ESTÁ UMA DAS PRINCIPAIS
+             * MUDANÇAS.
+             *
+             * Não vamos fingir que todos
+             * estão livres se o Firebase
+             * falhar.
+             */
+
+            console.error(
+                'Não foi possível consultar reservas:',
+                erro
+            );
+
+            grid.innerHTML = '';
+
+            mostrarAvisoHorarios(`
+                ⚠️ <strong>Não foi possível verificar os horários.</strong><br><br>
+                Atualize a página e tente novamente.
+            `);
+
+            return;
+
+        }
+
+
+        /*
+         * =====================================================
+         * MONTAR HORÁRIOS
+         * =====================================================
+         */
+
+        grid.innerHTML = '';
+
+        let quantidadeDisponivel = 0;
+
+
+        HORARIOS_ATENDIMENTO.forEach(
+            horario => {
+
+                /*
+                 * Horário já passou.
+                 */
+
+                if (
+                    horarioJaPassou(
+                        dataSelecionada,
+                        horario
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                /*
+                 * BLOQUEADO PELO ADMIN.
+                 */
+
+                if (
+                    bloqueados.has(
+                        horario
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                /*
+                 * JÁ RESERVADO.
+                 */
+
+                if (
+                    reservados.has(
+                        horario
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                const btn =
+                    document.createElement(
+                        'button'
+                    );
+
+                btn.type = 'button';
+
+                btn.className =
+                    'horario-modal-btn';
+
+                btn.innerText =
+                    horario;
+
+                btn.onclick = function () {
+
+                    selecionarHorarioModal(
+                        this,
+                        horario
+                    );
+
+                };
+
+                grid.appendChild(btn);
+
+                quantidadeDisponivel++;
+
+            }
+        );
+
+
+        /*
+         * SEM HORÁRIOS.
+         */
+
+        if (
+            quantidadeDisponivel === 0
+        ) {
+
+            mostrarAvisoHorarios(`
+                ⚠️ <strong>Não há mais horários disponíveis para esta data.</strong><br><br>
+                Escolha outro dia para fazer seu agendamento.
+            `);
+
+        }
+
+
+    } catch (erro) {
+
+        console.error(
+            'Erro ao carregar horários:',
+            erro
+        );
+
+        grid.innerHTML = '';
+
+        mostrarAvisoHorarios(`
+            ⚠️ <strong>Não foi possível carregar os horários.</strong><br><br>
+            Atualize a página e tente novamente.
+        `);
+
+    }
+
+}
+
+
+/* =========================================================
+   AVISO
+   ========================================================= */
+
+function mostrarAvisoHorarios(html) {
+
+    const aviso =
+        document.getElementById(
+            'aviso-horarios-modal'
+        );
+
+    if (!aviso) {
+        return;
+    }
+
+    aviso.style.display =
+        'block';
+
+    aviso.innerHTML =
+        html;
+
+}
+
+
+/* =========================================================
+   SELECIONAR HORÁRIO
+   ========================================================= */
+
+function selecionarHorarioModal(
+    elemento,
+    horario
+) {
+
+    document.querySelectorAll(
+        '.horario-modal-btn'
+    ).forEach(btn => {
+
+        btn.classList.remove(
+            'selected'
+        );
+
+    });
+
+    elemento.classList.add(
+        'selected'
+    );
+
+    dadosAgendamento.horario =
+        horario;
+
+    const botaoFinalizar =
+        document.getElementById(
+            'btn-finalizar-modal'
+        );
+
+    if (botaoFinalizar) {
+
+        botaoFinalizar.disabled =
+            false;
+
+        botaoFinalizar.style.opacity =
+            '1';
+
+    }
+
+}
+
+
+/* =========================================================
+   CÓDIGO
+   ========================================================= */
+
+function gerarCodigoAleatorio() {
+
+    return Math.floor(
+        1000 +
+        Math.random() * 9000
+    ).toString();
+
+}
+
+
+/* =========================================================
+   MENSAGEM WHATSAPP
+   ========================================================= */
+
+function criarMensagemWhatsApp() {
+
+    return `Olá! Gostaria de solicitar meu agendamento na Barbearia Marcelão.
+
+━━━━━━━━━━━━━━━━━━━━━━
+📋 DADOS DO AGENDAMENTO
+━━━━━━━━━━━━━━━━━━━━━━
+
+🔑 Código: ${dadosAgendamento.codigo}
+👤 Nome: ${dadosAgendamento.nome}
+💈 Serviço: ${dadosAgendamento.servico}
+📅 Data: ${formatarDataExibicao(dadosAgendamento.data)}
+🕒 Horário: ${dadosAgendamento.horario}
+
+━━━━━━━━━━━━━━━━━━━━━━
+⚠️ POLÍTICA DE RESERVA
+━━━━━━━━━━━━━━━━━━━━━━
+
+Esta solicitação está pendente de confirmação.
+
+O horário será reservado exclusivamente mediante o envio e a conferência do comprovante de pagamento antecipado (50% do valor do serviço).
+
+*Atenção:* Em caso de ausência sem aviso prévio, o valor da taxa de reserva não será restituído.
+
+Desde já, agradecemos a preferência!`;
+
+}
+
+
+/* =========================================================
+   FINALIZAR AGENDAMENTO
+   ========================================================= */
+
+async function finalizarAgendamento() {
+
+    /*
+     * =====================================================
+     * 1. VALIDAÇÕES
+     * =====================================================
+     */
+
+    if (
+        !dadosAgendamento.data ||
+        !dadosAgendamento.horario
+    ) {
+
+        alert(
+            '⚠️ Selecione uma data e um horário antes de finalizar.'
+        );
+
+        return;
+
+    }
+
+
+    const inputNome =
+        document.getElementById(
+            'nome-cliente-modal'
+        );
+
+    const nome =
+        inputNome
+            ? inputNome.value.trim()
+            : '';
+
+
+    if (!nome) {
+
+        alert(
+            '⚠️ Digite seu nome completo para continuar.'
+        );
+
+        if (inputNome) {
+            inputNome.focus();
+        }
+
+        return;
+
+    }
+
+
+    /*
+     * =====================================================
+     * 2. FIREBASE
+     * =====================================================
+     */
+
+    try {
+
+        if (window.firebaseReady) {
+            await window.firebaseReady;
+        }
+
+        if (!window.db) {
+            throw new Error(
+                'FIREBASE_NAO_INICIALIZADO'
+            );
+        }
+
+    } catch (erro) {
+
+        console.error(
+            'Firebase não inicializado:',
+            erro
+        );
+
+        alert(
+            '❌ Não foi possível conectar ao sistema de agendamento.\n\n' +
+            'Atualize a página e tente novamente.'
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * =====================================================
+     * 3. PREPARAR DADOS
+     * =====================================================
+     */
+
+    dadosAgendamento.nome =
+        nome;
+
+    dadosAgendamento.codigo =
+        gerarCodigoAleatorio();
+
+
+    const botao =
+        document.getElementById(
+            'btn-finalizar-modal'
+        );
+
+    if (botao) {
+
+        botao.disabled = true;
+
+        botao.innerText =
+            '⏳ CONFIRMANDO...';
+
+        botao.style.opacity =
+            '0.7';
+
+    }
+
+
+    /*
+     * =====================================================
+     * 4. VERIFICAÇÃO FINAL
+     *
+     * Consulta SOMENTE a data escolhida.
+     * =====================================================
+     */
+
+    try {
+
+        const consultaReserva =
+            window.firebaseQuery(
+
+                window.firebaseCollection(
+                    window.db,
+                    'agendamentos'
+                ),
+
+                window.firebaseWhere(
+                    'data',
+                    '==',
+                    dadosAgendamento.data
+                )
+
+            );
+
+        const reservasDoDia =
+            await window.firebaseGetDocs(
+                consultaReserva
+            );
+
+
+        let horarioOcupado =
+            false;
+
+
+        reservasDoDia.forEach(
+            docSnap => {
+
+                const reserva =
+                    docSnap.data();
+
+                if (
+                    reserva &&
+                    String(
+                        reserva.horario || ''
+                    ) ===
+                    String(
+                        dadosAgendamento.horario
+                    )
+                ) {
+
+                    horarioOcupado =
+                        true;
+
+                }
+
+            }
+        );
+
+
+        if (horarioOcupado) {
+
+            alert(
+                '⚠️ Esse horário acabou de ser reservado por outra pessoa.\n\n' +
+                'Escolha outro horário.'
+            );
+
+            dadosAgendamento.horario =
+                '';
+
+            if (botao) {
+
+                botao.disabled =
+                    true;
+
+                botao.innerText =
+                    '📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
+
+                botao.style.opacity =
+                    '0.5';
+
+            }
+
+            await carregarHorariosDisponiveis(
+                dadosAgendamento.data
+            );
+
+            return;
+
+        }
+
+
+    } catch (erro) {
+
+        console.error(
+            'Erro na verificação final:',
+            erro
+        );
+
+        if (botao) {
+
+            botao.disabled =
+                false;
+
+            botao.innerText =
+                '📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
+
+            botao.style.opacity =
+                '1';
+
+        }
+
+        alert(
+            '❌ Não foi possível verificar se o horário ainda está disponível.\n\n' +
+            'Por segurança, o agendamento não foi enviado.\n\n' +
+            'Tente novamente.'
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * =====================================================
+     * 5. GRAVAR
+     * =====================================================
+     */
+
+    try {
+
+        const referenciaAgendamentos =
+            window.firebaseCollection(
+                window.db,
+                'agendamentos'
+            );
+
+
+        const novoAgendamento = {
+
+            nome:
+                dadosAgendamento.nome,
+
+            servico:
+                dadosAgendamento.servico,
+
+            valor:
+                dadosAgendamento.valor,
+
+            data:
+                dadosAgendamento.data,
+
+            horario:
+                dadosAgendamento.horario,
+
+            codigo:
+                dadosAgendamento.codigo,
+
+            criadoEm:
+                window.firebaseServerTimestamp()
+
+        };
+
+
+        console.log(
+            'Salvando agendamento:',
+            novoAgendamento
+        );
+
+
+        await window.firebaseAddDoc(
+            referenciaAgendamentos,
+            novoAgendamento
+        );
+
+
+        console.log(
+            'Agendamento salvo!'
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            'Erro ao salvar agendamento:',
+            erro
+        );
+
+        if (botao) {
+
+            botao.disabled =
+                false;
+
+            botao.innerText =
+                '📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
+
+            botao.style.opacity =
+                '1';
+
+        }
+
+
+        if (
+            erro.code ===
+            'permission-denied'
+        ) {
+
+            alert(
+                '❌ O sistema não permitiu salvar o agendamento.\n\n' +
+                'Erro de permissão do Firestore.'
+            );
+
+        } else if (
+            erro.code ===
+            'unavailable'
+        ) {
+
+            alert(
+                '❌ O servidor do agendamento está temporariamente indisponível.\n\n' +
+                'Tente novamente em alguns segundos.'
+            );
+
+        } else {
+
+            alert(
+                '❌ Não foi possível salvar o agendamento.\n\n' +
+                (
+                    erro.message ||
+                    'Erro desconhecido.'
+                )
+            );
+
+        }
+
+        return;
+
+    }
+
+
+    /*
+     * =====================================================
+     * 6. WHATSAPP
+     * =====================================================
+     */
+
+    const mensagem =
+        criarMensagemWhatsApp();
+
+    const numeroWhatsApp =
+        '5585997313200';
+
+
+    const urlWhatsApp =
+        'https://api.whatsapp.com/send?phone=' +
+        numeroWhatsApp +
+        '&text=' +
+        encodeURIComponent(
+            mensagem
+        );
+
+
+    /*
+     * Fecha a janela.
+     */
+
+    const janela =
+        document.getElementById(
+            'confirmacao-servico'
+        );
+
+    if (janela) {
+        janela.style.display =
+            'none';
+    }
+
+
+    /*
+     * Abre o WhatsApp.
+     */
+
+    const win =
+        window.open(
+            urlWhatsApp,
+            '_blank'
+        );
+
+
+    if (!win) {
+
+        window.location.href =
+            urlWhatsApp;
+
+    }
+
+}
+
+
+/* =========================================================
+   FUNÇÕES ANTIGAS
+   ========================================================= */
+
+function validarEAvancar() {
+
+    if (
+        !dadosAgendamento.data ||
+        !dadosAgendamento.horario
+    ) {
+
+        alert(
+            '⚠️ Selecione uma data e um horário.'
+        );
+
+        return;
+
+    }
+
+    irParaPasso(3);
+
+}
+
+
+function irParaPasso() {
+    /*
+     * Mantida por compatibilidade.
+     */
+}
+
+
+function selecionarDia() {}
+function selecionarHorario() {}
+function carregarDiasProximos() {}
+function verificarExpediente() {}
+
+
+/* =========================================================
+   PIX
+   ========================================================= */
+
+function copiarPix() {
+
+    const chaveElemento =
+        document.getElementById(
+            'chavePix'
+        );
+
+    if (!chaveElemento) {
+        return;
+    }
+
+    const chave =
+        chaveElemento.innerText;
+
+    navigator.clipboard.writeText(
+        chave
+    )
+    .then(() => {
+
+        alert(
+            '✅ Chave PIX copiada com sucesso!'
+        );
+
+    })
+    .catch(() => {
+
+        alert(
+            'Não foi possível copiar automaticamente a chave PIX.'
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   BOTÃO SECRETO
+   ========================================================= */
+
+let contadorCliques = 0;
+
+
+function iniciarBotaoSecreto() {
+
+    const tituloSecreto =
+        document.getElementById(
+            'titulo-secreto'
+        );
+
+    if (!tituloSecreto) {
+        return;
+    }
+
+    tituloSecreto.addEventListener(
+        'click',
+        function () {
+
+            contadorCliques++;
+
+            if (
+                contadorCliques >= 5
+            ) {
+
+                contadorCliques = 0;
+
+                const senha =
+                    prompt(
+                        'Área Restrita\n\nDigite a senha:'
+                    );
+
+                if (
+                    senha === '1234'
+                ) {
+
+                    abrirPainelAdmin();
+
+                } else if (
+                    senha !== null
+                ) {
+
+                    alert(
+                        'Senha incorreta.'
+                    );
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+
+if (
+    document.readyState ===
+    'loading'
+) {
+
+    document.addEventListener(
+        'DOMContentLoaded',
+        iniciarBotaoSecreto
+    );
+
+} else {
+
+    iniciarBotaoSecreto();
+
+}
+
+</script>
+
+
+<!-- =========================================================
+     FIREBASE
+     ========================================================= -->
+
+<script type="module">
+
+import {
+    initializeApp
+} from
+"https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
+
+import {
+    getAnalytics
+} from
+"https://www.gstatic.com/firebasejs/12.17.0/firebase-analytics.js";
+
+import {
+
+    getFirestore,
+
+    collection,
+
+    addDoc,
+
+    doc,
+
+    setDoc,
+
+    deleteDoc,
+
+    getDocs,
+
+    getDoc,
+
+    query,
+
+    where,
+
+    onSnapshot,
+
+    serverTimestamp
+
+} from
+"https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore.js";
+
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyBJaHFBApy9mPSALP_GVwwu7OekQ9vOhFY",
+
+    authDomain:
+        "barbearia-marcelao.firebaseapp.com",
+
+    projectId:
+        "barbearia-marcelao",
+
+    storageBucket:
+        "barbearia-marcelao.firebasestorage.app",
+
+    messagingSenderId:
+        "299678759428",
+
+    appId:
+        "1:299678759428:web:87e7f4cdb1336005d05351",
+
+    measurementId:
+        "G-NKEJH8EFJE"
+
+};
+
+
+window.firebaseReady =
+    (async () => {
+
+        const app =
+            initializeApp(
+                firebaseConfig
+            );
+
+
+        let analytics = null;
+
+        try {
+
+            analytics =
+                getAnalytics(
+                    app
+                );
+
+        } catch (erroAnalytics) {
+
+            console.warn(
+                'Analytics não inicializado:',
+                erroAnalytics
+            );
+
+        }
+
+
+        window.db =
+            getFirestore(
+                app
+            );
+
+
+        window.firebaseCollection =
+            collection;
+
+        window.firebaseAddDoc =
+            addDoc;
+
+        window.firebaseDoc =
+            doc;
+
+        window.firebaseSetDoc =
+            setDoc;
+
+        window.firebaseDeleteDoc =
+            deleteDoc;
+
+        window.firebaseGetDocs =
+            getDocs;
+
+        window.firebaseGetDoc =
+            getDoc;
+
+        window.firebaseQuery =
+            query;
+
+        window.firebaseWhere =
+            where;
+
+        window.firebaseOnSnapshot =
+            onSnapshot;
+
+        window.firebaseServerTimestamp =
+            serverTimestamp;
+
+
+        console.log(
+            '🔥 Firebase + Firestore conectado com sucesso!'
+        );
+
+
+        return {
+            app,
+            analytics
+        };
+
+    })();
+
+</script>
+
+
+<!-- =========================================================
+     PAINEL ADMINISTRATIVO
+     ========================================================= -->
+
+<script>
+
+async function abrirPainelAdmin() {
+
+    const painel =
+        document.getElementById(
+            'painel-admin'
+        );
+
+    if (painel) {
+        painel.style.display =
+            'block';
+    }
+
+
+    const conteudo =
+        document.getElementById(
+            'conteudo-admin'
+        );
+
+    if (!conteudo) {
+        return;
+    }
+
+
+    conteudo.innerHTML = `
+        <p style="
+            text-align:center;
+            color:#d4af37;
+        ">
+            ⏳ Carregando painel...
+        </p>
+    `;
+
+
+    try {
+
+        if (window.firebaseReady) {
+            await window.firebaseReady;
+        }
+
+
+        /*
+         * =====================================================
+         * DATA SELECIONADA
+         * =====================================================
+         */
+
+        const hoje =
+            new Date();
+
+        hoje.setHours(
+            0, 0, 0, 0
+        );
+
+
+        const dataInicial =
+            criarDataISO(hoje);
+
+
+        conteudo.innerHTML = `
+
+            <label style="
+                display:block;
+                color:#ccc;
+                margin-bottom:8px;
+                text-align:left;
+                font-weight:bold;
+            ">
+                Escolha a data:
+            </label>
+
+            <input
+                type="date"
+                id="admin-data"
+                class="admin-data"
+                value="${dataInicial}"
+                onchange="carregarHorariosAdmin()"
+            >
+
+            <div class="admin-legenda">
+
+                <span>
+                    <i
+                        class="admin-bolinha"
+                        style="background:#2a2a2a;"
+                    ></i>
+                    Livre
+                </span>
+
+                <span>
+                    <i
+                        class="admin-bolinha"
+                        style="background:#b30000;"
+                    ></i>
+                    Bloqueado
+                </span>
+
+                <span>
+                    <i
+                        class="admin-bolinha"
+                        style="background:#555;"
+                    ></i>
+                    Reservado
+                </span>
+
+            </div>
+
+            <div id="admin-horarios-container"></div>
+
+        `;
+
+
+        await carregarHorariosAdmin();
+
+
+    } catch (erro) {
+
+        console.error(
+            'Erro ao abrir painel:',
+            erro
+        );
+
+        conteudo.innerHTML = `
+            <p style="
+                text-align:center;
+                color:red;
+            ">
+                ❌ Erro ao carregar painel.
+            </p>
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
+   CARREGAR HORÁRIOS ADMIN
+   ========================================================= */
+
+async function carregarHorariosAdmin() {
+
+    const container =
+        document.getElementById(
+            'admin-horarios-container'
+        );
+
+    const input =
+        document.getElementById(
+            'admin-data'
+        );
+
+    if (!container || !input) {
+        return;
+    }
+
+
+    const dataSelecionada =
+        input.value;
+
+
+    if (!dataSelecionada) {
+        return;
+    }
+
+
+    container.innerHTML = `
+        <p style="
+            color:#d4af37;
+            text-align:center;
+            padding:20px;
+        ">
+            ⏳ Verificando...
+        </p>
+    `;
+
+
+    try {
+
+        if (window.firebaseReady) {
+            await window.firebaseReady;
+        }
+
+
+        /*
+         * =====================================================
+         * BLOQUEIOS
+         * =====================================================
+         */
+
+        const bloqueados =
+            new Set();
+
+
+        const consultaBloqueios =
+            window.firebaseQuery(
+
+                window.firebaseCollection(
+                    window.db,
+                    'horariosBloqueados'
+                ),
+
+                window.firebaseWhere(
+                    'data',
+                    '==',
+                    dataSelecionada
+                )
+
+            );
+
+
+        const snapshotBloqueios =
+            await window.firebaseGetDocs(
+                consultaBloqueios
+            );
+
+
+        snapshotBloqueios.forEach(
+            docSnap => {
+
+                const dados =
+                    docSnap.data();
+
+                if (
+                    dados &&
+                    dados.horario
+                ) {
+
+                    bloqueados.add(
+                        String(
+                            dados.horario
+                        )
+                    );
+
+                }
+
+            }
+        );
+
+
+        /*
+         * =====================================================
+         * RESERVAS
+         * =====================================================
+         */
+
+        const reservados =
+            new Set();
+
+
+        const consultaReservas =
+            window.firebaseQuery(
+
+                window.firebaseCollection(
+                    window.db,
+                    'agendamentos'
+                ),
+
+                window.firebaseWhere(
+                    'data',
+                    '==',
+                    dataSelecionada
+                )
+
+            );
+
+
+        const snapshotReservas =
+            await window.firebaseGetDocs(
+                consultaReservas
+            );
+
+
+        snapshotReservas.forEach(
+            docSnap => {
+
+                const dados =
+                    docSnap.data();
+
+                if (
+                    dados &&
+                    dados.horario
+                ) {
+
+                    reservados.add(
+                        String(
+                            dados.horario
+                        )
+                    );
+
+                }
+
+            }
+        );
+
+
+        /*
+         * =====================================================
+         * MONTAR PAINEL
+         * =====================================================
+         */
+
+        container.innerHTML = `
+
+            <h3 style="
+                color:#d4af37;
+                text-align:center;
+                margin-bottom:20px;
+            ">
+                ${formatarDataExibicao(dataSelecionada)}
+            </h3>
+
+            <div style="
+                display:grid;
+                grid-template-columns:
+                repeat(
+                    auto-fill,
+                    minmax(110px,1fr)
+                );
+                gap:10px;
+            " id="admin-grid-horarios">
+            </div>
+
+        `;
+
+
+        const grid =
+            document.getElementById(
+                'admin-grid-horarios'
+            );
+
+
+        HORARIOS_ATENDIMENTO.forEach(
+            horario => {
+
+                const estaBloqueado =
+                    bloqueados.has(
+                        horario
+                    );
+
+                const estaReservado =
+                    reservados.has(
+                        horario
+                    );
+
+
+                const btn =
+                    document.createElement(
+                        'button'
+                    );
+
+
+                btn.type =
+                    'button';
+
+
+                btn.className =
+                    'admin-horario';
+
+
+                /*
+                 * RESERVADO
+                 */
+
+                if (estaReservado) {
+
+                    btn.style.background =
+                        '#555';
+
+                    btn.style.color =
+                        '#ddd';
+
+                    btn.style.border =
+                        '1px solid #777';
+
+                    btn.innerHTML =
+                        `${horario} 👤`;
+
+                    btn.disabled =
+                        true;
+
+                    btn.title =
+                        'Horário já reservado';
+
+                }
+
+                /*
+                 * BLOQUEADO
+                 */
+
+                else if (
+                    estaBloqueado
+                ) {
+
+                    btn.style.background =
+                        '#b30000';
+
+                    btn.style.color =
+                        'white';
+
+                    btn.style.border =
+                        '1px solid #ff4444';
+
+                    btn.innerHTML =
+                        `${horario} 🔒`;
+
+                    btn.dataset.ocupado =
+                        '1';
+
+                    btn.onclick =
+                        function () {
+
+                            alternarHorario(
+                                this
+                            );
+
+                        };
+
+                }
+
+                /*
+                 * LIVRE
+                 */
+
+                else {
+
+                    btn.style.background =
+                        '#2a2a2a';
+
+                    btn.style.color =
+                        'white';
+
+                    btn.style.border =
+                        '1px solid #444';
+
+                    btn.innerHTML =
+                        horario;
+
+                    btn.dataset.ocupado =
+                        '0';
+
+                    btn.onclick =
+                        function () {
+
+                            alternarHorario(
+                                this
+                            );
+
+                        };
+
+                }
+
+
+                btn.style.borderRadius =
+                    '8px';
+
+                btn.style.padding =
+                    '12px 8px';
+
+                btn.style.cursor =
+                    estaReservado
+                        ? 'not-allowed'
+                        : 'pointer';
+
+                btn.style.fontWeight =
+                    'bold';
+
+
+                grid.appendChild(
+                    btn
+                );
+
+            }
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            'Erro ao carregar horários admin:',
+            erro
+        );
+
+        container.innerHTML = `
+            <p style="
+                text-align:center;
+                color:red;
+            ">
+                ❌ Erro ao carregar horários.
+            </p>
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
+   ALTERNAR BLOQUEIO
+   ========================================================= */
+
+async function alternarHorario(
+    botao
+) {
+
+    const input =
+        document.getElementById(
+            'admin-data'
+        );
+
+    if (!input) {
+        return;
+    }
+
+
+    const data =
+        input.value;
+
+
+    const horario =
+        botao.innerText
+            .replace(' 🔒', '')
+            .trim();
+
+
+    if (!data || !horario) {
+        return;
+    }
+
+
+    const docId =
+        `${data}_${horario}`;
+
+
+    const docRef =
+        window.firebaseDoc(
+            window.db,
+            'horariosBloqueados',
+            docId
+        );
+
+
+    /*
+     * DESBLOQUEAR
+     */
+
+    if (
+        botao.dataset.ocupado ===
+        '1'
+    ) {
+
+        try {
+
+            await window.firebaseDeleteDoc(
+                docRef
+            );
+
+
+            botao.dataset.ocupado =
+                '0';
+
+            botao.style.background =
+                '#2a2a2a';
+
+            botao.style.border =
+                '1px solid #444';
+
+            botao.innerHTML =
+                horario;
+
+
+        } catch (erro) {
+
+            console.error(
+                'Erro ao desbloquear:',
+                erro
+            );
+
+            alert(
+                '❌ Erro ao desbloquear horário.'
+            );
+
+        }
+
+
+        return;
+
+    }
+
+
+    /*
+     * BLOQUEAR
+     */
+
+    try {
+
+        await window.firebaseSetDoc(
+            docRef,
+            {
+
+                data:
+                    data,
+
+                horario:
+                    horario,
+
+                bloqueadoEm:
+                    window.firebaseServerTimestamp()
+
+            }
+        );
+
+
+        botao.dataset.ocupado =
+            '1';
+
+        botao.style.background =
+            '#b30000';
+
+        botao.style.border =
+            '1px solid #ff4444';
+
+        botao.innerHTML =
+            horario + ' 🔒';
+
+
+    } catch (erro) {
+
+        console.error(
+            'Erro ao bloquear:',
+            erro
+        );
+
+        alert(
+            '❌ Erro ao bloquear horário.'
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   FECHAR PAINEL
+   ========================================================= */
+
+function fecharPainelAdmin() {
+
+    const painel =
+        document.getElementById(
+            'painel-admin'
+        );
+
+    if (painel) {
+
+        painel.style.display =
+            'none';
+
+    }
+
+}
+
+
+/* =========================================================
+   PLANOS VIP
+   ========================================================= */
+
+function assinarPlano(
+    nomePlano,
+    quantidadeCortes,
+    valorPlano
+) {
+
+    const numeroWhatsApp =
+        '5585997313200';
+
+
+    const mensagem =
+`Olá, Marcelo! Gostaria de assinar um plano VIP da barbearia.
+
+━━━━━━━━━━━━━━━━━━━━━━
+👑 DETALHES DO PLANO ESCOLHIDO
+━━━━━━━━━━━━━━━━━━━━━━
+
+• *Plano:* ${nomePlano}
+• *Cortes inclusos:* ${quantidadeCortes} por mês
+• *Valor mensal:* ${valorPlano}
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+Como funciona o pagamento e a ativação da minha assinatura mensal?`;
+
+
+    const url =
+        `https://api.whatsapp.com/send?phone=${numeroWhatsApp}&text=` +
+        encodeURIComponent(
+            mensagem
+        );
+
+
+    window.open(
+        url,
+        '_blank'
+    );
+
+}
+
+</script>
+
 </body>
 </html>
