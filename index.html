@@ -1441,21 +1441,105 @@ function gerarCodigoAleatorio() {
    ========================================================= */
 
 async function finalizarAgendamento(){
- if(!dadosAgendamento.data||!dadosAgendamento.horario){alert('⚠️ Selecione uma data e um horário antes de finalizar.');return;}
- const input=document.getElementById('nome-cliente-modal'),nome=input?input.value.trim():''; if(!nome){alert('⚠️ Digite seu nome completo para continuar.');if(input)input.focus();return;}
- try{if(window.firebaseReady)await window.firebaseReady;if(!window.db)throw new Error('FIREBASE_NAO_INICIALIZADO');}catch(e){alert('❌ Não foi possível conectar ao sistema de agendamento.\n\nAtualize a página e tente novamente.');return;}
- const botao=document.getElementById('btn-finalizar-modal');if(botao){botao.disabled=true;botao.innerText='⏳ VERIFICANDO E RESERVANDO...';}
- dadosAgendamento.nome=nome;dadosAgendamento.codigo=gerarCodigoAleatorio();const dataISO=converterDataAgendamentoParaISO(dadosAgendamento.data),horario=dadosAgendamento.horario;
- try{
-  await window.firebaseRunTransaction(window.db,async tx=>{
-   const bq=window.firebaseQuery(window.firebaseCollection(window.db,'horariosBloqueados'),window.firebaseWhere('data','==',dataISO));
-   const rq=window.firebaseQuery(window.firebaseCollection(window.db,'agendamentos'),window.firebaseWhere('data','==',dadosAgendamento.data));
-   const [bs,rs]=await Promise.all([tx.get(bq),tx.get(rq)]);let bloqueado=false,reservado=false;bs.forEach(d=>{const x=d.data();if(x&&String(x.horario)===horario)bloqueado=true;});rs.forEach(d=>{const x=d.data();if(x&&String(x.horario)===horario)reservado=true;});
-   if(bloqueado)throw Object.assign(new Error('HORARIO_BLOQUEADO'),{code:'horario-bloqueado'});if(reservado)throw Object.assign(new Error('HORARIO_RESERVADO'),{code:'horario-reservado'});
-   const ref=window.firebaseDoc(window.db,'agendamentos',`${dataISO}_${horario.replace(':','-')}`);const ex=await tx.get(ref);if(ex.exists())throw Object.assign(new Error('HORARIO_RESERVADO'),{code:'horario-reservado'});
-   tx.set(ref,{nome:dadosAgendamento.nome,servico:dadosAgendamento.servico,data:dadosAgendamento.data,dataISO,horario,codigo:dadosAgendamento.codigo,criadoEm:window.firebaseServerTimestamp()});
-  });
- }catch(e){console.error(e);if(botao){botao.disabled=false;botao.innerText='📲 FINALIZAR E ENVIAR PARA O WHATSAPP';}if(e.code==='horario-bloqueado')alert('🔒 Este horário foi bloqueado pelo administrador enquanto você estava agendando.\n\nEscolha outro horário.');else if(e.code==='horario-reservado')alert('⚠️ Esse horário acabou de ser reservado por outra pessoa.\n\nEscolha outro horário.');else alert('❌ Não foi possível confirmar o agendamento.\n\nTente novamente.');dadosAgendamento.horario='';await carregarHorariosDisponiveis(dadosAgendamento.data);return;}
+    if(!dadosAgendamento.data || !dadosAgendamento.horario){
+        alert('⚠️ Selecione uma data e um horário antes de finalizar.');
+        return;
+    }
+
+    const input=document.getElementById('nome-cliente-modal');
+    const nome=input ? input.value.trim() : '';
+    if(!nome){
+        alert('⚠️ Digite seu nome completo para continuar.');
+        if(input) input.focus();
+        return;
+    }
+
+    try{
+        if(window.firebaseReady) await window.firebaseReady;
+        if(!window.db) throw new Error('FIREBASE_NAO_INICIALIZADO');
+    }catch(e){
+        console.error('Firebase não inicializado:',e);
+        alert('❌ Não foi possível conectar ao sistema de agendamento.\n\nAtualize a página e tente novamente.');
+        return;
+    }
+
+    const botao=document.getElementById('btn-finalizar-modal');
+    if(botao){
+        botao.disabled=true;
+        botao.innerText='⏳ VERIFICANDO E RESERVANDO...';
+    }
+
+    const dataISO=converterDataAgendamentoParaISO(dadosAgendamento.data);
+    const horario=String(dadosAgendamento.horario);
+    dadosAgendamento.nome=nome;
+    dadosAgendamento.codigo=gerarCodigoAleatorio();
+
+    try{
+        // REVALIDAÇÃO FINAL: consulta novamente o bloqueio específico da data + horário.
+        const bloqueioRef=window.firebaseDoc(
+            window.db,
+            'horariosBloqueados',
+            `${dataISO}_${horario.replace(':','-')}`
+        );
+        const bloqueioSnap=await window.firebaseGetDoc(bloqueioRef);
+        if(bloqueioSnap.exists()){
+            const erro=new Error('HORARIO_BLOQUEADO');
+            erro.code='horario-bloqueado';
+            throw erro;
+        }
+
+        // REVALIDAÇÃO FINAL: procura qualquer reserva existente para o mesmo horário.
+        // Isso mantém compatibilidade com reservas antigas e novas.
+        const reservaQuery=window.firebaseQuery(
+            window.firebaseCollection(window.db,'agendamentos'),
+            window.firebaseWhere('data','==',dadosAgendamento.data)
+        );
+        const reservas=await window.firebaseGetDocs(reservaQuery);
+        let horarioReservado=false;
+        reservas.forEach(d=>{
+            const x=d.data();
+            if(x && String(x.horario)===horario) horarioReservado=true;
+        });
+        if(horarioReservado){
+            const erro=new Error('HORARIO_RESERVADO');
+            erro.code='horario-reservado';
+            throw erro;
+        }
+
+        // Usa addDoc, a mesma forma de gravação que já funcionava no site original.
+        // A checagem acima é repetida imediatamente antes da gravação para reduzir
+        // ao máximo a chance de um horário ficar ocupado durante a confirmação.
+        await window.firebaseAddDoc(window.firebaseCollection(window.db,'agendamentos'),{
+            nome:dadosAgendamento.nome,
+            servico:dadosAgendamento.servico,
+            data:dadosAgendamento.data,
+            dataISO,
+            horario,
+            codigo:dadosAgendamento.codigo,
+            criadoEm:window.firebaseServerTimestamp()
+        });
+
+    }catch(e){
+        console.error('❌ Erro ao confirmar agendamento:',e);
+        console.error('Código Firebase:',e && e.code);
+        console.error('Mensagem Firebase:',e && e.message);
+        if(botao){
+            botao.disabled=false;
+            botao.innerText='📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
+        }
+
+        if(e.code==='horario-bloqueado'){
+            alert('🔒 Este horário foi bloqueado pelo administrador enquanto você estava agendando.\n\nEscolha outro horário.');
+        }else if(e.code==='horario-reservado'){
+            alert('⚠️ Esse horário acabou de ser reservado por outra pessoa.\n\nEscolha outro horário.');
+        }else{
+            alert('❌ Não foi possível confirmar o agendamento.\n\nCódigo: '+(e.code||'desconhecido')+'\n\n'+(e.message||'Verifique sua conexão e as permissões do Firebase.'));
+        }
+
+        dadosAgendamento.horario='';
+        await carregarHorariosDisponiveis(dadosAgendamento.data);
+        return;
+    }
 
     // 6. MONTA A MENSAGEM DO WHATSAPP
     // =========================================================
@@ -1603,8 +1687,7 @@ if (document.readyState === 'loading') {
     query,
     where,
     onSnapshot,
-    serverTimestamp,
-    runTransaction
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -1633,7 +1716,6 @@ if (document.readyState === 'loading') {
     window.firebaseWhere = where;
     window.firebaseOnSnapshot = onSnapshot;
     window.firebaseServerTimestamp = serverTimestamp;
-    window.firebaseRunTransaction = runTransaction;
 
     console.log("Firebase + Firestore conectado com sucesso!");
     return { app, analytics };
