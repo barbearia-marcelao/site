@@ -1375,19 +1375,21 @@ function horarioJaPassou(dataSelecionada, horario) {
 
     if (!ehHoje) return false;
 
-    const [hora, minuto] = horario.split(':').map(Number);
+const [hora, minuto] = horario.split(':').map(Number);
 
-    return (
-        hora < agora.getHours() ||
-        (hora === agora.getHours() && minuto <= agora.getMinutes())
-    );
+return (
+    hora < agora.getHours() ||
+    (hora === agora.getHours() && minuto <= agora.getMinutes())
+);
+
 }
 
 /* =========================================================
-   BUSCAR HORÁRIOS BLOQUEADOS E RESERVADOS
-   ========================================================= */
+BUSCAR HORÁRIOS BLOQUEADOS E RESERVADOS
+========================================================= */
 
 async function carregarHorariosDisponiveis(dataSelecionada) {
+
     const grid = document.getElementById('horarios-modal-grid');
     const aviso = document.getElementById('aviso-horarios-modal');
     const botaoFinalizar = document.getElementById('btn-finalizar-modal');
@@ -1410,7 +1412,9 @@ async function carregarHorariosDisponiveis(dataSelecionada) {
     const diaDaSemana = descobrirDiaDaSemana(dataSelecionada);
 
     if (!diaDaSemana) {
-        mostrarAvisoHorarios('⚠️ Não foi possível identificar a data selecionada.');
+        mostrarAvisoHorarios(
+            '⚠️ Não foi possível identificar a data selecionada.'
+        );
         return;
     }
 
@@ -1427,7 +1431,7 @@ async function carregarHorariosDisponiveis(dataSelecionada) {
     `;
 
     try {
-        // Garante que o Firebase terminou de inicializar antes da consulta.
+
         if (window.firebaseReady) {
             await window.firebaseReady;
         }
@@ -1436,60 +1440,85 @@ async function carregarHorariosDisponiveis(dataSelecionada) {
         const reservados = new Set();
 
         /* =====================================================
-           1. HORÁRIOS BLOQUEADOS PELO ADMIN
-           ===================================================== */
+        1. HORÁRIOS BLOQUEADOS PELO ADMIN
+        ===================================================== */
+
         try {
+
             const consultaBloqueios = window.firebaseQuery(
-                window.firebaseCollection(window.db, 'horariosBloqueados'),
-                window.firebaseWhere('dia', '==', diaDaSemana)
+                window.firebaseCollection(
+                    window.db,
+                    'horariosBloqueados'
+                ),
+                window.firebaseWhere(
+                    'dia',
+                    '==',
+                    diaDaSemana
+                )
             );
 
-            const snapshotBloqueios = await window.firebaseGetDocs(consultaBloqueios);
+            const snapshotBloqueios =
+                await window.firebaseGetDocs(consultaBloqueios);
 
             snapshotBloqueios.forEach(docSnap => {
+
                 const dados = docSnap.data();
+
                 if (dados && dados.horario) {
                     bloqueados.add(String(dados.horario));
                 }
+
             });
+
         } catch (erroBloqueios) {
-            // Se a consulta de bloqueios falhar, não mostraremos uma falsa
-            // mensagem de "sem horários". O usuário ainda poderá ver os slots.
-            console.warn('Não foi possível consultar bloqueios:', erroBloqueios);
+
+            console.warn(
+                'Não foi possível consultar bloqueios:',
+                erroBloqueios
+            );
+
         }
 
         /* =====================================================
-           2. RESERVAS JÁ FEITAS
-           =====================================================
-           Lemos a coleção agendamentos e filtramos no navegador.
-           Se a leitura estiver bloqueada pelas regras do Firestore,
-           simplesmente continuamos com os horários não bloqueados.
-           A transação de FINALIZAR continua sendo a proteção contra
-           duas pessoas reservarem o mesmo horário.
-           ===================================================== */
+        2. RESERVAS JÁ FEITAS
+        ===================================================== */
+
         try {
-            const snapshotAgendamentos = await window.firebaseGetDocs(
-                window.firebaseCollection(window.db, 'agendamentos')
-            );
+
+            const snapshotAgendamentos =
+                await window.firebaseGetDocs(
+                    window.firebaseCollection(
+                        window.db,
+                        'agendamentos'
+                    )
+                );
 
             snapshotAgendamentos.forEach(docSnap => {
+
                 const dados = docSnap.data();
 
                 if (!dados) return;
 
-                const mesmaData = String(dados.data || '') === String(dataSelecionada);
-                const mesmoHorario = String(dados.horario || '');
+                const mesmaData =
+                    String(dados.data || '') ===
+                    String(dataSelecionada);
+
+                const mesmoHorario =
+                    String(dados.horario || '');
 
                 if (mesmaData && mesmoHorario) {
                     reservados.add(mesmoHorario);
                 }
+
             });
+
         } catch (erroReservas) {
+
             console.warn(
-                'Não foi possível consultar reservas existentes. ' +
-                'Os horários não bloqueados continuarão sendo exibidos:',
+                'Não foi possível consultar reservas existentes.',
                 erroReservas
             );
+
         }
 
         grid.innerHTML = '';
@@ -1497,185 +1526,296 @@ async function carregarHorariosDisponiveis(dataSelecionada) {
         let quantidadeDisponivel = 0;
 
         HORARIOS_ATENDIMENTO.forEach(horario => {
-            // Horário já passado só é retirado quando a data escolhida é hoje.
-            if (horarioJaPassou(dataSelecionada, horario)) return;
 
-            // Bloqueio manual pelo administrador.
-            if (bloqueados.has(horario)) return;
+            if (horarioJaPassou(
+                dataSelecionada,
+                horario
+            )) {
+                return;
+            }
 
-            // Reserva já registrada.
-            if (reservados.has(horario)) return;
+            if (bloqueados.has(horario)) {
+                return;
+            }
 
-            const btn = document.createElement('button');
+            if (reservados.has(horario)) {
+                return;
+            }
+
+            const btn =
+                document.createElement('button');
+
             btn.type = 'button';
             btn.className = 'horario-modal-btn';
             btn.innerText = horario;
 
             btn.onclick = function () {
-                selecionarHorarioModal(this, horario);
+                selecionarHorarioModal(
+                    this,
+                    horario
+                );
             };
 
             grid.appendChild(btn);
+
             quantidadeDisponivel++;
+
         });
 
         if (quantidadeDisponivel === 0) {
+
             mostrarAvisoHorarios(`
-                ⚠️ <strong>Não há mais horários disponíveis para esta data.</strong><br><br>
+                ⚠️ <strong>
+                Não há mais horários disponíveis para esta data.
+                </strong>
+                <br><br>
                 Escolha o próximo dia disponível para fazer seu agendamento.
             `);
+
         }
 
     } catch (erro) {
-        console.error('Erro geral ao carregar horários:', erro);
 
-        // Última proteção: se alguma parte do Firebase falhar, ainda mostramos
-        // os horários básicos, retirando apenas os que já passaram hoje.
+        console.error(
+            'Erro geral ao carregar horários:',
+            erro
+        );
+
         grid.innerHTML = '';
 
         let quantidadeDisponivel = 0;
 
         HORARIOS_ATENDIMENTO.forEach(horario => {
-            if (horarioJaPassou(dataSelecionada, horario)) return;
 
-            const btn = document.createElement('button');
+            if (horarioJaPassou(
+                dataSelecionada,
+                horario
+            )) {
+                return;
+            }
+
+            const btn =
+                document.createElement('button');
+
             btn.type = 'button';
             btn.className = 'horario-modal-btn';
             btn.innerText = horario;
+
             btn.onclick = function () {
-                selecionarHorarioModal(this, horario);
+                selecionarHorarioModal(
+                    this,
+                    horario
+                );
             };
 
             grid.appendChild(btn);
+
             quantidadeDisponivel++;
+
         });
 
         if (quantidadeDisponivel === 0) {
+
             mostrarAvisoHorarios(`
-                ⚠️ <strong>Não há mais horários disponíveis para esta data.</strong><br><br>
+                ⚠️ <strong>
+                Não há mais horários disponíveis para esta data.
+                </strong>
+                <br><br>
                 Escolha o próximo dia disponível para fazer seu agendamento.
             `);
+
         }
+
     }
+
 }
 
+
+/* =========================================================
+MOSTRAR AVISO
+========================================================= */
+
 function mostrarAvisoHorarios(html) {
-    const aviso = document.getElementById('aviso-horarios-modal');
+
+    const aviso =
+        document.getElementById(
+            'aviso-horarios-modal'
+        );
 
     if (!aviso) return;
 
     aviso.style.display = 'block';
     aviso.innerHTML = html;
+
 }
 
-function selecionarHorarioModal(elemento, horario) {
-    document.querySelectorAll('.horario-modal-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
+
+/* =========================================================
+SELECIONAR HORÁRIO
+========================================================= */
+
+function selecionarHorarioModal(
+    elemento,
+    horario
+) {
+
+    document
+        .querySelectorAll('.horario-modal-btn')
+        .forEach(btn => {
+            btn.classList.remove('selected');
+        });
 
     elemento.classList.add('selected');
+
     dadosAgendamento.horario = horario;
 
-    const botaoFinalizar = document.getElementById('btn-finalizar-modal');
+    const botaoFinalizar =
+        document.getElementById(
+            'btn-finalizar-modal'
+        );
 
     if (botaoFinalizar) {
+
         botaoFinalizar.disabled = false;
         botaoFinalizar.style.opacity = '1';
+
     }
+
 }
 
+
 /* =========================================================
-   GERAR CÓDIGO
-   ========================================================= */
+GERAR CÓDIGO
+========================================================= */
 
 function gerarCodigoAleatorio() {
-    return Math.floor(1000 + Math.random() * 9000).toString();
+
+    return Math.floor(
+        1000 + Math.random() * 9000
+    ).toString();
+
 }
 
+
 /* =========================================================
-   FINALIZAR -> RESERVA + WHATSAPP
-   ========================================================= */
+FINALIZAR -> RESERVA + WHATSAPP
+========================================================= */
 
 async function finalizarAgendamento() {
-    if (!dadosAgendamento.data || !dadosAgendamento.horario) {
-        alert('⚠️ Selecione uma data e um horário antes de finalizar.');
+
+    if (
+        !dadosAgendamento.data ||
+        !dadosAgendamento.horario
+    ) {
+
+        alert(
+            '⚠️ Selecione uma data e um horário antes de finalizar.'
+        );
+
         return;
     }
 
-    const inputNome = document.getElementById('nome-cliente-modal');
-    const nome = inputNome ? inputNome.value.trim() : '';
+    const inputNome =
+        document.getElementById(
+            'nome-cliente-modal'
+        );
+
+    const nome =
+        inputNome
+            ? inputNome.value.trim()
+            : '';
 
     if (!nome) {
-        alert('Por favor, preencha seu nome completo para continuar.');
-        if (inputNome) inputNome.focus();
+
+        alert(
+            'Por favor, preencha seu nome completo para continuar.'
+        );
+
+        if (inputNome) {
+            inputNome.focus();
+        }
+
         return;
-    }
-
-    if (window.firebaseReady) {
-        await window.firebaseReady;
-    }
-
-    dadosAgendamento.nome = nome;
-    dadosAgendamento.codigo = gerarCodigoAleatorio();
-
-    const diaDaSemana = descobrirDiaDaSemana(dadosAgendamento.data);
-
-    if (!diaDaSemana) {
-        alert('⚠️ Não foi possível identificar o dia selecionado.');
-        return;
-    }
-
-    const botao = document.getElementById('btn-finalizar-modal');
-
-    if (botao) {
-        botao.disabled = true;
-        botao.innerText = '⏳ RESERVANDO...';
     }
 
     try {
-        /*
-         * SALVAMENTO DO AGENDAMENTO
-         *
-         * O fluxo anterior tentava gravar primeiro em "reservasSlots"
-         * usando uma transação. Se as regras do Firestore não permitirem
-         * acesso a essa coleção, o agendamento inteiro falhava e o usuário
-         * recebia "Não foi possível confirmar o agendamento".
-         *
-         * O site já consulta a coleção "agendamentos" para retirar horários
-         * ocupados da tela. Portanto, salvamos diretamente nela, que é a
-         * coleção usada pelo painel/administração do site.
-         */
+
+        if (window.firebaseReady) {
+            await window.firebaseReady;
+        }
+
+    } catch (erroFirebase) {
+
+        console.error(
+            'Erro ao conectar ao Firebase:',
+            erroFirebase
+        );
+
+        alert(
+            'Não foi possível conectar ao sistema de agendamento.\n\n' +
+            'Verifique sua conexão e tente novamente.'
+        );
+
+        return;
+    }
+
+    dadosAgendamento.nome = nome;
+
+    dadosAgendamento.codigo =
+        gerarCodigoAleatorio();
+
+    const diaDaSemana =
+        descobrirDiaDaSemana(
+            dadosAgendamento.data
+        );
+
+    if (!diaDaSemana) {
+
+        alert(
+            '⚠️ Não foi possível identificar o dia selecionado.'
+        );
+
+        return;
+    }
+
+    const botao =
+        document.getElementById(
+            'btn-finalizar-modal'
+        );
+
+    if (botao) {
+
+        botao.disabled = true;
+        botao.innerText =
+            '⏳ RESERVANDO...';
+
+    }
+
+    try {
+
         await window.firebaseAddDoc(
-            window.firebaseCollection(window.db, 'agendamentos'),
+            window.firebaseCollection(
+                window.db,
+                'agendamentos'
+            ),
             {
                 nome: dadosAgendamento.nome,
                 servico: dadosAgendamento.servico,
                 data: dadosAgendamento.data,
                 horario: dadosAgendamento.horario,
                 codigo: dadosAgendamento.codigo,
-                criadoEm: window.firebaseServerTimestamp()
+                valor: dadosAgendamento.valor || '',
+                criadoEm:
+                    window.firebaseServerTimestamp()
             }
         );
 
     } catch (erro) {
-        console.error('Erro ao finalizar agendamento:', erro);
 
-        if (erro.message === 'HORARIO_JA_RESERVADO') {
-            alert(
-                '⚠️ Esse horário acabou de ser reservado por outra pessoa.\n\n' +
-                'Escolha outro horário.'
-            );
-
-            dadosAgendamento.horario = '';
-
-            if (botao) {
-                botao.disabled = false;
-                botao.innerText = '📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
-            }
-
-            carregarHorariosDisponiveis(dadosAgendamento.data);
-            return;
-        }
+        console.error(
+            'Erro ao finalizar agendamento:',
+            erro
+        );
 
         alert(
             'Não foi possível confirmar o agendamento.\n\n' +
@@ -1683,14 +1823,19 @@ async function finalizarAgendamento() {
         );
 
         if (botao) {
+
             botao.disabled = false;
-            botao.innerText = '📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
+
+            botao.innerText =
+                '📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
+
         }
 
         return;
     }
 
-    const mensagem = `Olá! Gostaria de solicitar meu agendamento na Barbearia Marcelão.
+    const mensagem =
+`Olá! Gostaria de solicitar meu agendamento na Barbearia Marcelão.
 
 ━━━━━━━━━━━━━━━━━━━━━━
 📋 DADOS DO AGENDAMENTO
@@ -1714,383 +1859,481 @@ O horário será reservado exclusivamente mediante o envio e a conferência do c
 
 Desde já, agradecemos a preferência!`;
 
-    const numeroWhatsApp = '5585997313200';
+    /* =====================================================
+       WHATSAPP
+       ===================================================== */
+
+    const numeroWhatsApp =
+        '5585997313200';
 
     const urlWhatsApp =
         `https://wa.me/${numeroWhatsApp}?text=` +
         encodeURIComponent(mensagem);
 
-    const janela = document.getElementById('confirmacao-servico');
+    const janela =
+        document.getElementById(
+            'confirmacao-servico'
+        );
 
     if (janela) {
         janela.style.display = 'none';
     }
 
-    const win = window.open(urlWhatsApp, '_blank');
+    const win =
+        window.open(
+            urlWhatsApp,
+            '_blank'
+        );
 
     if (!win) {
-        window.location.href = urlWhatsApp;
+        window.location.href =
+            urlWhatsApp;
     }
+
 }
 
+
 /* =========================================================
-   FUNÇÕES ANTIGAS MANTIDAS COMO COMPATIBILIDADE
-   ========================================================= */
+FUNÇÕES ANTIGAS MANTIDAS COMO COMPATIBILIDADE
+========================================================= */
 
 function validarEAvancar() {
-    if (!dadosAgendamento.data || !dadosAgendamento.horario) {
-        alert('⚠️ Selecione uma data e um horário.');
+
+    if (
+        !dadosAgendamento.data ||
+        !dadosAgendamento.horario
+    ) {
+
+        alert(
+            '⚠️ Selecione uma data e um horário.'
+        );
+
         return;
     }
 
     irParaPasso(3);
+
 }
 
 function irParaPasso() {
-    // O antigo fluxo de etapas foi substituído pela janela sobre a página.
-    // Esta função fica apenas para não quebrar chamadas antigas.
+
+    // O antigo fluxo foi substituído pela janela.
+
 }
 
 function selecionarDia() {}
+
 function selecionarHorario() {}
+
 function carregarDiasProximos() {}
+
 function verificarExpediente() {}
 
+
 /* =========================================================
-   COPIAR PIX - mantida para não quebrar outras partes
-   ========================================================= */
+COPIAR PIX
+========================================================= */
 
 function copiarPix() {
-    const chaveElemento = document.getElementById('chavePix');
+
+    const chaveElemento =
+        document.getElementById(
+            'chavePix'
+        );
 
     if (!chaveElemento) return;
 
-    const chave = chaveElemento.innerText;
+    const chave =
+        chaveElemento.innerText;
 
-    navigator.clipboard.writeText(chave)
-        .then(() => alert('✅ Chave PIX copiada com sucesso!'))
-        .catch(() => alert('Não foi possível copiar automaticamente a chave PIX.'));
+    navigator.clipboard
+        .writeText(chave)
+        .then(() => {
+
+            alert(
+                '✅ Chave PIX copiada com sucesso!'
+            );
+
+        })
+        .catch(() => {
+
+            alert(
+                'Não foi possível copiar automaticamente a chave PIX.'
+            );
+
+        });
+
 }
 
+
 /* =========================================================
-   BOTÃO SECRETO / ADMIN
-   ========================================================= */
+BOTÃO SECRETO / ADMIN
+========================================================= */
 
 let contadorCliques = 0;
 
 function iniciarBotaoSecreto() {
-    const tituloSecreto = document.getElementById('titulo-secreto');
+
+    const tituloSecreto =
+        document.getElementById(
+            'titulo-secreto'
+        );
 
     if (!tituloSecreto) return;
 
-    tituloSecreto.addEventListener('click', function () {
-        contadorCliques++;
+    tituloSecreto.addEventListener(
+        'click',
+        function () {
 
-        if (contadorCliques >= 5) {
-            contadorCliques = 0;
+            contadorCliques++;
 
-            const senha = prompt('Área Restrita\n\nDigite a senha:');
+            if (contadorCliques >= 5) {
 
-            if (senha === '1234') {
-                abrirPainelAdmin();
-            } else if (senha !== null) {
-                alert('Senha incorreta.');
+                contadorCliques = 0;
+
+                const senha =
+                    prompt(
+                        'Área Restrita\n\nDigite a senha:'
+                    );
+
+                if (senha === '1234') {
+
+                    if (
+                        typeof abrirPainelAdmin ===
+                        'function'
+                    ) {
+
+                        abrirPainelAdmin();
+
+                    } else {
+
+                        alert(
+                            '⚠️ O painel administrativo não foi carregado.'
+                        );
+
+                    }
+
+                } else if (
+                    senha !== null
+                ) {
+
+                    alert(
+                        'Senha incorreta.'
+                    );
+
+                }
+
             }
+
         }
-    });
+    );
+
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', iniciarBotaoSecreto);
+
+if (
+    document.readyState ===
+    'loading'
+) {
+
+    document.addEventListener(
+        'DOMContentLoaded',
+        iniciarBotaoSecreto
+    );
+
 } else {
+
     iniciarBotaoSecreto();
+
 }
 
-</script>
-<!-- Firebase -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-analytics.js";
- import { 
-    getFirestore,
-    collection,
-    addDoc,
-    doc,
-    setDoc,
-    deleteDoc,
-    getDocs,
-    getDoc,
-    query,
-    where,
-    onSnapshot,
-    runTransaction,
-    serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBJaHFBApy9mPSALP_GVwwu7OekQ9vOhFY",
-    authDomain: "barbearia-marcelao.firebaseapp.com",
-    projectId: "barbearia-marcelao",
-    storageBucket: "barbearia-marcelao.firebasestorage.app",
-    messagingSenderId: "299678759428",
-    appId: "1:299678759428:web:87e7f4cdb1336005d05351",
-    measurementId: "G-NKEJH8EFJE"
-  };
-
-  window.firebaseReady = (async () => {
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    window.db = getFirestore(app);
-
-    window.firebaseCollection = collection;
-    window.firebaseAddDoc = addDoc;
-    window.firebaseDoc = doc;
-    window.firebaseSetDoc = setDoc;
-    window.firebaseDeleteDoc = deleteDoc;
-    window.firebaseGetDocs = getDocs;
-    window.firebaseGetDoc = getDoc;
-    window.firebaseQuery = query;
-    window.firebaseWhere = where;
-    window.firebaseOnSnapshot = onSnapshot;
-    window.firebaseRunTransaction = runTransaction;
-    window.firebaseServerTimestamp = serverTimestamp;
-
-    console.log("Firebase + Firestore conectado com sucesso!");
-    return { app, analytics };
-  })();
-
-</script>
-
-<script>
 /* =========================================================
-   PAINEL ADMINISTRATIVO
-   ========================================================= */
+FIREBASE
+========================================================= */
 
-async function abrirPainelAdmin() {
-    const painel = document.getElementById('painel-admin');
-    if (painel) painel.style.display = 'block';
+/*
+   Aqui usamos importação dinâmica.
+   Assim não precisamos transformar todo o seu
+   <script> em type="module".
+*/
 
-    const conteudo = document.getElementById('conteudo-admin');
-    if (!conteudo) return;
+const firebaseConfig = {
 
-    const dias = ['Segunda','Terça','Quarta','Quinta','Sexta'];
-    const horarios = ['08:10','08:50','09:30','10:10','10:50','11:30','15:10','15:50','16:30','17:10','17:50','18:30'];
+    apiKey:
+        "AIzaSyBJaHFBApy9mPSAL_GVwwu7OekQ9vOhFY",
 
-    conteudo.innerHTML = "<p style='text-align:center;color:#d4af37;'>Carregando horários bloqueados...</p>";
+    authDomain:
+        "barbearia-marcelao.firebaseapp.com",
 
-    try {
-        const querySnapshot = await window.firebaseGetDocs(
-            window.firebaseCollection(window.db, 'horariosBloqueados')
+    projectId:
+        "barbearia-marcelao",
+
+    storageBucket:
+        "barbearia-marcelao.firebasestorage.app",
+
+    messagingSenderId:
+        "299678759428",
+
+    appId:
+        "1:299678759428:web:87e7f4cdb1336005d05351",
+
+    measurementId:
+        "G-NKEJH8EFJE"
+
+};
+
+
+window.firebaseReady = (async () => {
+
+    const {
+        initializeApp
+    } = await import(
+        'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'
+    );
+
+    const {
+        getFirestore,
+        collection,
+        addDoc,
+        doc,
+        setDoc,
+        deleteDoc,
+        getDocs,
+        getDoc,
+        query,
+        where,
+        onSnapshot,
+        runTransaction,
+        serverTimestamp
+    } = await import(
+        'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js'
+    );
+
+    const app =
+        initializeApp(
+            firebaseConfig
         );
 
-        const bloqueiosSalvos = [];
-        querySnapshot.forEach(doc => {
-            const dados = doc.data();
-            bloqueiosSalvos.push(dados.dia + '_' + dados.horario);
-        });
+    window.db =
+        getFirestore(app);
 
-        conteudo.innerHTML = '';
+    window.firebaseCollection =
+        collection;
 
-        dias.forEach(dia => {
-            let html = `
-                <div style="margin-bottom:30px;border:1px solid #333;border-radius:10px;padding:20px;">
-                    <h3 style="color:#d4af37;margin-bottom:15px;">${dia}</h3>
-                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:10px;">
-            `;
+    window.firebaseAddDoc =
+        addDoc;
 
-            horarios.forEach(horario => {
-                const idUnico = `${dia}_${horario}`;
-                const estaBloqueado = bloqueiosSalvos.includes(idUnico);
-                const bg = estaBloqueado ? '#b30000' : '#2a2a2a';
-                const textoBtn = estaBloqueado ? `${horario} 🔒` : horario;
+    window.firebaseDoc =
+        doc;
 
-                html += `
-                    <button class="admin-horario" data-ocupado="${estaBloqueado ? '1' : '0'}" style="background:${bg};color:white;border:1px solid #444;border-radius:8px;padding:10px;cursor:pointer;" onclick="alternarHorario(this)">
-                        ${textoBtn}
-                    </button>
-                `;
-            });
+    window.firebaseSetDoc =
+        setDoc;
 
-            html += '</div></div>';
-            conteudo.innerHTML += html;
-        });
-    } catch (erro) {
-        console.error('Erro ao carregar painel admin:', erro);
-        conteudo.innerHTML = "<p style='text-align:center;color:red;'>Erro ao carregar dados do painel.</p>";
-    }
-}
+    window.firebaseDeleteDoc =
+        deleteDoc;
 
-function fecharPainelAdmin() {
-    const painel = document.getElementById('painel-admin');
-    if (painel) painel.style.display = 'none';
-}
+    window.firebaseGetDocs =
+        getDocs;
 
-async function alternarHorario(botao) {
-    const horario = botao.innerText.replace(' 🔒', '').trim();
-    const cardDia = botao.closest("div[style*='margin-bottom:30px']");
+    window.firebaseGetDoc =
+        getDoc;
 
-    if (!cardDia) {
-        alert('Erro ao identificar o dia.');
-        return;
-    }
+    window.firebaseQuery =
+        query;
 
-    const diaElemento = cardDia.querySelector('h3');
-    if (!diaElemento) return;
+    window.firebaseWhere =
+        where;
 
-    const dia = diaElemento.innerText.trim();
-    const docId = `${dia}_${horario}`;
-    const docRef = window.firebaseDoc(window.db, 'horariosBloqueados', docId);
+    window.firebaseOnSnapshot =
+        onSnapshot;
 
-    if (botao.dataset.ocupado === '1') {
-        try {
-            await window.firebaseDeleteDoc(docRef);
-            botao.dataset.ocupado = '0';
-            botao.style.background = '#2a2a2a';
-            botao.innerHTML = horario;
-        } catch (erro) {
-            console.error('Erro ao desbloquear:', erro);
-            alert('Erro ao desbloquear horário.');
-        }
-    } else {
-        try {
-            await window.firebaseSetDoc(docRef, {
-                dia: dia,
-                horario: horario,
-                bloqueadoEm: window.firebaseServerTimestamp()
-            });
-            botao.dataset.ocupado = '1';
-            botao.style.background = '#b30000';
-            botao.innerHTML = horario + ' 🔒';
-        } catch (erro) {
-            console.error('Erro ao bloquear:', erro);
-            alert('Erro ao bloquear horário.');
-        }
-    }
-}
+    window.firebaseRunTransaction =
+        runTransaction;
 
-/* =========================================================
-   PLANOS VIP
-   ========================================================= */
+    window.firebaseServerTimestamp =
+        serverTimestamp;
 
-function assinarPlano(nomePlano, quantidadeCortes, valorPlano) {
-    const numeroWhatsApp = '5585997313200';
-    const mensagem = `Olá, Marcelo! Gostaria de assinar um plano VIP da barbearia.
+    console.log(
+        'Firebase + Firestore conectado com sucesso!'
+    );
 
-━━━━━━━━━━━━━━━━━━━━━━
-👑 DETALHES DO PLANO ESCOLHIDO
-━━━━━━━━━━━━━━━━━━━━━━
-• *Plano:* ${nomePlano}
-• *Cortes inclusos:* ${quantidadeCortes} por mês
-• *Valor mensal:* ${valorPlano}
-━━━━━━━━━━━━━━━━━━━━━━
+    return {
+        app
+    };
 
-Como funciona o pagamento e a ativação da minha assinatura mensal?`;
-    const url = `https://api.whatsapp.com/send?phone=${numeroWhatsApp}&text=` + encodeURIComponent(mensagem);
-    window.open(url, '_blank');
-}
+})();
+
 </script>
+
+
 <!-- =====================================================
-     JANELA DE AGENDAMENTO SOBRE A PÁGINA
-     ===================================================== -->
+MODAL DE AGENDAMENTO
+===================================================== -->
 
-<div id="confirmacao-servico" class="modal-agendamento">
+<div
+    id="confirmacao-servico"
+    class="modal-agendamento-caixa"
+    style="
+        display:none;
+        position:fixed;
+        inset:0;
+        z-index:99998;
+        background:rgba(0,0,0,.88);
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        overflow-y:auto;
+    "
+>
 
-    <div class="modal-agendamento-caixa">
+    <!-- TELA 1: CONFIRMAR SERVIÇO -->
 
-        <!-- TELA 1: CONFIRMAR SERVIÇO -->
-        <div id="tela-confirmar-servico">
+    <div
+        id="tela-confirmar-servico"
+        style="
+            width:100%;
+            max-width:550px;
+            background:#1a1a1a;
+            border:1px solid #d4af37;
+            border-radius:15px;
+            padding:30px;
+            text-align:center;
+        "
+    >
 
-            <div class="modal-icone">💈</div>
+        <div class="modal-icone">
+            💈
+        </div>
 
-            <h2 class="modal-titulo">CONFIRMAR<br>SERVIÇO</h2>
+        <h2 class="modal-titulo">
+            CONFIRMAR<br>SERVIÇO
+        </h2>
 
-            <p id="texto-confirmacao" class="modal-texto"></p>
+        <p
+            id="texto-confirmacao"
+            class="modal-texto"
+        ></p>
 
-            <div class="modal-botoes">
+        <div class="modal-botoes">
 
-                <button
-                    type="button"
-                    onclick="confirmarServicoSim()"
-                    class="modal-btn modal-btn-principal"
-                >
-                    ✅ SIM, CONTINUAR
-                </button>
+            <button
+                type="button"
+                onclick="confirmarServicoSim()"
+                class="modal-btn modal-btn-principal"
+            >
+                ✅ SIM, CONTINUAR
+            </button>
 
-                <button
-                    type="button"
-                    onclick="fecharConfirmacaoServico()"
-                    class="modal-btn modal-btn-secundario"
-                >
-                    ↩️ ESCOLHER OUTRO SERVIÇO
-                </button>
-
-            </div>
+            <button
+                type="button"
+                onclick="fecharConfirmacaoServico()"
+                class="modal-btn modal-btn-secundario"
+            >
+                ↩️ ESCOLHER OUTRO SERVIÇO
+            </button>
 
         </div>
 
-        <!-- TELA 2: DATA E HORÁRIO -->
-        <div id="tela-escolher-horario" style="display:none;">
+    </div>
 
-            <div class="modal-icone">📅</div>
 
-            <h2 class="modal-titulo modal-titulo-menor">
-                ESCOLHA DATA E HORÁRIO
-            </h2>
+    <!-- TELA 2: DATA E HORÁRIO -->
 
-            <div class="modal-servico-resumo" id="resumo-servico-modal">
-                Serviço selecionado
-            </div>
+    <div
+        id="tela-escolher-horario"
+        style="
+            display:none;
+            width:100%;
+            max-width:650px;
+            background:#1a1a1a;
+            border:1px solid #d4af37;
+            border-radius:15px;
+            padding:30px;
+            text-align:center;
+        "
+    >
 
-            <div class="modal-subtitulo">
-                Escolha um dos próximos dias disponíveis:
-            </div>
+        <div class="modal-icone">
+            📅
+        </div>
 
-            <div id="dias-modal-grid" class="dias-modal-grid"></div>
+        <h2 class="modal-titulo modal-titulo-menor">
+            ESCOLHA DATA E HORÁRIO
+        </h2>
 
-            <div class="modal-subtitulo horario-titulo">
-                Horários disponíveis
-            </div>
+        <div
+            class="modal-servico-resumo"
+            id="resumo-servico-modal"
+        >
+            Serviço selecionado
+        </div>
 
-            <div id="horarios-modal-grid" class="horarios-modal-grid"></div>
+        <div class="modal-subtitulo">
+            Escolha um dos próximos dias disponíveis:
+        </div>
 
-            <div
-                id="aviso-horarios-modal"
-                class="aviso-sem-horarios-modal"
-                style="display:none;"
-            ></div>
+        <div
+            id="dias-modal-grid"
+            class="dias-modal-grid"
+        ></div>
 
-            <div class="modal-form-nome">
-                <label for="nome-cliente-modal">Seu nome completo</label>
-                <input
-                    type="text"
-                    id="nome-cliente-modal"
-                    placeholder="Digite seu nome"
-                    autocomplete="name"
-                >
-            </div>
+        <div
+            class="modal-subtitulo horario-titulo"
+        >
+            Horários disponíveis
+        </div>
 
-            <div class="modal-botoes modal-botoes-final">
+        <div
+            id="horarios-modal-grid"
+            class="horarios-modal-grid"
+        ></div>
 
-                <button
-                    type="button"
-                    onclick="fecharJanelaAgendamento()"
-                    class="modal-btn modal-btn-secundario"
-                >
-                    ↩️ VOLTAR
-                </button>
+        <div
+            id="aviso-horarios-modal"
+            class="aviso-sem-horarios-modal"
+            style="display:none;"
+        ></div>
 
-                <button
-                    type="button"
-                    id="btn-finalizar-modal"
-                    onclick="finalizarAgendamento()"
-                    class="modal-btn modal-btn-principal"
-                    disabled
-                    style="opacity:0.5;"
-                >
-                    📲 FINALIZAR E ENVIAR PARA O WHATSAPP
-                </button>
+        <div class="modal-form-nome">
 
-            </div>
+            <label
+                for="nome-cliente-modal"
+            >
+                Seu nome completo
+            </label>
+
+            <input
+                type="text"
+                id="nome-cliente-modal"
+                placeholder="Digite seu nome"
+                autocomplete="name"
+            >
+
+        </div>
+
+        <div
+            class="modal-botoes modal-botoes-final"
+        >
+
+            <button
+                type="button"
+                onclick="fecharJanelaAgendamento()"
+                class="modal-btn modal-btn-secundario"
+            >
+                ↩️ VOLTAR
+            </button>
+
+            <button
+                type="button"
+                id="btn-finalizar-modal"
+                onclick="finalizarAgendamento()"
+                class="modal-btn modal-btn-principal"
+                disabled
+                style="opacity:0.5;"
+            >
+                📲 FINALIZAR E ENVIAR PARA O WHATSAPP
+            </button>
 
         </div>
 
@@ -2098,251 +2341,4 @@ Como funciona o pagamento e a ativação da minha assinatura mensal?`;
 
 </div>
 
-<style>
-/* =========================================================
-   ESTILO DA NOVA JANELA DE AGENDAMENTO
-   Não altera o restante do design do site.
-   ========================================================= */
-
-.modal-agendamento {
-    display:none;
-    position:fixed;
-    inset:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,0.90);
-    z-index:999999;
-    align-items:center;
-    justify-content:center;
-    padding:18px;
-    overflow-y:auto;
-}
-
-.modal-agendamento-caixa {
-    width:92%;
-    max-width:720px;
-    max-height:94vh;
-    overflow-y:auto;
-    background:#1b1b1b;
-    border:2px solid #d4af37;
-    border-radius:20px;
-    padding:30px;
-    text-align:center;
-    box-sizing:border-box;
-    box-shadow:0 15px 50px rgba(0,0,0,.7);
-}
-
-.modal-icone {
-    font-size:48px;
-    margin-bottom:8px;
-}
-
-.modal-titulo {
-    color:#d4af37;
-    font-size:42px;
-    line-height:1.15;
-    margin:0 0 22px;
-    font-weight:900;
-    letter-spacing:2px;
-}
-
-.modal-titulo-menor {
-    font-size:30px;
-}
-
-.modal-texto {
-    color:white;
-    font-size:20px;
-    line-height:32px;
-    margin:0;
-}
-
-.modal-botoes {
-    display:flex;
-    gap:12px;
-    justify-content:center;
-    margin-top:28px;
-    flex-wrap:wrap;
-}
-
-.modal-btn {
-    border:none;
-    border-radius:10px;
-    padding:14px 22px;
-    font-weight:bold;
-    cursor:pointer;
-    font-size:15px;
-    transition:.2s ease;
-}
-
-.modal-btn:hover:not(:disabled) {
-    transform:translateY(-2px);
-}
-
-.modal-btn:disabled {
-    cursor:not-allowed;
-}
-
-.modal-btn-principal {
-    background:#d4af37;
-    color:#000;
-}
-
-.modal-btn-secundario {
-    background:#333;
-    color:white;
-}
-
-.modal-servico-resumo {
-    background:#211d15;
-    border:1px solid #d4af37;
-    color:#d4af37;
-    border-radius:10px;
-    padding:12px;
-    margin-bottom:18px;
-    font-weight:bold;
-    line-height:24px;
-}
-
-.modal-subtitulo {
-    color:#ddd;
-    font-size:17px;
-    margin:14px 0 12px;
-    text-align:left;
-}
-
-.horario-titulo {
-    margin-top:24px;
-}
-
-.dias-modal-grid {
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:8px;
-}
-
-.dia-modal-btn {
-    background:#222;
-    color:white;
-    border:2px solid #333;
-    border-radius:9px;
-    padding:12px 6px;
-    cursor:pointer;
-    font-weight:bold;
-    font-size:14px;
-}
-
-.dia-modal-btn:hover,
-.dia-modal-btn.selected {
-    background:#d4af37;
-    color:#121212;
-    border-color:#d4af37;
-}
-
-.horarios-modal-grid {
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:9px;
-    min-height:20px;
-}
-
-.horario-modal-btn {
-    background:#222;
-    color:white;
-    border:2px solid #333;
-    border-radius:9px;
-    padding:12px 5px;
-    cursor:pointer;
-    font-weight:bold;
-    font-size:15px;
-}
-
-.horario-modal-btn:hover,
-.horario-modal-btn.selected {
-    background:#d4af37;
-    color:#121212;
-    border-color:#d4af37;
-}
-
-.aviso-sem-horarios-modal {
-    margin-top:15px;
-    padding:15px;
-    border:1px solid #d4af37;
-    border-radius:10px;
-    background:#211d15;
-    color:#f5f5f5;
-    line-height:24px;
-}
-
-.modal-form-nome {
-    margin-top:24px;
-    text-align:left;
-}
-
-.modal-form-nome label {
-    display:block;
-    color:#ccc;
-    margin-bottom:8px;
-    font-size:15px;
-}
-
-.modal-form-nome input {
-    width:100%;
-    box-sizing:border-box;
-    padding:14px;
-    background:#222;
-    border:2px solid #333;
-    border-radius:9px;
-    color:white;
-    font-size:16px;
-    outline:none;
-}
-
-.modal-form-nome input:focus {
-    border-color:#d4af37;
-}
-
-.modal-botoes-final {
-    margin-top:22px;
-}
-
-@media (max-width:600px) {
-    .modal-agendamento {
-        padding:10px;
-    }
-
-    .modal-agendamento-caixa {
-        width:96%;
-        max-height:96vh;
-        padding:22px 16px;
-        border-radius:18px;
-    }
-
-    .modal-titulo {
-        font-size:34px;
-    }
-
-    .modal-titulo-menor {
-        font-size:24px;
-    }
-
-    .modal-texto {
-        font-size:18px;
-        line-height:28px;
-    }
-
-    .dias-modal-grid {
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .horarios-modal-grid {
-        grid-template-columns:repeat(3,1fr);
-    }
-
-    .modal-btn {
-        width:100%;
-    }
-}
-</style>
-</body>
-</html>
+    
