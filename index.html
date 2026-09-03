@@ -1323,7 +1323,7 @@ function enviarParaWhatsApp() {
     const mensagem = `Olá, Marcelo! Gostaria de agendar um serviço na Barbearia Marcelão.\n\n━━━━━━━━━━━━━━━━━━━━━━\n📋 SOLICITAÇÃO DE AGENDAMENTO\n━━━━━━━━━━━━━━━━━━━━━━\n\n🔑 Código: ${dadosAgendamento.codigo}\n👤 Nome: ${dadosAgendamento.nome}\n💈 Serviço: ${dadosAgendamento.servico}\n\n━━━━━━━━━━━━━━━━━━━━━━\n📅 DISPONIBILIDADE\n━━━━━━━━━━━━━━━━━━━━━━\n\nQuais são os dias e horários disponíveis para esse serviço?\n\nAguardo sua disponibilidade para escolher o melhor horário.\n\nObrigado!`;
 
     const numeroWhatsApp = '5585997313200';
-    const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=` + encodeURIComponent(mensagem);
+    const urlWhatsApp = `https://api.whatsapp.com/send?phone=${numeroWhatsApp}&text=` + encodeURIComponent(mensagem);
 
     const win = window.open(urlWhatsApp, '_blank');
     if (!win) {
@@ -1745,7 +1745,7 @@ Aguardo a confirmação da Barbearia Marcelão.
 Obrigado!`;
 
     const numeroWhatsApp = '5585997313200';
-    const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=` + encodeURIComponent(mensagem);
+    const urlWhatsApp = `https://api.whatsapp.com/send?phone=${numeroWhatsApp}&text=` + encodeURIComponent(mensagem);
 
     const win = window.open(urlWhatsApp, '_blank');
     if (!win) window.location.href = urlWhatsApp;
