@@ -987,7 +987,140 @@ gap: 12px;
     </div>
 </div>
 
-    <!-- AGENDAMENTO: agora acontece exclusivamente em uma janela sobre a página -->
+    <!-- SEÇÃO DE AGENDAMENTO -->
+    <section id="area-agendamento" class="agendamento-section" style="display:none !important;">
+        <h2>Agende seu Horário</h2>
+        <div class="section-divider"></div>
+
+        <div class="step-container">
+
+            <div class="aviso-atendimento">
+                <i class="fa-solid fa-circle-info"></i> O atendimento de Segunda a Sexta ocorre <strong>por agendamento</strong>. Garanta seu horário antecipadamente!
+            </div>
+
+            <!-- PASSO 1 - mantido no site, mas o fluxo principal começa ao clicar no serviço -->
+            <div id="step-1" class="step-content hidden">
+
+                <div class="categorias-abas">
+                    <button class="aba-btn active" onclick="filtrarCategoria('adulto', this)"> Adulto</button>
+                    <button class="aba-btn" onclick="filtrarCategoria('infantil', this)"> Infantil</button>
+                    <button class="aba-btn" onclick="filtrarCategoria('exclusividade', this)"> Exclusividades</button>
+                    <button class="aba-btn" onclick="filtrarCategoria('pigmentacao', this)"> Pigmentação</button>
+                </div>
+
+                <div id="grid-servicos-adulto" class="options-grid">
+                    <div class="option-btn" onclick="confirmarServico('Adulto: Social Altura Lateral 1,2,3', 'R$ 25,00')">Social - R$ 25,00</div>
+                    <div class="option-btn" onclick="confirmarServico('Adulto: Degradê na Zero', 'R$ 25,00')">Degradê na Zero - R$ 25,00</div>
+                    <div class="option-btn" onclick="confirmarServico('Adulto: Degradê Navalhado', 'R$ 30,00')">Degradê Navalhado - R$ 30,00</div>
+                    <div class="option-btn" onclick="confirmarServico('Adulto: Social todo na Tesoura', 'R$ 35,00')">Social todo na Tesoura - R$ 35,00</div>
+                </div>
+
+                <div id="grid-servicos-infantil" class="options-grid hidden">
+                    <div class="option-btn" onclick="confirmarServico('Infantil: Social', 'R$ 30,00')">Social - R$ 30,00</div>
+                    <div class="option-btn" onclick="confirmarServico('Infantil: Degradê na Zero ou Zero Alto', 'R$ 35,00')">Degradê na Zero - R$ 35,00</div>
+                    <div class="option-btn" onclick="confirmarServico('Infantil: Degradê na navalha', 'R$ 40,00')">Degradê navalhado - R$ 40,00</div>
+                    <div class="option-btn" onclick="confirmarServico('Infantil: Social Todo na Tesoura', 'R$ 40,00')">Social todo na Tesoura - R$ 40,00</div>
+                </div>
+
+                <div id="grid-servicos-exclusividade" class="options-grid hidden">
+                    <div class="option-btn" onclick="confirmarServico('Exclusividade: Luzes amarela', 'R$ 50,00')">Luzes amarela - R$ 50,00</div>
+                    <div class="option-btn" onclick="confirmarServico('Exclusividade: Luzes platinado', 'R$ 70,00')">Luzes platinado - R$ 70,00</div>
+                    <div class="option-btn" onclick="confirmarServico('Exclusividade: Luzes geral global amarelo', 'R$ 100,00')">Luzes geral global amarelo - R$ 100,00</div>
+                    <div class="option-btn" onclick="confirmarServico('Exclusividade: Luzes geral global platinada', 'R$ 120,00')">Luzes geral global platinada - R$ 120,00</div>
+                    <div class="option-btn" onclick="confirmarServico('Exclusividade: Alisamento ou botox', 'R$ 50,00')">Alisamento ou botox - R$ 50,00</div>
+                    <div class="option-btn" onclick="confirmarServico('Exclusividade: Limpeza básica de pele', 'R$ 35,00')">Limpeza básica de pele - R$ 35,00</div>
+                    <div class="option-btn" onclick="confirmarServico('Exclusividade: Barba desenhada', 'R$ 35,00')">Barba desenhada - R$ 35,00</div>
+                    <div class="option-btn" onclick="confirmarServico('Exclusividade: Cabelo e barba', 'R$ 50,00')">Cabelo e barba - R$ 50,00</div>
+                    <div class="option-btn" onclick="confirmarServico('Exclusividade: Barbaterapia', 'R$ 50,00')">Barbaterapia - R$ 50,00</div>
+                    <div class="option-btn" onclick="confirmarServico('Exclusividade: Sobrancelhas', 'R$ 10,00')">Sobrancelhas - R$ 10,00</div>
+                </div>
+
+                <div id="grid-servicos-pigmentacao" class="options-grid hidden">
+                    <div class="option-btn" onclick="confirmarServico('Pigmentação: Pigmentação geral', 'R$ 30,00')">Pigmentação geral - R$ 30,00</div>
+                    <div class="option-btn" onclick="confirmarServico('Pigmentação: Pigmentação de barba', 'R$ 30,00')">Pigmentação de barba - R$ 30,00</div>
+                </div>
+
+                <div class="step-actions">
+                    <button class="btn btn-proximo" onclick="irParaPasso(2)">Próximo</button>
+                </div>
+            </div>
+
+            <!-- PASSO 2 - DATA E HORÁRIO -->
+            <div id="step-2" class="step-content hidden">
+                <div class="step-title">2. Escolha a Data e o Horário</div>
+
+                <div class="form-group">
+                    <label>Data do Atendimento</label>
+                    <div id="dias-grid" class="options-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); max-height: 250px; overflow-y: auto; margin-bottom: 15px;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Horários Disponíveis</label>
+                    <div class="horarios-grid">
+                        <div class="horario-btn" onclick="selecionarHorario(this, '08:10')">08:10</div>
+                        <div class="horario-btn" onclick="selecionarHorario(this, '08:50')">08:50</div>
+                        <div class="horario-btn" onclick="selecionarHorario(this, '09:30')">09:30</div>
+                        <div class="horario-btn" onclick="selecionarHorario(this, '10:10')">10:10</div>
+                        <div class="horario-btn" onclick="selecionarHorario(this, '10:50')">10:50</div>
+                        <div class="horario-btn" onclick="selecionarHorario(this, '11:30')">11:30</div>
+                        <div class="horario-btn" onclick="selecionarHorario(this, '15:10')">15:10</div>
+                        <div class="horario-btn" onclick="selecionarHorario(this, '15:50')">15:50</div>
+                        <div class="horario-btn" onclick="selecionarHorario(this, '16:30')">16:30</div>
+                        <div class="horario-btn" onclick="selecionarHorario(this, '17:10')">17:10</div>
+                        <div class="horario-btn" onclick="selecionarHorario(this, '17:50')">17:50</div>
+                        <div class="horario-btn" onclick="selecionarHorario(this, '18:30')">18:30</div>
+                    </div>
+                </div>
+
+                <div class="step-actions">
+                    <button class="btn btn-voltar" onclick="fecharAgendamentoEVoltar()">Voltar</button>
+                    <button class="btn btn-proximo" onclick="irParaPasso(3)">Continuar</button>
+                </div>
+            </div>
+
+            <!-- PASSO 3 - NOME E FINALIZAÇÃO -->
+            <div id="step-3" class="step-content hidden">
+                <div class="step-title">3. Confirme seus dados</div>
+
+                <div class="form-group">
+                    <label for="nome-cliente">Seu Nome Completo</label>
+                    <input type="text" id="nome-cliente" class="form-control" placeholder="Digite seu nome">
+                </div>
+
+                <div class="codigo-gerado-box">
+                    <span>Seu Código de Identificação</span>
+                    <h3 id="display-codigo">----</h3>
+                </div>
+
+                <div class="regras-agendamento-box">
+                    <h4>
+                        <i class="fa-solid fa-circle-check"></i>
+                        Resumo do Agendamento
+                    </h4>
+                    <p id="resumo-final-agendamento" style="line-height:30px;text-align:center;color:#fff;"></p>
+                </div>
+
+                <div class="regras-agendamento-box">
+                    <h4>
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        Informações Importantes
+                    </h4>
+                    <ul>
+                        <li><i class="fa-solid fa-check"></i> Confira a data e o horário antes de finalizar.</li>
+                        <li><i class="fa-solid fa-check"></i> Após finalizar, o pedido será enviado diretamente para o WhatsApp da Barbearia Marcelão.</li>
+                        <li><i class="fa-solid fa-check"></i> Anote ou envie seu código pelo WhatsApp para facilitar a confirmação.</li>
+                        <li><i class="fa-solid fa-check"></i> Chegue aproximadamente 5 minutos antes do horário marcado.</li>
+                    </ul>
+                </div>
+
+                <div class="step-actions">
+                    <button class="btn btn-voltar" onclick="irParaPasso(2)">Voltar</button>
+                    <button class="btn btn-proximo" id="btn-finalizar-agendamento" onclick="finalizarAgendamento()">📲 FINALIZAR E ENVIAR PARA O WHATSAPP</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
 
 <!-- PAINEL ADMINISTRATIVO -->
 <div id="painel-admin" style="display:none;
@@ -1067,71 +1200,26 @@ let dadosAgendamento = {
 
 let servicoSelecionado = '';
 let precoServicoSelecionado = '';
-
-const HORARIOS_ATENDIMENTO = [
-    '08:10',
-    '08:50',
-    '09:30',
-    '10:10',
-    '10:50',
-    '11:30',
-    '15:10',
-    '15:50',
-    '16:30',
-    '17:10',
-    '17:50',
-    '18:30'
-];
-
-const NOMES_DIAS = [
-    'Dom',
-    'Seg',
-    'Ter',
-    'Qua',
-    'Qui',
-    'Sex',
-    'Sáb'
-];
-
-const NOMES_DIAS_FIREBASE = [
-    'Domingo',
-    'Segunda',
-    'Terça',
-    'Quarta',
-    'Quinta',
-    'Sexta',
-    'Sábado'
-];
+let cancelarListenerHorarios = null;
 
 /* =========================================================
-   FILTRAR CATEGORIA - mantido para não quebrar o site
+   FILTRAR CATEGORIA
    ========================================================= */
 
 function filtrarCategoria(categoria, botao) {
-    document.querySelectorAll('.aba-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-
+    document.querySelectorAll('.aba-btn').forEach(btn => btn.classList.remove('active'));
     if (botao) botao.classList.add('active');
 
     document.querySelectorAll('.options-grid').forEach(grid => {
-        if (grid.id.startsWith('grid-servicos-')) {
-            grid.classList.add('hidden');
-        }
+        if (grid.id.startsWith('grid-servicos-')) grid.classList.add('hidden');
     });
 
     const gridAlvo = document.getElementById('grid-servicos-' + categoria);
-
-    if (gridAlvo) {
-        gridAlvo.classList.remove('hidden');
-    }
+    if (gridAlvo) gridAlvo.classList.remove('hidden');
 }
 
 function selecionarServico(elemento, nomeServico) {
-    document.querySelectorAll('#step-1 .option-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-
+    document.querySelectorAll('#step-1 .option-btn').forEach(btn => btn.classList.remove('selected'));
     elemento.classList.add('selected');
     dadosAgendamento.servico = nomeServico;
 }
@@ -1146,446 +1234,320 @@ function confirmarServico(nomeServico, precoServico) {
     servicoSelecionado = nomeServico;
     precoServicoSelecionado = precoServico;
 
-    dadosAgendamento.data = '';
-    dadosAgendamento.horario = '';
-    dadosAgendamento.nome = '';
-    dadosAgendamento.codigo = '';
-    dadosAgendamento.valor = precoServico;
-
     const texto = document.getElementById('texto-confirmacao');
     const janela = document.getElementById('confirmacao-servico');
-    const telaServico = document.getElementById('tela-confirmar-servico');
-    const telaHorario = document.getElementById('tela-escolher-horario');
 
-    if (!texto || !janela || !telaServico || !telaHorario) {
-        console.error('❌ Elementos da janela de agendamento não encontrados.');
+    if (!texto || !janela) {
+        console.error('Elementos da confirmação não encontrados.');
         return;
     }
 
     texto.innerHTML = `
         Confirmar que quer agendar:<br><br>
-
-        <strong style="
-            color:#d4af37;
-            font-size:24px;
-        ">
+        <strong style="color:#d4af37;font-size:24px;">
             ${nomeServico}
         </strong>
-
         <br><br>
-
         Valor: <strong>${precoServico}</strong>
     `;
-
-    telaServico.style.display = 'block';
-    telaHorario.style.display = 'none';
-
-    const resumoServico = document.getElementById('resumo-servico-modal');
-    if (resumoServico) {
-        resumoServico.innerHTML = `${nomeServico} — ${precoServico}`;
-    }
 
     janela.style.display = 'flex';
 }
 
 function fecharConfirmacaoServico() {
     const janela = document.getElementById('confirmacao-servico');
-
-    if (janela) {
-        janela.style.display = 'none';
-    }
-
-    dadosAgendamento.data = '';
-    dadosAgendamento.horario = '';
+    if (janela) janela.style.display = 'none';
 }
 
 /* =========================================================
-   SIM, CONTINUAR -> SEGUNDA TELA NA MESMA JANELA
+   SIM, CONTINUAR -> VAI DIRETO PARA DATA/HORÁRIO
    ========================================================= */
 
-async function confirmarServicoSim() {
+function confirmarServicoSim() {
     if (!servicoSelecionado) {
         alert('⚠️ Selecione um serviço.');
         return;
     }
 
-    dadosAgendamento.servico =
-        servicoSelecionado + ' - ' + precoServicoSelecionado;
+    const janela = document.getElementById('confirmacao-servico');
+    if (janela) janela.style.display = 'none';
 
+    dadosAgendamento.servico = servicoSelecionado + ' - ' + precoServicoSelecionado;
     dadosAgendamento.valor = precoServicoSelecionado;
     dadosAgendamento.data = '';
     dadosAgendamento.horario = '';
+    dadosAgendamento.nome = '';
+    dadosAgendamento.codigo = gerarCodigoAleatorio();
 
-    const telaServico = document.getElementById('tela-confirmar-servico');
-    const telaHorario = document.getElementById('tela-escolher-horario');
+    const inputNome = document.getElementById('nome-cliente-whatsapp');
+    if (inputNome) {
+        inputNome.value = '';
+    }
 
-    if (!telaServico || !telaHorario) return;
+    const displayServico = document.getElementById('servico-confirmado-whatsapp');
+    if (displayServico) {
+        displayServico.innerHTML = `${servicoSelecionado}<br><span style=\"font-size:17px;color:#d4af37;\">${precoServicoSelecionado}</span>`;
+    }
 
-    telaServico.style.display = 'none';
-    telaHorario.style.display = 'block';
+    const displayCodigo = document.getElementById('codigo-whatsapp');
+    if (displayCodigo) {
+        displayCodigo.innerText = dadosAgendamento.codigo;
+    }
 
-    carregarDiasModal();
+    const segundaJanela = document.getElementById('dados-whatsapp');
+    if (segundaJanela) {
+        segundaJanela.style.display = 'flex';
+        setTimeout(() => {
+            if (inputNome) inputNome.focus();
+        }, 100);
+    }
+}
+
+function fecharDadosWhatsApp() {
+    const janela = document.getElementById('dados-whatsapp');
+    if (janela) janela.style.display = 'none';
+}
+
+function enviarParaWhatsApp() {
+    const inputNome = document.getElementById('nome-cliente-whatsapp');
+    const nome = inputNome ? inputNome.value.trim() : '';
+
+    if (!nome) {
+        alert('Por favor, coloque seu nome para continuar.');
+        if (inputNome) inputNome.focus();
+        return;
+    }
+
+    dadosAgendamento.nome = nome;
+
+    const mensagem = `Olá, Marcelo! Gostaria de agendar um serviço na Barbearia Marcelão.\n\n━━━━━━━━━━━━━━━━━━━━━━\n📋 SOLICITAÇÃO DE AGENDAMENTO\n━━━━━━━━━━━━━━━━━━━━━━\n\n🔑 Código: ${dadosAgendamento.codigo}\n👤 Nome: ${dadosAgendamento.nome}\n💈 Serviço: ${dadosAgendamento.servico}\n\n━━━━━━━━━━━━━━━━━━━━━━\n📅 DISPONIBILIDADE\n━━━━━━━━━━━━━━━━━━━━━━\n\nQuais são os dias e horários disponíveis para esse serviço?\n\nAguardo sua disponibilidade para escolher o melhor horário.\n\nObrigado!`;
+
+    const numeroWhatsApp = '5585997313200';
+    const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=` + encodeURIComponent(mensagem);
+
+    const win = window.open(urlWhatsApp, '_blank');
+    if (!win) {
+        window.location.href = urlWhatsApp;
+    }
+}
+
+function fecharAgendamentoEVoltar() {
+    if (cancelarListenerHorarios) {
+        cancelarListenerHorarios();
+        cancelarListenerHorarios = null;
+    }
+
+    const area = document.getElementById('area-agendamento');
+    if (area) area.style.display = 'none';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* =========================================================
-   FECHAR JANELA DE AGENDAMENTO
+   SELEÇÃO DE DIA
    ========================================================= */
 
-function fecharJanelaAgendamento() {
-    const janela = document.getElementById('confirmacao-servico');
-
-    if (janela) {
-        janela.style.display = 'none';
-    }
-
-    dadosAgendamento.data = '';
-    dadosAgendamento.horario = '';
-}
-
-/* =========================================================
-   DATA / HORA
-   ========================================================= */
-
-function obterDiaInicialParaAgendamento() {
-    const agora = new Date();
-    const diaSemana = agora.getDay();
-
-    const encerrado =
-        agora.getHours() > 18 ||
-        (agora.getHours() === 18 && agora.getMinutes() >= 30);
-
-    let inicio = new Date(agora);
-    inicio.setHours(0, 0, 0, 0);
-
-    // Sábado ou domingo -> próxima segunda-feira.
-    if (diaSemana === 6) {
-        inicio.setDate(inicio.getDate() + 2);
-        return inicio;
-    }
-
-    if (diaSemana === 0) {
-        inicio.setDate(inicio.getDate() + 1);
-        return inicio;
-    }
-
-    // Sexta-feira -> sempre mostra a próxima semana.
-    if (diaSemana === 5) {
-        inicio.setDate(inicio.getDate() + 3);
-        return inicio;
-    }
-
-    // Segunda a quinta depois das 18:30 -> começa no dia seguinte.
-    if (encerrado) {
-        inicio.setDate(inicio.getDate() + 1);
-    }
-
-    return inicio;
-}
-
-function carregarDiasModal() {
-    const diasGrid = document.getElementById('dias-modal-grid');
-
-    if (!diasGrid) return;
-
-    diasGrid.innerHTML = '';
-
-    const inicio = obterDiaInicialParaAgendamento();
-    let data = new Date(inicio);
-    let quantidade = 0;
-
-    while (quantidade < 5) {
-        const diaSemana = data.getDay();
-
-        if (diaSemana >= 1 && diaSemana <= 5) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'dia-modal-btn';
-
-            const dia = String(data.getDate()).padStart(2, '0');
-            const mes = String(data.getMonth() + 1).padStart(2, '0');
-            const texto = `${NOMES_DIAS[diaSemana]}, ${dia}/${mes}`;
-
-            btn.innerText = texto;
-            btn.dataset.data = texto;
-
-            btn.onclick = function () {
-                selecionarDiaModal(this, texto);
-            };
-
-            diasGrid.appendChild(btn);
-            quantidade++;
-        }
-
-        data.setDate(data.getDate() + 1);
-    }
-
-    // Seleciona automaticamente o primeiro dia disponível.
-    const primeiro = diasGrid.querySelector('.dia-modal-btn');
-
-    if (primeiro) {
-        selecionarDiaModal(primeiro, primeiro.dataset.data);
-    }
-}
-
-function descobrirDiaDaSemana(dataStr) {
-    if (dataStr.includes('Seg')) return 'Segunda';
-    if (dataStr.includes('Ter')) return 'Terça';
-    if (dataStr.includes('Qua')) return 'Quarta';
-    if (dataStr.includes('Qui')) return 'Quinta';
-    if (dataStr.includes('Sex')) return 'Sexta';
-    return '';
-}
-
-function selecionarDiaModal(elemento, dataStr) {
-    document.querySelectorAll('.dia-modal-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-
+function selecionarDia(elemento, dataStr) {
+    document.querySelectorAll('#dias-grid .dia-btn').forEach(btn => btn.classList.remove('selected'));
     elemento.classList.add('selected');
 
     dadosAgendamento.data = dataStr;
     dadosAgendamento.horario = '';
 
-    document.querySelectorAll('.horario-modal-btn').forEach(btn => {
+    document.querySelectorAll('.horario-btn').forEach(btn => {
         btn.classList.remove('selected');
     });
 
-    carregarHorariosDisponiveis(dataStr);
+    atualizarHorarios(dataStr);
 }
 
-function horarioJaPassou(dataSelecionada, horario) {
+/* =========================================================
+   HORÁRIOS PASSADOS
+   ========================================================= */
+
+function ocultarHorariosPassados(dataSelecionada) {
     const agora = new Date();
     const partesData = dataSelecionada.match(/(\d{2})\/(\d{2})/);
-
-    if (!partesData) return false;
+    if (!partesData) return;
 
     const dia = parseInt(partesData[1], 10);
     const mes = parseInt(partesData[2], 10) - 1;
-
-    const dataEscolhida = new Date(
-        agora.getFullYear(),
-        mes,
-        dia
-    );
+    const dataEscolhida = new Date(agora.getFullYear(), mes, dia);
 
     const ehHoje =
         dataEscolhida.getDate() === agora.getDate() &&
         dataEscolhida.getMonth() === agora.getMonth() &&
         dataEscolhida.getFullYear() === agora.getFullYear();
 
-    if (!ehHoje) return false;
+    if (!ehHoje) return;
 
-    const [hora, minuto] = horario.split(':').map(Number);
+    document.querySelectorAll('.horario-btn').forEach(btn => {
+        const partesHora = btn.innerText.trim().split(':');
+        if (partesHora.length !== 2) return;
 
-    return (
-        hora < agora.getHours() ||
-        (hora === agora.getHours() && minuto <= agora.getMinutes())
+        const hora = parseInt(partesHora[0], 10);
+        const minuto = parseInt(partesHora[1], 10);
+
+        if (
+            hora < agora.getHours() ||
+            (hora === agora.getHours() && minuto <= agora.getMinutes())
+        ) {
+            btn.style.display = 'none';
+        }
+    });
+}
+
+/* =========================================================
+   HORÁRIOS BLOQUEADOS PELO ADMIN
+   ========================================================= */
+
+function ouvirHorariosBloqueados(diaDaSemana, dataSelecionada) {
+    if (cancelarListenerHorarios) {
+        cancelarListenerHorarios();
+        cancelarListenerHorarios = null;
+    }
+
+    if (!diaDaSemana || !window.db) return;
+
+    const consulta = window.firebaseQuery(
+        window.firebaseCollection(window.db, 'horariosBloqueados'),
+        window.firebaseWhere('dia', '==', diaDaSemana)
+    );
+
+    cancelarListenerHorarios = window.firebaseOnSnapshot(
+        consulta,
+        (snapshot) => {
+            const horariosBloqueados = [];
+
+            snapshot.forEach(doc => {
+                const dados = doc.data();
+                if (dados && dados.horario) horariosBloqueados.push(dados.horario);
+            });
+
+            document.querySelectorAll('.horario-btn').forEach(btn => {
+                const horario = btn.innerText.trim();
+
+                if (horariosBloqueados.includes(horario)) {
+                    btn.style.display = 'none';
+                    btn.classList.remove('selected');
+                    if (dadosAgendamento.horario === horario) dadosAgendamento.horario = '';
+                } else {
+                    btn.style.display = 'block';
+                }
+            });
+
+            if (dataSelecionada) ocultarHorariosPassados(dataSelecionada);
+            verificarSeNaoHaHorarios();
+        },
+        (erro) => console.error('Erro ao atualizar horários:', erro)
     );
 }
 
-/* =========================================================
-   BUSCAR HORÁRIOS BLOQUEADOS E RESERVADOS
-   ========================================================= */
+function verificarSeNaoHaHorarios() {
+    const visiveis = [...document.querySelectorAll('.horario-btn')]
+        .some(btn => btn.style.display !== 'none');
 
-async function carregarHorariosDisponiveis(dataSelecionada) {
-    const grid = document.getElementById('horarios-modal-grid');
-    const aviso = document.getElementById('aviso-horarios-modal');
-    const botaoFinalizar = document.getElementById('btn-finalizar-modal');
-
+    const grid = document.querySelector('.horarios-grid');
     if (!grid) return;
 
-    grid.innerHTML = '';
-    dadosAgendamento.horario = '';
+    let aviso = document.getElementById('aviso-sem-horarios');
 
-    if (aviso) {
-        aviso.style.display = 'none';
-        aviso.innerHTML = '';
-    }
-
-    if (botaoFinalizar) {
-        botaoFinalizar.disabled = true;
-        botaoFinalizar.style.opacity = '0.5';
-    }
-
-    const diaDaSemana = descobrirDiaDaSemana(dataSelecionada);
-
-    if (!diaDaSemana) {
-        mostrarAvisoHorarios('⚠️ Não foi possível identificar a data selecionada.');
-        return;
-    }
-
-    grid.innerHTML = `
-        <div style="
-            grid-column:1 / -1;
-            color:#d4af37;
-            text-align:center;
-            padding:15px;
-            font-weight:bold;
-        ">
-            ⏳ Verificando horários disponíveis...
-        </div>
-    `;
-
-    try {
-        // Garante que o Firebase terminou de inicializar antes da consulta.
-        if (window.firebaseReady) {
-            await window.firebaseReady;
+    if (!visiveis) {
+        if (!aviso) {
+            aviso = document.createElement('div');
+            aviso.id = 'aviso-sem-horarios';
+            aviso.style.gridColumn = '1 / -1';
+            aviso.style.padding = '20px';
+            aviso.style.textAlign = 'center';
+            aviso.style.color = '#d4af37';
+            aviso.innerHTML = '⚠️ Não há horários disponíveis para esta data. Escolha outro dia.';
+            grid.appendChild(aviso);
         }
-
-        const bloqueados = new Set();
-        const reservados = new Set();
-
-        /* =====================================================
-           1. HORÁRIOS BLOQUEADOS PELO ADMIN
-           ===================================================== */
-        try {
-            const consultaBloqueios = window.firebaseQuery(
-                window.firebaseCollection(window.db, 'horariosBloqueados'),
-                window.firebaseWhere('dia', '==', diaDaSemana)
-            );
-
-            const snapshotBloqueios = await window.firebaseGetDocs(consultaBloqueios);
-
-            snapshotBloqueios.forEach(docSnap => {
-                const dados = docSnap.data();
-                if (dados && dados.horario) {
-                    bloqueados.add(String(dados.horario));
-                }
-            });
-        } catch (erroBloqueios) {
-            // Se a consulta de bloqueios falhar, não mostraremos uma falsa
-            // mensagem de "sem horários". O usuário ainda poderá ver os slots.
-            console.warn('Não foi possível consultar bloqueios:', erroBloqueios);
-        }
-
-        /* =====================================================
-           2. RESERVAS JÁ FEITAS
-           =====================================================
-           Lemos a coleção agendamentos e filtramos no navegador.
-           Se a leitura estiver bloqueada pelas regras do Firestore,
-           simplesmente continuamos com os horários não bloqueados.
-           A transação de FINALIZAR continua sendo a proteção contra
-           duas pessoas reservarem o mesmo horário.
-           ===================================================== */
-        try {
-            const snapshotAgendamentos = await window.firebaseGetDocs(
-                window.firebaseCollection(window.db, 'agendamentos')
-            );
-
-            snapshotAgendamentos.forEach(docSnap => {
-                const dados = docSnap.data();
-
-                if (!dados) return;
-
-                const mesmaData = String(dados.data || '') === String(dataSelecionada);
-                const mesmoHorario = String(dados.horario || '');
-
-                if (mesmaData && mesmoHorario) {
-                    reservados.add(mesmoHorario);
-                }
-            });
-        } catch (erroReservas) {
-            console.warn(
-                'Não foi possível consultar reservas existentes. ' +
-                'Os horários não bloqueados continuarão sendo exibidos:',
-                erroReservas
-            );
-        }
-
-        grid.innerHTML = '';
-
-        let quantidadeDisponivel = 0;
-
-        HORARIOS_ATENDIMENTO.forEach(horario => {
-            // Horário já passado só é retirado quando a data escolhida é hoje.
-            if (horarioJaPassou(dataSelecionada, horario)) return;
-
-            // Bloqueio manual pelo administrador.
-            if (bloqueados.has(horario)) return;
-
-            // Reserva já registrada.
-            if (reservados.has(horario)) return;
-
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'horario-modal-btn';
-            btn.innerText = horario;
-
-            btn.onclick = function () {
-                selecionarHorarioModal(this, horario);
-            };
-
-            grid.appendChild(btn);
-            quantidadeDisponivel++;
-        });
-
-        if (quantidadeDisponivel === 0) {
-            mostrarAvisoHorarios(`
-                ⚠️ <strong>Não há mais horários disponíveis para esta data.</strong><br><br>
-                Escolha o próximo dia disponível para fazer seu agendamento.
-            `);
-        }
-
-    } catch (erro) {
-        console.error('Erro geral ao carregar horários:', erro);
-
-        // Última proteção: se alguma parte do Firebase falhar, ainda mostramos
-        // os horários básicos, retirando apenas os que já passaram hoje.
-        grid.innerHTML = '';
-
-        let quantidadeDisponivel = 0;
-
-        HORARIOS_ATENDIMENTO.forEach(horario => {
-            if (horarioJaPassou(dataSelecionada, horario)) return;
-
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'horario-modal-btn';
-            btn.innerText = horario;
-            btn.onclick = function () {
-                selecionarHorarioModal(this, horario);
-            };
-
-            grid.appendChild(btn);
-            quantidadeDisponivel++;
-        });
-
-        if (quantidadeDisponivel === 0) {
-            mostrarAvisoHorarios(`
-                ⚠️ <strong>Não há mais horários disponíveis para esta data.</strong><br><br>
-                Escolha o próximo dia disponível para fazer seu agendamento.
-            `);
-        }
+    } else if (aviso) {
+        aviso.remove();
     }
 }
 
-function mostrarAvisoHorarios(html) {
-    const aviso = document.getElementById('aviso-horarios-modal');
+/* =========================================================
+   ATUALIZAR HORÁRIOS
+   ========================================================= */
 
-    if (!aviso) return;
-
-    aviso.style.display = 'block';
-    aviso.innerHTML = html;
-}
-
-function selecionarHorarioModal(elemento, horario) {
-    document.querySelectorAll('.horario-modal-btn').forEach(btn => {
+function atualizarHorarios(dataSelecionada) {
+    document.querySelectorAll('.horario-btn').forEach(btn => {
+        btn.style.display = 'block';
         btn.classList.remove('selected');
     });
 
-    elemento.classList.add('selected');
-    dadosAgendamento.horario = horario;
+    const aviso = document.getElementById('aviso-sem-horarios');
+    if (aviso) aviso.remove();
 
-    const botaoFinalizar = document.getElementById('btn-finalizar-modal');
+    let diaDaSemana = '';
 
-    if (botaoFinalizar) {
-        botaoFinalizar.disabled = false;
-        botaoFinalizar.style.opacity = '1';
-    }
+    if (dataSelecionada.includes('Seg')) diaDaSemana = 'Segunda';
+    else if (dataSelecionada.includes('Ter')) diaDaSemana = 'Terça';
+    else if (dataSelecionada.includes('Qua')) diaDaSemana = 'Quarta';
+    else if (dataSelecionada.includes('Qui')) diaDaSemana = 'Quinta';
+    else if (dataSelecionada.includes('Sex')) diaDaSemana = 'Sexta';
+
+    ouvirHorariosBloqueados(diaDaSemana, dataSelecionada);
+    ocultarHorariosPassados(dataSelecionada);
+    verificarSeNaoHaHorarios();
 }
 
 /* =========================================================
-   GERAR CÓDIGO
+   SELECIONAR HORÁRIO
+   ========================================================= */
+
+function selecionarHorario(elemento, horarioStr) {
+    if (elemento.style.display === 'none') return;
+
+    document.querySelectorAll('.horario-btn').forEach(btn => btn.classList.remove('selected'));
+    elemento.classList.add('selected');
+    dadosAgendamento.horario = horarioStr || elemento.innerText.trim();
+}
+
+/* =========================================================
+   CARREGAR PRÓXIMOS DIAS
+   ========================================================= */
+
+function carregarDiasProximos() {
+    const diasGrid = document.getElementById('dias-grid');
+    if (!diasGrid) return;
+
+    diasGrid.innerHTML = '';
+
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    let data = new Date(hoje);
+    const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    let quantidadeDias = 0;
+
+    while (quantidadeDias < 6) {
+        const diaSemana = data.getDay();
+
+        if (diaSemana >= 1 && diaSemana <= 5) {
+            const btn = document.createElement('button');
+            btn.className = 'dia-btn';
+
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const texto = `${diasSemana[diaSemana]}, ${dia}/${mes}`;
+
+            btn.innerText = texto;
+            btn.onclick = function () { selecionarDia(this, texto); };
+            diasGrid.appendChild(btn);
+            quantidadeDias++;
+        }
+
+        data.setDate(data.getDate() + 1);
+    }
+
+    verificarExpediente();
+}
+
+/* =========================================================
+   CÓDIGO
    ========================================================= */
 
 function gerarCodigoAleatorio() {
@@ -1593,16 +1555,57 @@ function gerarCodigoAleatorio() {
 }
 
 /* =========================================================
-   FINALIZAR -> RESERVA + WHATSAPP
+   MUDAR DE ETAPA
    ========================================================= */
 
-async function finalizarAgendamento() {
-    if (!dadosAgendamento.data || !dadosAgendamento.horario) {
-        alert('⚠️ Selecione uma data e um horário antes de finalizar.');
-        return;
+function irParaPasso(passo) {
+    if (passo === 2) {
+        if (!dadosAgendamento.servico) {
+            alert('Por favor, selecione um serviço antes de continuar.');
+            return;
+        }
+        carregarDiasProximos();
     }
 
-    const inputNome = document.getElementById('nome-cliente-modal');
+    if (passo === 3) {
+        if (!dadosAgendamento.data || !dadosAgendamento.horario) {
+            alert('⚠️ Por favor, selecione uma data e um horário.');
+            return;
+        }
+
+        dadosAgendamento.codigo = gerarCodigoAleatorio();
+
+        const displayCodigo = document.getElementById('display-codigo');
+        if (displayCodigo) displayCodigo.innerText = dadosAgendamento.codigo;
+
+        const resumo = document.getElementById('resumo-final-agendamento');
+        if (resumo) {
+            resumo.innerHTML = `
+                <strong style="color:#d4af37;">Serviço:</strong> ${dadosAgendamento.servico}<br>
+                <strong style="color:#d4af37;">Data:</strong> ${dadosAgendamento.data}<br>
+                <strong style="color:#d4af37;">Horário:</strong> ${dadosAgendamento.horario}
+            `;
+        }
+    }
+
+    document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+    const etapa = document.getElementById('step-' + passo);
+    if (etapa) etapa.classList.remove('hidden');
+}
+
+/* =========================================================
+   VALIDAÇÃO E AVANÇO
+   ========================================================= */
+
+function validarEAvancar(proximoPasso) {
+    if (proximoPasso === 3) {
+        if (!dadosAgendamento.data || !dadosAgendamento.horario) {
+            alert('⚠️ Por favor, selecione uma data e um horário.');
+            return;
+        }
+    }
+
+    const inputNome = document.getElementById('nome-cliente');
     const nome = inputNome ? inputNome.value.trim() : '';
 
     if (!nome) {
@@ -1611,57 +1614,79 @@ async function finalizarAgendamento() {
         return;
     }
 
-    if (window.firebaseReady) {
-        await window.firebaseReady;
+    dadosAgendamento.nome = nome;
+    irParaPasso(proximoPasso);
+}
+
+/* =========================================================
+   FINALIZAR: RESERVA NO FIRESTORE + WHATSAPP
+   ========================================================= */
+
+async function finalizarAgendamento() {
+    const inputNome = document.getElementById('nome-cliente');
+    const nome = inputNome ? inputNome.value.trim() : '';
+
+    if (!dadosAgendamento.data || !dadosAgendamento.horario) {
+        alert('⚠️ Selecione uma data e um horário antes de continuar.');
+        irParaPasso(2);
+        return;
+    }
+
+    if (!nome) {
+        alert('Por favor, preencha seu nome completo para finalizar.');
+        if (inputNome) inputNome.focus();
+        return;
     }
 
     dadosAgendamento.nome = nome;
-    dadosAgendamento.codigo = gerarCodigoAleatorio();
 
-    const diaDaSemana = descobrirDiaDaSemana(dadosAgendamento.data);
+    let diaDaSemana = '';
+    if (dadosAgendamento.data.includes('Seg')) diaDaSemana = 'Segunda';
+    else if (dadosAgendamento.data.includes('Ter')) diaDaSemana = 'Terça';
+    else if (dadosAgendamento.data.includes('Qua')) diaDaSemana = 'Quarta';
+    else if (dadosAgendamento.data.includes('Qui')) diaDaSemana = 'Quinta';
+    else if (dadosAgendamento.data.includes('Sex')) diaDaSemana = 'Sexta';
 
     if (!diaDaSemana) {
         alert('⚠️ Não foi possível identificar o dia selecionado.');
         return;
     }
 
-    const botao = document.getElementById('btn-finalizar-modal');
-
+    const botao = document.getElementById('btn-finalizar-agendamento');
     if (botao) {
         botao.disabled = true;
-        botao.innerText = '⏳ RESERVANDO...';
+        botao.innerText = '⏳ FINALIZANDO...';
     }
 
     try {
         const partesData = dadosAgendamento.data.match(/(\d{2})\/(\d{2})/);
-
-        if (!partesData) {
-            throw new Error('DATA_INVALIDA');
-        }
+        if (!partesData) throw new Error('DATA_INVALIDA');
 
         const dia = partesData[1];
         const mes = partesData[2];
+        const idHorario = `${dia}-${mes}_${dadosAgendamento.horario}`;
 
-        // Usa a coleção AGENDAMENTOS, que já é a coleção principal do site.
-        // Assim evitamos a falha que estava acontecendo na coleção reservasSlots.
-        const consultaReserva = window.firebaseQuery(
-            window.firebaseCollection(window.db, 'agendamentos'),
-            window.firebaseWhere('data', '==', dadosAgendamento.data)
+        const referenciaHorario = window.firebaseDoc(
+            window.db,
+            'reservasSlots',
+            idHorario
         );
 
-        const reservasDoDia = await window.firebaseGetDocs(consultaReserva);
+        await window.firebaseRunTransaction(window.db, async (transaction) => {
+            const reservaExistente = await transaction.get(referenciaHorario);
 
-        let horarioOcupado = false;
-        reservasDoDia.forEach(docSnap => {
-            const reserva = docSnap.data();
-            if (reserva.horario === dadosAgendamento.horario) {
-                horarioOcupado = true;
+            if (reservaExistente.exists()) {
+                throw new Error('HORARIO_JA_RESERVADO');
             }
-        });
 
-        if (horarioOcupado) {
-            throw new Error('HORARIO_JA_RESERVADO');
-        }
+            transaction.set(referenciaHorario, {
+                dia: diaDaSemana,
+                data: dadosAgendamento.data,
+                horario: dadosAgendamento.horario,
+                reservadoEm: window.firebaseServerTimestamp(),
+                codigo: dadosAgendamento.codigo
+            });
+        });
 
         await window.firebaseAddDoc(
             window.firebaseCollection(window.db, 'agendamentos'),
@@ -1679,32 +1704,21 @@ async function finalizarAgendamento() {
         console.error('Erro ao finalizar agendamento:', erro);
 
         if (erro.message === 'HORARIO_JA_RESERVADO') {
-            alert(
-                '⚠️ Esse horário acabou de ser reservado por outra pessoa.\n\n' +
-                'Escolha outro horário.'
-            );
-
+            alert('⚠️ Esse horário acabou de ser reservado por outra pessoa.\n\nEscolha outro horário.');
             dadosAgendamento.horario = '';
-
             if (botao) {
                 botao.disabled = false;
                 botao.innerText = '📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
             }
-
-            carregarHorariosDisponiveis(dadosAgendamento.data);
+            irParaPasso(2);
             return;
         }
 
-        alert(
-            'Não foi possível confirmar o agendamento.\n\n' +
-            'Verifique sua conexão e tente novamente.'
-        );
-
+        alert('Não foi possível confirmar o agendamento. Verifique sua conexão e tente novamente.');
         if (botao) {
             botao.disabled = false;
             botao.innerText = '📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
         }
-
         return;
     }
 
@@ -1721,70 +1735,75 @@ async function finalizarAgendamento() {
 🕒 Horário: ${dadosAgendamento.horario}
 
 ━━━━━━━━━━━━━━━━━━━━━━
-⚠️ POLÍTICA DE RESERVA
+✅ SOLICITAÇÃO ENVIADA
 ━━━━━━━━━━━━━━━━━━━━━━
 
-Esta solicitação está pendente de confirmação.
+Meu agendamento foi realizado pelo site e estou enviando os dados para confirmação.
 
-O horário será reservado exclusivamente mediante o envio e a conferência do comprovante de pagamento antecipado (50% do valor do serviço).
+Aguardo a confirmação da Barbearia Marcelão.
 
-*Atenção:* Em caso de ausência sem aviso prévio, o valor da taxa de reserva não será restituído.
-
-Desde já, agradecemos a preferência!`;
+Obrigado!`;
 
     const numeroWhatsApp = '5585997313200';
-
-    const urlWhatsApp =
-        `https://wa.me/${numeroWhatsApp}?text=` +
-        encodeURIComponent(mensagem);
-
-    const janela = document.getElementById('confirmacao-servico');
-
-    if (janela) {
-        janela.style.display = 'none';
-    }
+    const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=` + encodeURIComponent(mensagem);
 
     const win = window.open(urlWhatsApp, '_blank');
-
-    if (!win) {
-        window.location.href = urlWhatsApp;
-    }
+    if (!win) window.location.href = urlWhatsApp;
 }
 
 /* =========================================================
-   FUNÇÕES ANTIGAS MANTIDAS COMO COMPATIBILIDADE
+   VERIFICAR EXPEDIENTE
    ========================================================= */
 
-function validarEAvancar() {
-    if (!dadosAgendamento.data || !dadosAgendamento.horario) {
-        alert('⚠️ Selecione uma data e um horário.');
-        return;
-    }
+function verificarExpediente() {
+    const agora = new Date();
+    const expedienteEncerrado =
+        agora.getHours() > 18 ||
+        (agora.getHours() === 18 && agora.getMinutes() >= 30);
 
-    irParaPasso(3);
+    if (!expedienteEncerrado) return;
+
+    document.querySelectorAll('.horario-btn').forEach(btn => btn.style.display = 'none');
+
+    if (document.getElementById('mensagem-expediente')) return;
+
+    const mensagem = document.createElement('div');
+    mensagem.id = 'mensagem-expediente';
+    mensagem.style.width = '100%';
+    mensagem.style.gridColumn = '1 / -1';
+    mensagem.style.boxSizing = 'border-box';
+
+    mensagem.innerHTML = `
+        <div style="width:100%;box-sizing:border-box;background:linear-gradient(180deg,#202020,#171717);border:2px solid #d4af37;border-radius:18px;padding:35px;text-align:center;">
+            <div style="font-size:48px;">💈</div>
+            <h2 style="color:#d4af37;font-size:38px;margin-top:10px;margin-bottom:20px;">ATENDIMENTO ENCERRADO</h2>
+            <p style="font-size:18px;line-height:34px;">
+                Muito obrigado pela sua visita!<br><br>
+                Hoje nossos atendimentos já foram finalizados.<br><br>
+                ✨ <strong>Mas você ainda pode garantir seu horário para os próximos dias.</strong>
+            </p>
+            <div style="margin-top:25px;padding:18px;border-radius:12px;background:#2b2b2b;">
+                <strong style="color:#d4af37;">🕘 Atendimento<br>Segunda a Sexta<br>08:00 às 18:30</strong>
+            </div>
+            <button onclick="document.getElementById('dias-grid').scrollIntoView({behavior:'smooth'});" style="margin-top:25px;padding:14px 30px;background:#d4af37;color:black;font-weight:bold;border:none;border-radius:10px;cursor:pointer;font-size:16px;">
+                📅 ESCOLHER OUTRA DATA
+            </button>
+        </div>
+    `;
+
+    const horariosGrid = document.querySelector('.horarios-grid');
+    if (horariosGrid) horariosGrid.appendChild(mensagem);
 }
-
-function irParaPasso() {
-    // O antigo fluxo de etapas foi substituído pela janela sobre a página.
-    // Esta função fica apenas para não quebrar chamadas antigas.
-}
-
-function selecionarDia() {}
-function selecionarHorario() {}
-function carregarDiasProximos() {}
-function verificarExpediente() {}
 
 /* =========================================================
-   COPIAR PIX - mantida para não quebrar outras partes
+   COPIAR PIX - mantida apenas para não quebrar outras partes
    ========================================================= */
 
 function copiarPix() {
     const chaveElemento = document.getElementById('chavePix');
-
     if (!chaveElemento) return;
 
     const chave = chaveElemento.innerText;
-
     navigator.clipboard.writeText(chave)
         .then(() => alert('✅ Chave PIX copiada com sucesso!'))
         .catch(() => alert('Não foi possível copiar automaticamente a chave PIX.'));
@@ -1798,7 +1817,6 @@ let contadorCliques = 0;
 
 function iniciarBotaoSecreto() {
     const tituloSecreto = document.getElementById('titulo-secreto');
-
     if (!tituloSecreto) return;
 
     tituloSecreto.addEventListener('click', function () {
@@ -1806,14 +1824,10 @@ function iniciarBotaoSecreto() {
 
         if (contadorCliques >= 5) {
             contadorCliques = 0;
-
             const senha = prompt('Área Restrita\n\nDigite a senha:');
 
-            if (senha === '1234') {
-                abrirPainelAdmin();
-            } else if (senha !== null) {
-                alert('Senha incorreta.');
-            }
+            if (senha === '1234') abrirPainelAdmin();
+            else if (senha !== null) alert('Senha incorreta.');
         }
     });
 }
@@ -1825,6 +1839,7 @@ if (document.readyState === 'loading') {
 }
 
 </script>
+
 <!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
@@ -1837,10 +1852,10 @@ if (document.readyState === 'loading') {
     setDoc,
     deleteDoc,
     getDocs,
-    getDoc,
     query,
     where,
     onSnapshot,
+    runTransaction,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore.js";
 
@@ -1854,26 +1869,26 @@ if (document.readyState === 'loading') {
     measurementId: "G-NKEJH8EFJE"
   };
 
-  window.firebaseReady = (async () => {
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    window.db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
 
-    window.firebaseCollection = collection;
-    window.firebaseAddDoc = addDoc;
-    window.firebaseDoc = doc;
-    window.firebaseSetDoc = setDoc;
-    window.firebaseDeleteDoc = deleteDoc;
-    window.firebaseGetDocs = getDocs;
-    window.firebaseGetDoc = getDoc;
-    window.firebaseQuery = query;
-    window.firebaseWhere = where;
-    window.firebaseOnSnapshot = onSnapshot;
+  // Salvando as funções na janela global para o resto do site usar
+  window.db = getFirestore(app);
+    
+  window.firebaseCollection = collection;
+  window.firebaseAddDoc = addDoc;
+  window.firebaseDoc = doc;
+  window.firebaseSetDoc = setDoc;
+  window.firebaseDeleteDoc = deleteDoc;
+  window.firebaseGetDocs = getDocs;
+window.firebaseQuery = query;
+window.firebaseWhere = where;
+window.firebaseOnSnapshot = onSnapshot;
+    window.firebaseRunTransaction = runTransaction;
     window.firebaseServerTimestamp = serverTimestamp;
 
-    console.log("Firebase + Firestore conectado com sucesso!");
-    return { app, analytics };
-  })();
+  console.log("Firebase + Firestore conectado com sucesso!");
+
 
 </script>
 
@@ -2006,107 +2021,119 @@ Como funciona o pagamento e a ativação da minha assinatura mensal?`;
 }
 </script>
 <!-- =====================================================
-     JANELA DE AGENDAMENTO SOBRE A PÁGINA
+     JANELA DE CONFIRMAÇÃO DO SERVIÇO
      ===================================================== -->
 
-<div id="confirmacao-servico" class="modal-agendamento">
+<div
+    id="confirmacao-servico"
 
-    <div class="modal-agendamento-caixa">
+    style="
+        display:none;
+        position:fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        background:rgba(0,0,0,0.90);
+        z-index:999999;
 
-        <!-- TELA 1: CONFIRMAR SERVIÇO -->
-        <div id="tela-confirmar-servico">
+        align-items:center;
+        justify-content:center;
+    "
+>
 
-            <div class="modal-icone">💈</div>
+    <div
+        style="
+            width:90%;
+            max-width:500px;
 
-            <h2 class="modal-titulo">CONFIRMAR<br>SERVIÇO</h2>
+            background:#1b1b1b;
 
-            <p id="texto-confirmacao" class="modal-texto"></p>
+            border:2px solid #d4af37;
 
-            <div class="modal-botoes">
+            border-radius:18px;
 
-                <button
-                    type="button"
-                    onclick="confirmarServicoSim()"
-                    class="modal-btn modal-btn-principal"
-                >
-                    ✅ SIM, CONTINUAR
-                </button>
+            padding:30px;
 
-                <button
-                    type="button"
-                    onclick="fecharConfirmacaoServico()"
-                    class="modal-btn modal-btn-secundario"
-                >
-                    ↩️ ESCOLHER OUTRO SERVIÇO
-                </button>
+            text-align:center;
 
-            </div>
+            box-sizing:border-box;
+        "
+    >
 
+        <div
+            style="
+                font-size:50px;
+            "
+        >
+            💈
         </div>
 
-        <!-- TELA 2: DATA E HORÁRIO -->
-        <div id="tela-escolher-horario" style="display:none;">
 
-            <div class="modal-icone">📅</div>
+        <h2
+            style="
+                color:#d4af37;
+                margin-bottom:20px;
+            "
+        >
+            CONFIRMAR SERVIÇO
+        </h2>
 
-            <h2 class="modal-titulo modal-titulo-menor">
-                ESCOLHA DATA E HORÁRIO
-            </h2>
 
-            <div class="modal-servico-resumo" id="resumo-servico-modal">
-                Serviço selecionado
-            </div>
+        <p
+            id="texto-confirmacao"
 
-            <div class="modal-subtitulo">
-                Escolha um dos próximos dias disponíveis:
-            </div>
+            style="
+                color:white;
+                font-size:19px;
+                line-height:30px;
+            "
+        >
+        </p>
 
-            <div id="dias-modal-grid" class="dias-modal-grid"></div>
 
-            <div class="modal-subtitulo horario-titulo">
-                Horários disponíveis
-            </div>
+        <div
+            style="
+                display:flex;
+                gap:12px;
+                justify-content:center;
+                margin-top:25px;
+                flex-wrap:wrap;
+            "
+        >
 
-            <div id="horarios-modal-grid" class="horarios-modal-grid"></div>
+            <button
+                onclick="confirmarServicoSim()"
 
-            <div
-                id="aviso-horarios-modal"
-                class="aviso-sem-horarios-modal"
-                style="display:none;"
-            ></div>
+                style="
+                    padding:14px 25px;
+                    border:none;
+                    border-radius:10px;
+                    background:#d4af37;
+                    color:#000;
+                    font-weight:bold;
+                    cursor:pointer;
+                "
+            >
+                ✅ SIM, CONTINUAR
+            </button>
 
-            <div class="modal-form-nome">
-                <label for="nome-cliente-modal">Seu nome completo</label>
-                <input
-                    type="text"
-                    id="nome-cliente-modal"
-                    placeholder="Digite seu nome"
-                    autocomplete="name"
-                >
-            </div>
 
-            <div class="modal-botoes modal-botoes-final">
+            <button
+                onclick="fecharConfirmacaoServico()"
 
-                <button
-                    type="button"
-                    onclick="fecharJanelaAgendamento()"
-                    class="modal-btn modal-btn-secundario"
-                >
-                    ↩️ VOLTAR
-                </button>
-
-                <button
-                    type="button"
-                    id="btn-finalizar-modal"
-                    onclick="finalizarAgendamento()"
-                    class="modal-btn modal-btn-principal"
-                    disabled
-                    style="opacity:0.5;"
-                >
-                    📲 FINALIZAR E ENVIAR PARA O WHATSAPP
-                </button>
-
-            </div>
+                style="
+                    padding:14px 25px;
+                    border:none;
+                    border-radius:10px;
+                    background:#333;
+                    color:white;
+                    font-weight:bold;
+                    cursor:pointer;
+                "
+            >
+                ↩️ ESCOLHER OUTRO SERVIÇO
+            </button>
 
         </div>
 
@@ -2114,251 +2141,131 @@ Como funciona o pagamento e a ativação da minha assinatura mensal?`;
 
 </div>
 
-<style>
-/* =========================================================
-   ESTILO DA NOVA JANELA DE AGENDAMENTO
-   Não altera o restante do design do site.
-   ========================================================= */
-
-.modal-agendamento {
-    display:none;
-    position:fixed;
-    inset:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,0.90);
-    z-index:999999;
-    align-items:center;
-    justify-content:center;
-    padding:18px;
-    overflow-y:auto;
-}
-
-.modal-agendamento-caixa {
-    width:92%;
-    max-width:720px;
-    max-height:94vh;
-    overflow-y:auto;
-    background:#1b1b1b;
-    border:2px solid #d4af37;
-    border-radius:20px;
-    padding:30px;
-    text-align:center;
-    box-sizing:border-box;
-    box-shadow:0 15px 50px rgba(0,0,0,.7);
-}
-
-.modal-icone {
-    font-size:48px;
-    margin-bottom:8px;
-}
-
-.modal-titulo {
-    color:#d4af37;
-    font-size:42px;
-    line-height:1.15;
-    margin:0 0 22px;
-    font-weight:900;
-    letter-spacing:2px;
-}
-
-.modal-titulo-menor {
-    font-size:30px;
-}
-
-.modal-texto {
-    color:white;
-    font-size:20px;
-    line-height:32px;
-    margin:0;
-}
-
-.modal-botoes {
-    display:flex;
-    gap:12px;
-    justify-content:center;
-    margin-top:28px;
-    flex-wrap:wrap;
-}
-
-.modal-btn {
-    border:none;
-    border-radius:10px;
-    padding:14px 22px;
-    font-weight:bold;
-    cursor:pointer;
-    font-size:15px;
-    transition:.2s ease;
-}
-
-.modal-btn:hover:not(:disabled) {
-    transform:translateY(-2px);
-}
-
-.modal-btn:disabled {
-    cursor:not-allowed;
-}
-
-.modal-btn-principal {
-    background:#d4af37;
-    color:#000;
-}
-
-.modal-btn-secundario {
-    background:#333;
-    color:white;
-}
-
-.modal-servico-resumo {
-    background:#211d15;
-    border:1px solid #d4af37;
-    color:#d4af37;
-    border-radius:10px;
-    padding:12px;
-    margin-bottom:18px;
-    font-weight:bold;
-    line-height:24px;
-}
-
-.modal-subtitulo {
-    color:#ddd;
-    font-size:17px;
-    margin:14px 0 12px;
-    text-align:left;
-}
-
-.horario-titulo {
-    margin-top:24px;
-}
-
-.dias-modal-grid {
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:8px;
-}
-
-.dia-modal-btn {
-    background:#222;
-    color:white;
-    border:2px solid #333;
-    border-radius:9px;
-    padding:12px 6px;
-    cursor:pointer;
-    font-weight:bold;
-    font-size:14px;
-}
-
-.dia-modal-btn:hover,
-.dia-modal-btn.selected {
-    background:#d4af37;
-    color:#121212;
-    border-color:#d4af37;
-}
-
-.horarios-modal-grid {
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:9px;
-    min-height:20px;
-}
-
-.horario-modal-btn {
-    background:#222;
-    color:white;
-    border:2px solid #333;
-    border-radius:9px;
-    padding:12px 5px;
-    cursor:pointer;
-    font-weight:bold;
-    font-size:15px;
-}
-
-.horario-modal-btn:hover,
-.horario-modal-btn.selected {
-    background:#d4af37;
-    color:#121212;
-    border-color:#d4af37;
-}
-
-.aviso-sem-horarios-modal {
-    margin-top:15px;
-    padding:15px;
-    border:1px solid #d4af37;
-    border-radius:10px;
-    background:#211d15;
-    color:#f5f5f5;
-    line-height:24px;
-}
-
-.modal-form-nome {
-    margin-top:24px;
-    text-align:left;
-}
-
-.modal-form-nome label {
-    display:block;
-    color:#ccc;
-    margin-bottom:8px;
-    font-size:15px;
-}
-
-.modal-form-nome input {
-    width:100%;
-    box-sizing:border-box;
-    padding:14px;
-    background:#222;
-    border:2px solid #333;
-    border-radius:9px;
-    color:white;
-    font-size:16px;
-    outline:none;
-}
-
-.modal-form-nome input:focus {
-    border-color:#d4af37;
-}
-
-.modal-botoes-final {
-    margin-top:22px;
-}
-
-@media (max-width:600px) {
-    .modal-agendamento {
-        padding:10px;
-    }
-
-    .modal-agendamento-caixa {
-        width:96%;
-        max-height:96vh;
-        padding:22px 16px;
-        border-radius:18px;
-    }
-
-    .modal-titulo {
-        font-size:34px;
-    }
-
-    .modal-titulo-menor {
-        font-size:24px;
-    }
-
-    .modal-texto {
-        font-size:18px;
-        line-height:28px;
-    }
-
-    .dias-modal-grid {
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .horarios-modal-grid {
-        grid-template-columns:repeat(3,1fr);
-    }
-
-    .modal-btn {
+<!-- =====================================================
+     JANELA 2 - NOME E ENVIO PARA WHATSAPP
+     ===================================================== -->
+<div
+    id="dados-whatsapp"
+    style="
+        display:none;
+        position:fixed;
+        top:0;
+        left:0;
         width:100%;
-    }
-}
-</style>
+        height:100%;
+        background:rgba(0,0,0,0.90);
+        z-index:1000000;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        box-sizing:border-box;
+    "
+>
+    <div
+        style="
+            width:90%;
+            max-width:500px;
+            max-height:90vh;
+            overflow-y:auto;
+            background:#1b1b1b;
+            border:2px solid #d4af37;
+            border-radius:18px;
+            padding:30px;
+            text-align:center;
+            box-sizing:border-box;
+            box-shadow:0 10px 40px rgba(0,0,0,.7);
+        "
+    >
+        <div style="font-size:50px;">💈</div>
+
+        <h2 style="color:#d4af37;margin:10px 0 20px;">
+            QUASE TUDO PRONTO!
+        </h2>
+
+        <p style="color:#fff;font-size:18px;line-height:28px;margin-bottom:20px;">
+            Você confirmou o serviço. Agora coloque seu nome para enviar a solicitação diretamente para o Marcelo.
+        </p>
+
+        <div style="
+            background:#241f16;
+            border:1px solid #d4af37;
+            border-radius:12px;
+            padding:16px;
+            margin-bottom:18px;
+        ">
+            <div style="color:#aaa;font-size:13px;text-transform:uppercase;margin-bottom:7px;">
+                Serviço escolhido
+            </div>
+            <div id="servico-confirmado-whatsapp" style="color:#fff;font-size:20px;font-weight:bold;line-height:28px;"></div>
+        </div>
+
+        <div style="
+            background:#1f1b14;
+            border:2px dashed #d4af37;
+            border-radius:10px;
+            padding:15px;
+            margin-bottom:20px;
+        ">
+            <div style="color:#aaa;font-size:13px;text-transform:uppercase;margin-bottom:5px;">
+                Seu código individual
+            </div>
+            <div id="codigo-whatsapp" style="color:#d4af37;font-size:30px;font-weight:bold;letter-spacing:5px;">
+                ----
+            </div>
+        </div>
+
+        <div style="text-align:left;margin-bottom:20px;">
+            <label for="nome-cliente-whatsapp" style="display:block;color:#ccc;font-size:15px;margin-bottom:8px;">
+                Seu nome
+            </label>
+            <input
+                type="text"
+                id="nome-cliente-whatsapp"
+                class="form-control"
+                placeholder="Digite seu nome"
+                autocomplete="name"
+            >
+        </div>
+
+        <p style="color:#bbb;font-size:15px;line-height:24px;margin-bottom:20px;">
+            📲 Ao continuar, o WhatsApp será aberto com seu serviço, nome e código, perguntando ao Marcelo quais dias e horários estão disponíveis.
+        </p>
+
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <button
+                onclick="enviarParaWhatsApp()"
+                style="
+                    padding:14px 25px;
+                    border:none;
+                    border-radius:10px;
+                    background:#d4af37;
+                    color:#000;
+                    font-weight:bold;
+                    cursor:pointer;
+                    font-size:15px;
+                "
+            >
+                📲 ENVIAR PARA O WHATSAPP
+            </button>
+
+            <button
+                onclick="fecharDadosWhatsApp()"
+                style="
+                    padding:14px 25px;
+                    border:none;
+                    border-radius:10px;
+                    background:#333;
+                    color:white;
+                    font-weight:bold;
+                    cursor:pointer;
+                    font-size:15px;
+                "
+            >
+                ↩️ VOLTAR
+            </button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
