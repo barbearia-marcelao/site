@@ -1734,9 +1734,9 @@ Desde já, agradecemos a preferência!`;
 
     const numeroWhatsApp = '5585997313200';
 
-    const urlWhatsApp =
-        `https://wa.me/${numeroWhatsApp}?text=` +
-        encodeURIComponent(mensagem);
+   const urlWhatsApp =
+    `https://api.whatsapp.com/send?phone=${numeroWhatsApp}&text=` +
+    encodeURIComponent(mensagem);
 
     const janela = document.getElementById('confirmacao-servico');
 
