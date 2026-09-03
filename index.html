@@ -1597,6 +1597,11 @@ function gerarCodigoAleatorio() {
    ========================================================= */
 
 async function finalizarAgendamento() {
+
+    // =========================================================
+    // 1. VERIFICAÇÕES BÁSICAS
+    // =========================================================
+
     if (!dadosAgendamento.data || !dadosAgendamento.horario) {
         alert('⚠️ Selecione uma data e um horário antes de finalizar.');
         return;
@@ -1606,24 +1611,43 @@ async function finalizarAgendamento() {
     const nome = inputNome ? inputNome.value.trim() : '';
 
     if (!nome) {
-        alert('Por favor, preencha seu nome completo para continuar.');
+        alert('⚠️ Digite seu nome completo para continuar.');
         if (inputNome) inputNome.focus();
         return;
     }
 
-    if (window.firebaseReady) {
-        await window.firebaseReady;
+    // =========================================================
+    // 2. AGUARDA O FIREBASE
+    // =========================================================
+
+    try {
+
+        if (window.firebaseReady) {
+            await window.firebaseReady;
+        }
+
+        if (!window.db) {
+            throw new Error('FIREBASE_NAO_INICIALIZADO');
+        }
+
+    } catch (erroFirebase) {
+
+        console.error('❌ ERRO AO INICIALIZAR FIREBASE:', erroFirebase);
+
+        alert(
+            '❌ Não foi possível conectar ao sistema de agendamento.\n\n' +
+            'Atualize a página e tente novamente.'
+        );
+
+        return;
     }
+
+    // =========================================================
+    // 3. PREPARA OS DADOS
+    // =========================================================
 
     dadosAgendamento.nome = nome;
     dadosAgendamento.codigo = gerarCodigoAleatorio();
-
-    const diaDaSemana = descobrirDiaDaSemana(dadosAgendamento.data);
-
-    if (!diaDaSemana) {
-        alert('⚠️ Não foi possível identificar o dia selecionado.');
-        return;
-    }
 
     const botao = document.getElementById('btn-finalizar-modal');
 
@@ -1632,53 +1656,42 @@ async function finalizarAgendamento() {
         botao.innerText = '⏳ RESERVANDO...';
     }
 
+    // =========================================================
+    // 4. VERIFICA SE O HORÁRIO AINDA ESTÁ DISPONÍVEL
+    // =========================================================
+
     try {
-        const partesData = dadosAgendamento.data.match(/(\d{2})\/(\d{2})/);
 
-        if (!partesData) {
-            throw new Error('DATA_INVALIDA');
-        }
-
-        const dia = partesData[1];
-        const mes = partesData[2];
-
-        // Usa a coleção AGENDAMENTOS, que já é a coleção principal do site.
-        // Assim evitamos a falha que estava acontecendo na coleção reservasSlots.
         const consultaReserva = window.firebaseQuery(
             window.firebaseCollection(window.db, 'agendamentos'),
-            window.firebaseWhere('data', '==', dadosAgendamento.data)
+            window.firebaseWhere(
+                'data',
+                '==',
+                dadosAgendamento.data
+            )
         );
 
-        const reservasDoDia = await window.firebaseGetDocs(consultaReserva);
+        const reservasDoDia =
+            await window.firebaseGetDocs(consultaReserva);
 
         let horarioOcupado = false;
+
         reservasDoDia.forEach(docSnap => {
+
             const reserva = docSnap.data();
-            if (reserva.horario === dadosAgendamento.horario) {
+
+            if (
+                reserva &&
+                String(reserva.horario || '') ===
+                String(dadosAgendamento.horario)
+            ) {
                 horarioOcupado = true;
             }
+
         });
 
         if (horarioOcupado) {
-            throw new Error('HORARIO_JA_RESERVADO');
-        }
 
-        await window.firebaseAddDoc(
-            window.firebaseCollection(window.db, 'agendamentos'),
-            {
-                nome: dadosAgendamento.nome,
-                servico: dadosAgendamento.servico,
-                data: dadosAgendamento.data,
-                horario: dadosAgendamento.horario,
-                codigo: dadosAgendamento.codigo,
-                criadoEm: window.firebaseServerTimestamp()
-            }
-        );
-
-    } catch (erro) {
-        console.error('Erro ao finalizar agendamento:', erro);
-
-        if (erro.message === 'HORARIO_JA_RESERVADO') {
             alert(
                 '⚠️ Esse horário acabou de ser reservado por outra pessoa.\n\n' +
                 'Escolha outro horário.'
@@ -1688,25 +1701,144 @@ async function finalizarAgendamento() {
 
             if (botao) {
                 botao.disabled = false;
-                botao.innerText = '📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
+                botao.innerText =
+                    '📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
             }
 
-            carregarHorariosDisponiveis(dadosAgendamento.data);
+            await carregarHorariosDisponiveis(
+                dadosAgendamento.data
+            );
+
             return;
         }
 
-        alert(
-            'Não foi possível confirmar o agendamento.\n\n' +
-            'Verifique sua conexão e tente novamente.'
+    } catch (erroConsulta) {
+
+        console.error(
+            '❌ ERRO AO CONSULTAR AGENDAMENTOS:',
+            erroConsulta
+        );
+
+        /*
+         * IMPORTANTE:
+         * Se a leitura do Firestore estiver bloqueada pelas regras,
+         * não vamos impedir o cliente de continuar.
+         *
+         * A gravação abaixo será a operação principal.
+         */
+
+        console.warn(
+            '⚠️ Não foi possível consultar reservas existentes. ' +
+            'Tentaremos gravar o agendamento normalmente.'
+        );
+    }
+
+    // =========================================================
+    // 5. GRAVA O AGENDAMENTO
+    // =========================================================
+
+    try {
+
+        const referenciaAgendamentos =
+            window.firebaseCollection(
+                window.db,
+                'agendamentos'
+            );
+
+        const novoAgendamento = {
+
+            nome: dadosAgendamento.nome,
+
+            servico: dadosAgendamento.servico,
+
+            data: dadosAgendamento.data,
+
+            horario: dadosAgendamento.horario,
+
+            codigo: dadosAgendamento.codigo,
+
+            criadoEm: window.firebaseServerTimestamp()
+
+        };
+
+        console.log(
+            '📋 Salvando agendamento:',
+            novoAgendamento
+        );
+
+        const documentoCriado =
+            await window.firebaseAddDoc(
+                referenciaAgendamentos,
+                novoAgendamento
+            );
+
+        console.log(
+            '✅ AGENDAMENTO SALVO COM SUCESSO!',
+            documentoCriado.id
+        );
+
+    } catch (erroGravacao) {
+
+        console.error(
+            '❌ ERRO REAL AO SALVAR NO FIRESTORE:',
+            erroGravacao
+        );
+
+        console.error(
+            'Código do erro:',
+            erroGravacao.code
+        );
+
+        console.error(
+            'Mensagem do erro:',
+            erroGravacao.message
         );
 
         if (botao) {
             botao.disabled = false;
-            botao.innerText = '📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
+            botao.innerText =
+                '📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
+        }
+
+        // =====================================================
+        // MENSAGENS MAIS PRECISAS
+        // =====================================================
+
+        if (
+            erroGravacao.code ===
+            'permission-denied'
+        ) {
+
+            alert(
+                '❌ O sistema não permitiu salvar o agendamento.\n\n' +
+                'Erro de permissão do Firestore.'
+            );
+
+        } else if (
+            erroGravacao.code ===
+            'unavailable'
+        ) {
+
+            alert(
+                '❌ O servidor do agendamento está temporariamente indisponível.\n\n' +
+                'Tente novamente em alguns segundos.'
+            );
+
+        } else {
+
+            alert(
+                '❌ Não foi possível salvar o agendamento.\n\n' +
+                'Erro: ' +
+                (erroGravacao.message || 'erro desconhecido')
+            );
         }
 
         return;
     }
+
+    // =========================================================
+    // 6. MONTA A MENSAGEM DO WHATSAPP
+    // =========================================================
 
     const mensagem = `Olá! Gostaria de solicitar meu agendamento na Barbearia Marcelão.
 
@@ -1732,19 +1864,29 @@ O horário será reservado exclusivamente mediante o envio e a conferência do c
 
 Desde já, agradecemos a preferência!`;
 
+    // =========================================================
+    // 7. WHATSAPP
+    // =========================================================
+
     const numeroWhatsApp = '5585997313200';
 
-   const urlWhatsApp =
-    `https://api.whatsapp.com/send?phone=${numeroWhatsApp}&text=` +
-    encodeURIComponent(mensagem);
+    const urlWhatsApp =
+        'https://api.whatsapp.com/send?phone=' +
+        numeroWhatsApp +
+        '&text=' +
+        encodeURIComponent(mensagem);
 
-    const janela = document.getElementById('confirmacao-servico');
+    // Fecha a janela
+    const janela =
+        document.getElementById('confirmacao-servico');
 
     if (janela) {
         janela.style.display = 'none';
     }
 
-    const win = window.open(urlWhatsApp, '_blank');
+    // Abre o WhatsApp
+    const win =
+        window.open(urlWhatsApp, '_blank');
 
     if (!win) {
         window.location.href = urlWhatsApp;
