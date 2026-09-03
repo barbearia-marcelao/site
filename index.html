@@ -1381,19 +1381,92 @@ function horarioJaPassou(dataSelecionada, horario) {
    BUSCAR HORÁRIOS BLOQUEADOS E RESERVADOS
    ========================================================= */
 
-async function carregarHorariosDisponiveis(dataSelecionada) {
-    const grid=document.getElementById('horarios-modal-grid'); const aviso=document.getElementById('aviso-horarios-modal'); const botao=document.getElementById('btn-finalizar-modal');
-    if(!grid)return; grid.innerHTML=''; dadosAgendamento.horario=''; if(aviso){aviso.style.display='none';aviso.innerHTML='';} if(botao){botao.disabled=true;botao.style.opacity='0.5';}
-    const dataISO=converterDataAgendamentoParaISO(dataSelecionada); if(!dataISO){mostrarAvisoHorarios('⚠️ Não foi possível identificar a data selecionada.');return;}
-    grid.innerHTML='<div style="grid-column:1 / -1;color:#d4af37;text-align:center;padding:15px;font-weight:bold;">⏳ Verificando horários disponíveis...</div>';
+async function carregarHorariosDisponiveis(dataSelecionada){
+    const grid=document.getElementById('horarios-modal-grid');
+    const aviso=document.getElementById('aviso-horarios-modal');
+    const botao=document.getElementById('btn-finalizar-modal');
+
+    if(!grid)return;
+
+    grid.innerHTML='';
+    dadosAgendamento.horario='';
+
+    if(aviso){
+        aviso.style.display='none';
+        aviso.innerHTML='';
+    }
+
+    if(botao){
+        botao.disabled=true;
+        botao.style.opacity='0.5';
+    }
+
+    const dataISO=converterDataAgendamentoParaISO(dataSelecionada);
+    if(!dataISO){
+        mostrarAvisoHorarios('⚠️ Não foi possível identificar a data selecionada.');
+        return;
+    }
+
+    grid.innerHTML='<div style="grid-column:1 / -1;color:#d4af37;text-align:center;padding:15px;font-weight:bold">⏳ Verificando horários disponíveis...</div>';
+
     try{
-      if(window.firebaseReady)await window.firebaseReady; if(!window.db)throw new Error('FIREBASE_NAO_INICIALIZADO');
-      const bs=await window.firebaseGetDocs(window.firebaseQuery(window.firebaseCollection(window.db,'horariosBloqueados'),window.firebaseWhere('data','==',dataISO)));
-      const rs=await window.firebaseGetDocs(window.firebaseQuery(window.firebaseCollection(window.db,'agendamentos'),window.firebaseWhere('data','==',dataSelecionada)));
-      const bloqueados=new Set(),reservados=new Set(); bs.forEach(d=>{const x=d.data();if(x&&x.horario)bloqueados.add(String(x.horario));}); rs.forEach(d=>{const x=d.data();if(x&&x.horario)reservados.add(String(x.horario));});
-      grid.innerHTML=''; let n=0; HORARIOS_ATENDIMENTO.forEach(h=>{if(horarioJaPassou(dataSelecionada,h)||bloqueados.has(h)||reservados.has(h))return;const b=document.createElement('button');b.type='button';b.className='horario-modal-btn';b.innerText=h;b.onclick=()=>selecionarHorarioModal(b,h);grid.appendChild(b);n++;});
-      if(!n)mostrarAvisoHorarios('⚠️ <strong>Não há mais horários disponíveis para esta data.</strong><br><br>Escolha o próximo dia disponível para fazer seu agendamento.');
-    }catch(e){console.error(e);grid.innerHTML='';mostrarAvisoHorarios('❌ Não foi possível verificar a disponibilidade com segurança.<br><br>Atualize a página e tente novamente.');}
+        if(window.firebaseReady)await window.firebaseReady;
+        if(!window.db)throw new Error('FIREBASE_NAO_INICIALIZADO');
+
+        const consultaBloqueios=window.firebaseQuery(
+            window.firebaseCollection(window.db,'horariosBloqueados'),
+            window.firebaseWhere('data','==',dataISO)
+        );
+
+        const consultaReservas=window.firebaseQuery(
+            window.firebaseCollection(window.db,'agendamentos'),
+            window.firebaseWhere('data','==',dataSelecionada)
+        );
+
+        /* As duas consultas acontecem ao mesmo tempo para reduzir a espera. */
+        const [snapshotBloqueios,snapshotAgendamentos]=await Promise.all([
+            window.firebaseGetDocs(consultaBloqueios),
+            window.firebaseGetDocs(consultaReservas)
+        ]);
+
+        const bloqueados=new Set();
+        const reservados=new Set();
+
+        snapshotBloqueios.forEach(d=>{
+            const x=d.data();
+            if(x&&x.horario)bloqueados.add(String(x.horario));
+        });
+
+        snapshotAgendamentos.forEach(d=>{
+            const x=d.data();
+            if(x&&x.horario)reservados.add(String(x.horario));
+        });
+
+        grid.innerHTML='';
+        let n=0;
+
+        HORARIOS_ATENDIMENTO.forEach(h=>{
+            if(horarioJaPassou(dataSelecionada,h))return;
+            if(bloqueados.has(h))return;
+            if(reservados.has(h))return;
+
+            const b=document.createElement('button');
+            b.type='button';
+            b.className='horario-modal-btn';
+            b.innerText=h;
+            b.onclick=()=>selecionarHorarioModal(b,h);
+            grid.appendChild(b);
+            n++;
+        });
+
+        if(!n){
+            mostrarAvisoHorarios('⚠️ <strong>Não há mais horários disponíveis para esta data.</strong><br><br>Escolha o próximo dia disponível para fazer seu agendamento.');
+        }
+    }catch(e){
+        console.error('Erro ao carregar horários:',e);
+        grid.innerHTML='';
+        mostrarAvisoHorarios('❌ Não foi possível verificar a disponibilidade agora.<br><br>Atualize a página e tente novamente.');
+    }
 }
 
 function converterDataAgendamentoParaISO(dataStr){const m=String(dataStr||'').match(/(\d{2})\/(\d{2})(?:\/(\d{4}))?/);if(!m)return '';const ano=m[3]?Number(m[3]):new Date().getFullYear();return `${ano}-${m[2]}-${m[1]}`;}
@@ -1448,11 +1521,20 @@ async function finalizarAgendamento(){
         return;
     }
 
+    /* Abre o WhatsApp imediatamente para evitar bloqueio do navegador. */
+    let janelaWhatsApp=null;
+    try{
+        janelaWhatsApp=window.open('about:blank','_blank');
+    }catch(e){
+        janelaWhatsApp=null;
+    }
+
     try{
         if(window.firebaseReady) await window.firebaseReady;
         if(!window.db) throw new Error('FIREBASE_NAO_INICIALIZADO');
     }catch(e){
         console.error('Firebase não inicializado:',e);
+        if(janelaWhatsApp && !janelaWhatsApp.closed) janelaWhatsApp.close();
         alert('❌ Não foi possível conectar ao sistema de agendamento.\n\nAtualize a página e tente novamente.');
         return;
     }
@@ -1460,7 +1542,7 @@ async function finalizarAgendamento(){
     const botao=document.getElementById('btn-finalizar-modal');
     if(botao){
         botao.disabled=true;
-        botao.innerText='⏳ VERIFICANDO E RESERVANDO...';
+        botao.innerText='⏳ RESERVANDO...';
     }
 
     const dataISO=converterDataAgendamentoParaISO(dadosAgendamento.data);
@@ -1469,54 +1551,60 @@ async function finalizarAgendamento(){
     dadosAgendamento.codigo=gerarCodigoAleatorio();
 
     try{
-        // REVALIDAÇÃO FINAL: consulta novamente o bloqueio específico da data + horário.
         const bloqueioRef=window.firebaseDoc(
             window.db,
             'horariosBloqueados',
             `${dataISO}_${horario.replace(':','-')}`
         );
-        const bloqueioSnap=await window.firebaseGetDoc(bloqueioRef);
+
+        const reservaQuery=window.firebaseQuery(
+            window.firebaseCollection(window.db,'agendamentos'),
+            window.firebaseWhere('data','==',dadosAgendamento.data)
+        );
+
+        /* As duas verificações finais são feitas em paralelo. */
+        const [bloqueioSnap,reservas]=await Promise.all([
+            window.firebaseGetDoc(bloqueioRef),
+            window.firebaseGetDocs(reservaQuery)
+        ]);
+
         if(bloqueioSnap.exists()){
             const erro=new Error('HORARIO_BLOQUEADO');
             erro.code='horario-bloqueado';
             throw erro;
         }
 
-        // REVALIDAÇÃO FINAL: procura qualquer reserva existente para o mesmo horário.
-        // Isso mantém compatibilidade com reservas antigas e novas.
-        const reservaQuery=window.firebaseQuery(
-            window.firebaseCollection(window.db,'agendamentos'),
-            window.firebaseWhere('data','==',dadosAgendamento.data)
-        );
-        const reservas=await window.firebaseGetDocs(reservaQuery);
         let horarioReservado=false;
         reservas.forEach(d=>{
             const x=d.data();
-            if(x && String(x.horario)===horario) horarioReservado=true;
+            if(x && String(x.horario||'')===horario) horarioReservado=true;
         });
+
         if(horarioReservado){
             const erro=new Error('HORARIO_RESERVADO');
             erro.code='horario-reservado';
             throw erro;
         }
 
-        // Usa addDoc, a mesma forma de gravação que já funcionava no site original.
-        // A checagem acima é repetida imediatamente antes da gravação para reduzir
-        // ao máximo a chance de um horário ficar ocupado durante a confirmação.
-        await window.firebaseAddDoc(window.firebaseCollection(window.db,'agendamentos'),{
-            nome:dadosAgendamento.nome,
-            servico:dadosAgendamento.servico,
-            data:dadosAgendamento.data,
-            dataISO,
-            horario,
-            codigo:dadosAgendamento.codigo,
-            criadoEm:window.firebaseServerTimestamp()
-        });
-
+        await window.firebaseAddDoc(
+            window.firebaseCollection(window.db,'agendamentos'),
+            {
+                nome:dadosAgendamento.nome,
+                servico:dadosAgendamento.servico,
+                data:dadosAgendamento.data,
+                dataISO,
+                horario,
+                codigo:dadosAgendamento.codigo,
+                criadoEm:window.firebaseServerTimestamp()
+            }
+        );
     }catch(e){
         console.error('❌ Erro ao confirmar agendamento:',e);
         console.error('Código Firebase:',e && e.code);
         console.error('Mensagem Firebase:',e && e.message);
+
+        if(janelaWhatsApp && !janelaWhatsApp.closed) janelaWhatsApp.close();
+
         if(botao){
             botao.disabled=false;
             botao.innerText='📲 FINALIZAR E ENVIAR PARA O WHATSAPP';
@@ -1534,9 +1622,6 @@ async function finalizarAgendamento(){
         await carregarHorariosDisponiveis(dadosAgendamento.data);
         return;
     }
-
-    // 6. MONTA A MENSAGEM DO WHATSAPP
-    // =========================================================
 
     const mensagem = `Olá! Gostaria de solicitar meu agendamento na Barbearia Marcelão.
 
@@ -1562,32 +1647,21 @@ O horário será reservado exclusivamente mediante o envio e a conferência do c
 
 Desde já, agradecemos a preferência!`;
 
-    // =========================================================
-    // 7. WHATSAPP
-    // =========================================================
-
-    const numeroWhatsApp = '5585997313200';
-
-    const urlWhatsApp =
-        'https://api.whatsapp.com/send?phone=' +
-        numeroWhatsApp +
-        '&text=' +
+    const numeroWhatsApp='5585997313200';
+    const urlWhatsApp=
+        'https://api.whatsapp.com/send?phone='+
+        numeroWhatsApp+
+        '&text='+
         encodeURIComponent(mensagem);
 
-    // Fecha a janela
-    const janela =
-        document.getElementById('confirmacao-servico');
+    const janela=document.getElementById('confirmacao-servico');
+    if(janela) janela.style.display='none';
 
-    if (janela) {
-        janela.style.display = 'none';
-    }
-
-    // Abre o WhatsApp
-    const win =
-        window.open(urlWhatsApp, '_blank');
-
-    if (!win) {
-        window.location.href = urlWhatsApp;
+    if(janelaWhatsApp && !janelaWhatsApp.closed){
+        janelaWhatsApp.location.href=urlWhatsApp;
+        try{ janelaWhatsApp.focus(); }catch(e){}
+    }else{
+        window.location.href=urlWhatsApp;
     }
 }
 
@@ -1752,7 +1826,8 @@ async function abrirPainelAdmin(){
     c.innerHTML=`
       <div style="text-align:center;margin-bottom:22px">
         <div style="color:#d4af37;font-size:14px;font-weight:bold;letter-spacing:.5px">AGENDA DA SEMANA</div>
-        <div style="color:#ddd;margin-top:6px;font-size:15px">Toque em um horário para bloquear ou liberar.</div>
+        <div style="color:#ddd;margin-top:6px;font-size:15px">Horário livre = clique para bloquear. Horário bloqueado = clique para liberar.</div>
+        <div style="color:#999;margin-top:7px;font-size:12px">Horários antigos reservados também podem ser liberados. Depois ficam disponíveis normalmente para os clientes.</div>
       </div>
       <div id="admin-semana" style="display:flex;flex-direction:column;gap:16px"></div>`;
 
@@ -1762,6 +1837,7 @@ async function abrirPainelAdmin(){
 async function carregarPainelAdminSemana(){
     const container=document.getElementById('admin-semana');
     if(!container)return;
+
     container.innerHTML='<div style="text-align:center;color:#d4af37;padding:25px;font-weight:bold">⏳ Carregando agenda...</div>';
 
     const agora=new Date();
@@ -1774,94 +1850,175 @@ async function carregarPainelAdminSemana(){
     ];
 
     try{
-      if(window.firebaseReady)await window.firebaseReady;
-      if(!window.db)throw new Error('FIREBASE_NAO_INICIALIZADO');
+        if(window.firebaseReady)await window.firebaseReady;
+        if(!window.db)throw new Error('FIREBASE_NAO_INICIALIZADO');
 
-      const blocos=[];
-      for(const dia of diasAdmin){
-        const data=obterProximaDataDoDiaSemana(dia.num,agora);
-        const dataISO=dataParaISOAdmin(data);
-        blocos.push({dia,data,dataISO});
-      }
+        const blocos=[];
+        for(const dia of diasAdmin){
+            const data=obterProximaDataDoDiaSemana(dia.num,agora);
+            const dataISO=dataParaISOAdmin(data);
+            blocos.push({dia,data,dataISO});
+        }
 
-      const html=[];
-      for(const item of blocos){
-        const snapB=await window.firebaseGetDocs(
-          window.firebaseQuery(
-            window.firebaseCollection(window.db,'horariosBloqueados'),
-            window.firebaseWhere('data','==',item.dataISO)
-          )
-        );
-        const snapR=await window.firebaseGetDocs(
-          window.firebaseQuery(
-            window.firebaseCollection(window.db,'agendamentos'),
-            window.firebaseWhere('data','==',`${NOMES_DIAS[item.dia.num]}, ${formatarDataAdmin(item.data).slice(0,5)}`)
-          )
-        ).catch(()=>null);
+        const html=[];
 
-        const bloqueados=new Set();
-        snapB.forEach(x=>{const v=x.data();if(v&&v.horario)bloqueados.add(String(v.horario));});
+        for(const item of blocos){
+            const snapB=await window.firebaseGetDocs(
+                window.firebaseQuery(
+                    window.firebaseCollection(window.db,'horariosBloqueados'),
+                    window.firebaseWhere('data','==',item.dataISO)
+                )
+            );
 
-        const reservados=new Set();
-        if(snapR) snapR.forEach(x=>{const v=x.data();if(v&&v.horario)reservados.add(String(v.horario));});
+            const dataExibicao=`${NOMES_DIAS[item.dia.num]}, ${formatarDataAdmin(item.data).slice(0,5)}`;
 
-        const botoes=HORARIOS_ATENDIMENTO.map(h=>{
-          const bloqueado=bloqueados.has(h);
-          const reservado=reservados.has(h);
-          if(reservado){
-            return `<button type="button" disabled data-horario="${h}" style="background:#444;color:#aaa;border:1px solid #555;border-radius:9px;padding:11px 8px;font-weight:bold;cursor:not-allowed;opacity:.8">${h}<small style="display:block;font-size:9px;margin-top:3px">RESERVADO</small></button>`;
-          }
-          return `<button type="button" class="admin-horario" data-horario="${h}" data-ocupado="${bloqueado?'1':'0'}" style="background:${bloqueado?'#8f1d1d':'#292929'};color:white;border:1px solid ${bloqueado?'#b83232':'#4a4a4a'};border-radius:9px;padding:12px 8px;cursor:pointer;font-weight:bold;transition:.2s" onclick="alternarHorario(this)">${h}${bloqueado?'<small style="display:block;font-size:9px;margin-top:3px">🔒 BLOQUEADO</small>':''}</button>`;
-        }).join('');
+            const snapR=await window.firebaseGetDocs(
+                window.firebaseQuery(
+                    window.firebaseCollection(window.db,'agendamentos'),
+                    window.firebaseWhere('data','==',dataExibicao)
+                )
+            ).catch(()=>null);
 
-        html.push(`
-          <section class="admin-dia-card" data-data-iso="${item.dataISO}" style="background:#1b1b1b;border:1px solid #444;border-radius:14px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,.25)">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:13px;flex-wrap:wrap">
-              <div>
-                <div style="font-size:18px;font-weight:900;color:#d4af37;letter-spacing:.7px">${item.dia.nome}</div>
-                <div style="font-size:13px;color:#bbb;margin-top:3px">📅 ${formatarDataAdmin(item.data)}</div>
-              </div>
-              <div style="font-size:11px;color:#999">Clique para bloquear</div>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:8px">${botoes}</div>
-          </section>`);
-      }
+            const bloqueados=new Set();
+            snapB.forEach(x=>{
+                const v=x.data();
+                if(v&&v.horario)bloqueados.add(String(v.horario));
+            });
 
-      container.innerHTML=html.join('');
+            /* IDs das reservas antigas: usadas somente para o botão LIBERAR. */
+            const reservasPorHorario=new Map();
+            if(snapR){
+                snapR.forEach(x=>{
+                    const v=x.data();
+                    if(v&&v.horario){
+                        const h=String(v.horario);
+                        if(!reservasPorHorario.has(h))reservasPorHorario.set(h,[]);
+                        reservasPorHorario.get(h).push(x.id);
+                    }
+                });
+            }
+
+            const botoes=HORARIOS_ATENDIMENTO.map(h=>{
+                const bloqueado=bloqueados.has(h);
+                const idsReservas=reservasPorHorario.get(h)||[];
+
+                if(bloqueado){
+                    return `<button type="button" class="admin-horario" data-horario="${h}" data-ocupado="1" data-reserva-ids="${idsReservas.join(',')}" style="background:#8f1d1d;color:white;border:1px solid #b83232;border-radius:9px;padding:12px 8px;cursor:pointer;font-weight:bold;transition:.2s" onclick="alternarHorario(this)">${h}<small style="display:block;font-size:9px;margin-top:3px">🔒 BLOQUEADO</small></button>`;
+                }
+
+                if(idsReservas.length){
+                    return `<button type="button" class="admin-horario" data-horario="${h}" data-ocupado="0" data-reserva-ids="${idsReservas.join(',')}" style="background:#292929;color:white;border:1px solid #4a4a4a;border-radius:9px;padding:12px 8px;cursor:pointer;font-weight:bold;transition:.2s" onclick="alternarHorario(this)">${h}<small style="display:block;font-size:9px;margin-top:3px;color:#d4af37">RESERVADO • CLIQUE PARA LIBERAR</small></button>`;
+                }
+
+                return `<button type="button" class="admin-horario" data-horario="${h}" data-ocupado="0" data-reserva-ids="" style="background:#292929;color:white;border:1px solid #4a4a4a;border-radius:9px;padding:12px 8px;cursor:pointer;font-weight:bold;transition:.2s" onclick="alternarHorario(this)">${h}</button>`;
+            }).join('');
+
+            html.push(`
+              <section class="admin-dia-card" data-data-iso="${item.dataISO}" style="background:#1b1b1b;border:1px solid #444;border-radius:14px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,.25)">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:13px;flex-wrap:wrap">
+                  <div>
+                    <div style="font-size:18px;font-weight:900;color:#d4af37;letter-spacing:.7px">${item.dia.nome}</div>
+                    <div style="font-size:13px;color:#bbb;margin-top:3px">📅 ${formatarDataAdmin(item.data)}</div>
+                  </div>
+                  <div style="font-size:11px;color:#999">Clique para bloquear / liberar</div>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:8px">${botoes}</div>
+              </section>`);
+        }
+
+        container.innerHTML=html.join('');
     }catch(e){
-      console.error(e);
-      container.innerHTML='<p style="text-align:center;color:#ff7777;padding:20px">❌ Não foi possível carregar a agenda administrativa.</p>';
+        console.error(e);
+        container.innerHTML='<p style="text-align:center;color:#ff7777;padding:20px">❌ Não foi possível carregar a agenda administrativa.</p>';
     }
 }
 
-function fecharPainelAdmin(){const p=document.getElementById('painel-admin');if(p)p.style.display='none';}
+function fecharPainelAdmin(){
+    const p=document.getElementById('painel-admin');
+    if(p)p.style.display='none';
+}
 
 async function alternarHorario(botao){
-    const horario=botao.dataset.horario||botao.innerText.replace(' 🔒','').trim();
+    const horario=botao.dataset.horario||botao.innerText.trim().split(' ')[0];
     const card=botao.closest('.admin-dia-card');
     const dataISO=card?card.dataset.dataIso:'';
-    if(!dataISO){alert('Não foi possível identificar a data deste dia.');return;}
+    if(!dataISO){
+        alert('Não foi possível identificar a data deste dia.');
+        return;
+    }
 
-    const ref=window.firebaseDoc(window.db,'horariosBloqueados',`${dataISO}_${horario.replace(':','-')}`);
+    const idsReservas=(botao.dataset.reservaIds||'')
+        .split(',')
+        .map(x=>x.trim())
+        .filter(Boolean);
+
     botao.disabled=true;
+
     try{
-      if(botao.dataset.ocupado==='1'){
-        await window.firebaseDeleteDoc(ref);
-        botao.dataset.ocupado='0';
-        botao.style.background='#292929';
-        botao.style.borderColor='#4a4a4a';
-        botao.innerHTML=horario;
-      }else{
-        await window.firebaseSetDoc(ref,{data:dataISO,horario,tipo:'bloqueio',bloqueadoEm:window.firebaseServerTimestamp()});
-        botao.dataset.ocupado='1';
-        botao.style.background='#8f1d1d';
-        botao.style.borderColor='#b83232';
-        botao.innerHTML=horario+'<small style="display:block;font-size:9px;margin-top:3px">🔒 BLOQUEADO</small>';
-      }
+        /*
+         * RESERVA ANTIGA:
+         * O primeiro clique libera o horário apagando a reserva antiga.
+         * Depois ele fica disponível para o cliente e para bloqueio manual.
+         */
+        if(idsReservas.length && botao.dataset.ocupado!=='1'){
+            const confirmar=window.confirm(
+                `O horário ${horario} possui ${idsReservas.length} reserva(s) antiga(s).\n\n`+
+                `Deseja LIBERAR esse horário?\n\n`+
+                `Depois de liberar, ele ficará disponível para os clientes e você poderá bloqueá-lo manualmente quando quiser.`
+            );
+
+            if(!confirmar){
+                botao.disabled=false;
+                return;
+            }
+
+            await Promise.all(
+                idsReservas.map(id=>
+                    window.firebaseDeleteDoc(
+                        window.firebaseDoc(window.db,'agendamentos',id)
+                    )
+                )
+            );
+
+            botao.dataset.reservaIds='';
+            botao.dataset.ocupado='0';
+            botao.style.background='#292929';
+            botao.style.borderColor='#4a4a4a';
+            botao.innerHTML=horario;
+            return;
+        }
+
+        /* BLOQUEIO MANUAL */
+        const ref=window.firebaseDoc(
+            window.db,
+            'horariosBloqueados',
+            `${dataISO}_${horario.replace(':','-')}`
+        );
+
+        if(botao.dataset.ocupado==='1'){
+            await window.firebaseDeleteDoc(ref);
+            botao.dataset.ocupado='0';
+            botao.style.background='#292929';
+            botao.style.borderColor='#4a4a4a';
+            botao.innerHTML=horario;
+        }else{
+            await window.firebaseSetDoc(ref,{
+                data:dataISO,
+                horario,
+                tipo:'bloqueio',
+                bloqueadoEm:window.firebaseServerTimestamp()
+            });
+            botao.dataset.ocupado='1';
+            botao.style.background='#8f1d1d';
+            botao.style.borderColor='#b83232';
+            botao.innerHTML=horario+'<small style="display:block;font-size:9px;margin-top:3px">🔒 BLOQUEADO</small>';
+        }
     }catch(e){
-      console.error(e);
-      alert('❌ Não foi possível alterar o bloqueio.');
-    }finally{botao.disabled=false;}
+        console.error(e);
+        alert('❌ Não foi possível alterar o horário.\n\nVerifique as permissões do Firebase.');
+    }finally{
+        botao.disabled=false;
+    }
 }
 </script>
 <!-- =====================================================
