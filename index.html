@@ -1268,12 +1268,6 @@ function obterDiaInicialParaAgendamento() {
         return inicio;
     }
 
-    // Sexta-feira -> sempre mostra a próxima semana.
-    if (diaSemana === 5) {
-        inicio.setDate(inicio.getDate() + 3);
-        return inicio;
-    }
-
     // Segunda a quinta depois das 18:30 -> começa no dia seguinte.
     if (encerrado) {
         inicio.setDate(inicio.getDate() + 1);
@@ -1728,10 +1722,147 @@ if (document.readyState === 'loading') {
    PAINEL ADMINISTRATIVO
    ========================================================= */
 
-async function abrirPainelAdmin(){const painel=document.getElementById('painel-admin'),c=document.getElementById('conteudo-admin');if(painel)painel.style.display='block';if(!c)return;const h=new Date(),iso=`${h.getFullYear()}-${String(h.getMonth()+1).padStart(2,'0')}-${String(h.getDate()).padStart(2,'0')}`;c.innerHTML=`<div style="margin-bottom:20px;text-align:center"><label style="display:block;color:#ccc;margin-bottom:8px;font-weight:bold">📅 Escolha a data</label><input id="admin-data" type="date" value="${iso}" min="${iso}" onchange="carregarPainelAdminData(this.value)" style="padding:12px;border-radius:8px;border:1px solid #555;background:#222;color:white;font-size:16px"><div id="admin-data-titulo" style="color:#d4af37;margin-top:10px;font-weight:bold"></div></div><div id="admin-grade"></div>`;await carregarPainelAdminData(iso);}
-async function carregarPainelAdminData(dataISO){const g=document.getElementById('admin-grade'),t=document.getElementById('admin-data-titulo');if(!g)return;const [a,m,d]=dataISO.split('-').map(Number),dt=new Date(a,m-1,d);t.textContent=`${NOMES_DIAS_FIREBASE[dt.getDay()]}, ${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${a}`;if(dt.getDay()===0||dt.getDay()===6){g.innerHTML='<p style="text-align:center;color:#ccc">A agenda para clientes funciona de segunda a sexta.</p>';return;}g.innerHTML='<p style="text-align:center;color:#d4af37">⏳ Carregando...</p>';try{if(window.firebaseReady)await window.firebaseReady;const snap=await window.firebaseGetDocs(window.firebaseQuery(window.firebaseCollection(window.db,'horariosBloqueados'),window.firebaseWhere('data','==',dataISO))),bs=new Set();snap.forEach(x=>{const v=x.data();if(v&&v.horario)bs.add(String(v.horario));});g.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px">'+HORARIOS_ATENDIMENTO.map(h=>{const b=bs.has(h);return `<button class="admin-horario" data-horario="${h}" data-ocupado="${b?'1':'0'}" style="background:${b?'#b30000':'#2a2a2a'};color:white;border:1px solid #444;border-radius:8px;padding:12px;cursor:pointer;font-weight:bold" onclick="alternarHorario(this)">${h}${b?' 🔒':''}</button>`}).join('')+'</div>';}catch(e){console.error(e);g.innerHTML='<p style="text-align:center;color:red">Erro ao carregar os bloqueios.</p>';}}
+/* =========================================================
+   PAINEL ADMINISTRATIVO — VISÃO POR DIA DA SEMANA
+   Cada dia aponta para a próxima ocorrência daquele dia.
+   Os bloqueios continuam sendo gravados por DATA + HORÁRIO.
+   ========================================================= */
+function obterProximaDataDoDiaSemana(alvo, base=new Date()) {
+    const d = new Date(base);
+    d.setHours(0,0,0,0);
+    let diff = (alvo - d.getDay() + 7) % 7;
+    d.setDate(d.getDate() + diff);
+    return d;
+}
+
+function dataParaISOAdmin(d) {
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function formatarDataAdmin(d) {
+    return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+
+async function abrirPainelAdmin(){
+    const painel=document.getElementById('painel-admin');
+    const c=document.getElementById('conteudo-admin');
+    if(painel)painel.style.display='block';
+    if(!c)return;
+
+    c.innerHTML=`
+      <div style="text-align:center;margin-bottom:22px">
+        <div style="color:#d4af37;font-size:14px;font-weight:bold;letter-spacing:.5px">AGENDA DA SEMANA</div>
+        <div style="color:#ddd;margin-top:6px;font-size:15px">Toque em um horário para bloquear ou liberar.</div>
+      </div>
+      <div id="admin-semana" style="display:flex;flex-direction:column;gap:16px"></div>`;
+
+    await carregarPainelAdminSemana();
+}
+
+async function carregarPainelAdminSemana(){
+    const container=document.getElementById('admin-semana');
+    if(!container)return;
+    container.innerHTML='<div style="text-align:center;color:#d4af37;padding:25px;font-weight:bold">⏳ Carregando agenda...</div>';
+
+    const agora=new Date();
+    const diasAdmin=[
+      {num:1,nome:'SEGUNDA'},
+      {num:2,nome:'TERÇA'},
+      {num:3,nome:'QUARTA'},
+      {num:4,nome:'QUINTA'},
+      {num:5,nome:'SEXTA'}
+    ];
+
+    try{
+      if(window.firebaseReady)await window.firebaseReady;
+      if(!window.db)throw new Error('FIREBASE_NAO_INICIALIZADO');
+
+      const blocos=[];
+      for(const dia of diasAdmin){
+        const data=obterProximaDataDoDiaSemana(dia.num,agora);
+        const dataISO=dataParaISOAdmin(data);
+        blocos.push({dia,data,dataISO});
+      }
+
+      const html=[];
+      for(const item of blocos){
+        const snapB=await window.firebaseGetDocs(
+          window.firebaseQuery(
+            window.firebaseCollection(window.db,'horariosBloqueados'),
+            window.firebaseWhere('data','==',item.dataISO)
+          )
+        );
+        const snapR=await window.firebaseGetDocs(
+          window.firebaseQuery(
+            window.firebaseCollection(window.db,'agendamentos'),
+            window.firebaseWhere('data','==',`${NOMES_DIAS[item.dia.num]}, ${formatarDataAdmin(item.data).slice(0,5)}`)
+          )
+        ).catch(()=>null);
+
+        const bloqueados=new Set();
+        snapB.forEach(x=>{const v=x.data();if(v&&v.horario)bloqueados.add(String(v.horario));});
+
+        const reservados=new Set();
+        if(snapR) snapR.forEach(x=>{const v=x.data();if(v&&v.horario)reservados.add(String(v.horario));});
+
+        const botoes=HORARIOS_ATENDIMENTO.map(h=>{
+          const bloqueado=bloqueados.has(h);
+          const reservado=reservados.has(h);
+          if(reservado){
+            return `<button type="button" disabled data-horario="${h}" style="background:#444;color:#aaa;border:1px solid #555;border-radius:9px;padding:11px 8px;font-weight:bold;cursor:not-allowed;opacity:.8">${h}<small style="display:block;font-size:9px;margin-top:3px">RESERVADO</small></button>`;
+          }
+          return `<button type="button" class="admin-horario" data-horario="${h}" data-ocupado="${bloqueado?'1':'0'}" style="background:${bloqueado?'#8f1d1d':'#292929'};color:white;border:1px solid ${bloqueado?'#b83232':'#4a4a4a'};border-radius:9px;padding:12px 8px;cursor:pointer;font-weight:bold;transition:.2s" onclick="alternarHorario(this)">${h}${bloqueado?'<small style="display:block;font-size:9px;margin-top:3px">🔒 BLOQUEADO</small>':''}</button>`;
+        }).join('');
+
+        html.push(`
+          <section class="admin-dia-card" data-data-iso="${item.dataISO}" style="background:#1b1b1b;border:1px solid #444;border-radius:14px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,.25)">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:13px;flex-wrap:wrap">
+              <div>
+                <div style="font-size:18px;font-weight:900;color:#d4af37;letter-spacing:.7px">${item.dia.nome}</div>
+                <div style="font-size:13px;color:#bbb;margin-top:3px">📅 ${formatarDataAdmin(item.data)}</div>
+              </div>
+              <div style="font-size:11px;color:#999">Clique para bloquear</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:8px">${botoes}</div>
+          </section>`);
+      }
+
+      container.innerHTML=html.join('');
+    }catch(e){
+      console.error(e);
+      container.innerHTML='<p style="text-align:center;color:#ff7777;padding:20px">❌ Não foi possível carregar a agenda administrativa.</p>';
+    }
+}
+
 function fecharPainelAdmin(){const p=document.getElementById('painel-admin');if(p)p.style.display='none';}
-async function alternarHorario(botao){const horario=botao.dataset.horario||botao.innerText.replace(' 🔒','').trim(),input=document.getElementById('admin-data'),dataISO=input?input.value:'';if(!dataISO){alert('Selecione uma data.');return;}const ref=window.firebaseDoc(window.db,'horariosBloqueados',`${dataISO}_${horario.replace(':','-')}`);botao.disabled=true;try{if(botao.dataset.ocupado==='1'){await window.firebaseDeleteDoc(ref);botao.dataset.ocupado='0';botao.style.background='#2a2a2a';botao.innerText=horario;}else{await window.firebaseSetDoc(ref,{data:dataISO,horario,tipo:'bloqueio',bloqueadoEm:window.firebaseServerTimestamp()});botao.dataset.ocupado='1';botao.style.background='#b30000';botao.innerText=horario+' 🔒';}}catch(e){console.error(e);alert('❌ Não foi possível alterar o bloqueio.');}finally{botao.disabled=false;}}
+
+async function alternarHorario(botao){
+    const horario=botao.dataset.horario||botao.innerText.replace(' 🔒','').trim();
+    const card=botao.closest('.admin-dia-card');
+    const dataISO=card?card.dataset.dataIso:'';
+    if(!dataISO){alert('Não foi possível identificar a data deste dia.');return;}
+
+    const ref=window.firebaseDoc(window.db,'horariosBloqueados',`${dataISO}_${horario.replace(':','-')}`);
+    botao.disabled=true;
+    try{
+      if(botao.dataset.ocupado==='1'){
+        await window.firebaseDeleteDoc(ref);
+        botao.dataset.ocupado='0';
+        botao.style.background='#292929';
+        botao.style.borderColor='#4a4a4a';
+        botao.innerHTML=horario;
+      }else{
+        await window.firebaseSetDoc(ref,{data:dataISO,horario,tipo:'bloqueio',bloqueadoEm:window.firebaseServerTimestamp()});
+        botao.dataset.ocupado='1';
+        botao.style.background='#8f1d1d';
+        botao.style.borderColor='#b83232';
+        botao.innerHTML=horario+'<small style="display:block;font-size:9px;margin-top:3px">🔒 BLOQUEADO</small>';
+      }
+    }catch(e){
+      console.error(e);
+      alert('❌ Não foi possível alterar o bloqueio.');
+    }finally{botao.disabled=false;}
+}
 </script>
 <!-- =====================================================
      JANELA DE AGENDAMENTO SOBRE A PÁGINA
